@@ -313,6 +313,41 @@ Challenge: *"Be An Earth System Trend Detective"*
 
 ---
 
+## 👨‍🚀 Meet the Team
+
+<p align="center">
+  <em>The minds behind EARTHPULSE-X — bringing NASA satellite data to life.</em>
+</p>
+
+<table align="center">
+  <tr>
+    <td align="center" width="220">
+      <img src="assets/aditya_corporate.png" alt="Aditya Suyal" width="140" height="140" style="border-radius:50%; object-fit:cover; border: 3px solid #4A90D9;"/><br/><br/>
+      <strong>Aditya Suyal</strong>
+    </td>
+    <td align="center" width="220">
+      <img src="assets/gaurav_negi.jpeg" alt="Gaurav Negi" width="140" height="140" style="border-radius:50%; object-fit:cover; border: 3px solid #4A90D9;"/><br/><br/>
+      <strong>Gaurav Negi</strong>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="220">
+      <img src="assets/Nisha_Kumari.jpeg" alt="Nisha Kumari" width="140" height="140" style="border-radius:50%; object-fit:cover; border: 3px solid #4A90D9;"/><br/><br/>
+      <strong>Nisha Kumari</strong>
+    </td>
+    <td align="center" width="220">
+      <img src="assets/ritesh.jpeg" alt="Ritesh" width="140" height="140" style="border-radius:50%; object-fit:cover; border: 3px solid #4A90D9;"/><br/><br/>
+      <strong>Ritesh</strong>
+    </td>
+  </tr>
+</table>
+
+<p align="center">
+  <em>🏔️ Team from Uttarakhand — analyzing the land we call home.</em>
+</p>
+
+---
+
 <p align="center">
   Built with 🛰️ NASA satellite data · 🧪 rigorous statistics · 🤖 evidence-grounded AI
 </p>
