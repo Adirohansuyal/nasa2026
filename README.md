@@ -19,7 +19,7 @@
 
 ---
 
-# Whaat is EARTHPULSE_X ?
+# Whaat is EARTHPULSE--X ?????
 
 EARTHPULSE-X is a **physics-aware, uncertainty-guided Earth system intelligence platform** that answers NASA's four core challenge questions using a decade of real satellite data:
 
