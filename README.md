@@ -19,11 +19,7 @@
 
 ---
 
-<<<<<<< HEAD
-##  What Is EARTHPULSE-X?
-=======
-## What Is EARTHPULSE-X?
->>>>>>> 337415b (Emperor)
+# Whaat is EARTHPULSE_X ?
 
 EARTHPULSE-X is a **physics-aware, uncertainty-guided Earth system intelligence platform** that answers NASA's four core challenge questions using a decade of real satellite data:
 
