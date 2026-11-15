@@ -155,14 +155,7 @@ def render_observation_timeline():
     else:
         valid_vals = np.array([])
 
-    if valid_vals.size:
-        m1, m2, m3, m4, m5 = st.columns(5)
-        m1.metric("Mean", f"{float(valid_vals.mean()):.3f}")
-        m2.metric("Min", f"{float(valid_vals.min()):.3f}")
-        m3.metric("Max", f"{float(valid_vals.max()):.3f}")
-        m4.metric("Std Dev", f"{float(valid_vals.std()):.3f}")
-        m5.metric("Valid Pixels", f"{len(valid_vals):,}")
-    else:
+    if not valid_vals.size:
         st.info(f"No valid satellite pixels are available for {month_label} with the current settings.")
 
     current_month_index = monthly_files.index(selected_file)
@@ -245,11 +238,50 @@ def render_observation_timeline():
     )
 
     sat_fig = satellite_layer(ds, selected_var, quality_key, show_valid_mask=False, month_key=month_label)
-    st.plotly_chart(sat_fig, width="stretch", key=f"eo_satellite_map_{month_label}_{selected_var}_{quality_key}", alt=f"{selected_var_label} satellite map for {month_label}")
-    st.caption(
-        "Native equal-area satellite pixels reprojected to latitude and longitude; "
-        "district boundaries are outlined for context."
-    )
+    map_column, stats_column = st.columns([4.2, 1], gap="medium", vertical_alignment="top")
+    with map_column:
+        st.plotly_chart(
+            sat_fig,
+            width="stretch",
+            key=f"eo_satellite_map_{month_label}_{selected_var}_{quality_key}",
+            alt=f"{selected_var_label} satellite map for {month_label}",
+        )
+        st.caption(
+            "Native equal-area satellite pixels reprojected to latitude and longitude; "
+            "district boundaries are outlined for context."
+        )
+
+    with stats_column:
+        unit = VAR_UNITS.get(selected_var, "")
+        is_temperature = selected_var == "lst"
+        display_values = valid_vals.astype(float)
+        if is_temperature:
+            # The source LST raster is stored in Kelvin; Celsius is easier to read.
+            display_values = display_values - 273.15
+            display_unit = "°C"
+            lowest_label = "Lowest temperature"
+            highest_label = "Highest temperature"
+            mean_label = "Mean temperature"
+            precision = 1
+        else:
+            display_unit = unit or "index"
+            lowest_label = "Lowest value"
+            highest_label = "Highest value"
+            mean_label = "Mean value"
+            precision = 3
+
+        with st.container(border=True):
+            st.markdown("#### Pixel statistics")
+            st.caption(f"{month_label} · {display_unit}")
+            if display_values.size:
+                st.metric(lowest_label, f"{display_values.min():.{precision}f} {display_unit}")
+                st.metric(highest_label, f"{display_values.max():.{precision}f} {display_unit}")
+                st.metric(mean_label, f"{display_values.mean():.{precision}f} {display_unit}")
+                st.caption(f"Based on {len(display_values):,} valid pixels · {current_coverage:.1f}% coverage")
+                if is_temperature:
+                    st.caption("Source data: Kelvin · displayed here in Celsius")
+            else:
+                st.info("No valid pixels for these settings.")
 
     section_header(
         "Regional mean over time",

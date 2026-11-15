@@ -141,8 +141,8 @@ FDR-corrected variable relationship network across lag windows 0–6 months. Edg
 ### ⚗️ Page 6 — Physics & Uncertainty
 Data quality and reliability dashboard. Sensor coverage over 10 years. Strict vs. relaxed quality threshold impact analysis. Physical plausibility checks. Contradictory signal detection. Uncertainty propagation from coverage gaps.
 
-### 🧠 Page 7 — AI Scientist
-Evidence-grounded conversational AI. Every question is answered with actual statistical context (JSON-serialized p-values, slopes, district records, interaction q-values) injected into the prompt. 14 strict scientific rules prevent hallucination. Answers follow: **Observation → Interpretation → Limitations → Further Investigation**.
+### 🔎 Page 7 — Earth Change Detective
+Choose an Earth-system signal, district, and month to inspect the monthly sensor anomaly timeline, district-level spread, and the regional satellite evidence for that month. Detected months are clearly separated from regional sensor context; the map summarizes district signals and does not imply confirmed impacts or causal relationships.
 
 ### 🔮 Page 8 — Predictive Intelligence
 Custom seasonal AR-Fourier Ridge forecast model (zero dependency on Prophet/LSTM). Rolling-origin cross-validation auto-selects lag depth and regularization. Residual bootstrap forecast intervals. Cross-variable lag VAR analysis with F-test significance. Drought Risk Score (0–100) composite index.
@@ -195,7 +195,7 @@ Physical plausibility bounds (e.g., LST 250–330 K, SMAP 0–0.60 m³/m³), cro
 
 | Client | Model | Usage |
 |---|---|---|
-| **Groq** | `openai/gpt-oss-120b` | Trend explainer, variable selection explainer, interaction graph, research reports, AI Scientist chat |
+| **Groq** | `openai/gpt-oss-120b` | Trend explainer, variable selection explainer, interaction graph, research reports |
 | **Google Gemini** | `gemini-3.8-flash` | Shared explanation client |
 | **OpenRouter** | `meta-llama/llama-3.3-70b-instruct` | Vision-grounded chart explanations |
 
@@ -243,6 +243,19 @@ streamlit run app.py
 ```
 
 The app will open at `http://localhost:8501`.
+
+### Static `index.html` AI explanations
+
+The Interaction Network and Haldwani-to-nearby-town explanation buttons use the small server-side OpenRouter proxy in `api_server.py`. Keep the OpenRouter key in the private `.env` file; never put it in browser JavaScript.
+
+Run the API and static site in separate terminals:
+
+```bash
+uvicorn api_server:app --host 127.0.0.1 --port 8001
+python -m http.server 5500
+```
+
+Open `http://localhost:5500`. For deployment, host the API over HTTPS, set `EARTHPULSE_ALLOWED_ORIGINS` to the website's exact origin, and set `window.EARTHPULSE_API_BASE` in `index.html` to the API's public base URL.
 
 ---
 
