@@ -19,7 +19,7 @@
 
 ---
 
-# Whaat is EARTHPULSE--X ?????
+## 🛰️ What Is EARTHPULSE-X?
 
 EARTHPULSE-X is a **physics-aware, uncertainty-guided Earth system intelligence platform** that answers NASA's four core challenge questions using a decade of real satellite data:
 
@@ -36,7 +36,7 @@ EARTHPULSE-X is a **physics-aware, uncertainty-guided Earth system intelligence 
 
 ---
 
-## Screenshots
+## 📸 Screenshots
 
 <table>
 <tr>
@@ -246,7 +246,7 @@ The app will open at `http://localhost:8501`.
 
 ### Static `index.html` AI explanations
 
-The Interaction Network and Haldwani-to-nearby-town explanation buttons use the small server-side OpenRouter proxy in `api_server.py`. Keep the OpenRouter key in the private `.env` file; never put it in browser JavaScript.
+AI explanation features use the small server-side OpenRouter proxy in `api_server.py`. Keep the OpenRouter key in the private `.env` file; never put it in browser JavaScript.
 
 Run the API and static site in separate terminals:
 
