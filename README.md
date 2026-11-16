@@ -6,6 +6,13 @@
 <h3 align="center">Uncertainty-Guided Earth System Intelligence for Uttarakhand, India</h3>
 
 <p align="center">
+  <a href="https://thunderous-otter-920a93.netlify.app/"><strong>🚀 Live Project</strong></a>
+  &nbsp;|&nbsp;
+  <a href="https://github.com/Adirohansuyal/nasa2026"><strong>💻 GitHub Repository</strong></a>
+</p>
+
+
+<p align="center">
   <strong>NASA Space Apps Challenge 2026 · "Be An Earth System Trend Detective"</strong>
 </p>
 
@@ -19,7 +26,7 @@
 
 ---
 
-## 🛰️ What Is EARTHPULSE-X?
+# Whaat is EARTHPULSE--X ?????
 
 EARTHPULSE-X is a **physics-aware, uncertainty-guided Earth system intelligence platform** that answers NASA's four core challenge questions using a decade of real satellite data:
 
@@ -36,7 +43,7 @@ EARTHPULSE-X is a **physics-aware, uncertainty-guided Earth system intelligence 
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 <table>
 <tr>
@@ -212,8 +219,8 @@ All AI responses are **evidence-grounded**: actual statistical outputs are JSON-
 ### 1. Clone and set up environment
 
 ```bash
-git clone <repository-url>
-cd EARTHPULSE_APP
+git clone https://github.com/Adirohansuyal/nasa2026.git
+cd nasa2026
 
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
@@ -246,7 +253,7 @@ The app will open at `http://localhost:8501`.
 
 ### Static `index.html` AI explanations
 
-AI explanation features use the small server-side OpenRouter proxy in `api_server.py`. Keep the OpenRouter key in the private `.env` file; never put it in browser JavaScript.
+The Interaction Network and Haldwani-to-nearby-town explanation buttons use the small server-side OpenRouter proxy in `api_server.py`. Keep the OpenRouter key in the private `.env` file; never put it in browser JavaScript.
 
 Run the API and static site in separate terminals:
 
