@@ -363,7 +363,7 @@ Challenge: *"Be An Earth System Trend Detective"*
 </table>
 
 <p align="center">
-  <em>🏔️ Team from Uttarakhand — analyzing the land we call home.</em>
+  <em>🏔️ Team from Uttarakhand + Bihar + Uttar Pradesh— analyzing the land we call home.</em>
 </p>
 
 ---
