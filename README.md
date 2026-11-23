@@ -234,7 +234,7 @@ The Causal Discovery page explores how four monthly satellite signals move toget
 </tr>
 </table>
 
-### 📖 How to Read a District Relationship — Plain English Guide
+### 📖 Interpreting District-Level Signal Relationships
 
 The app shows a table for every district that lists which signals are linked, by how much, and with what delay. Here is what that table looks like:
 
