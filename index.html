@@ -785,25 +785,372 @@ body{background-color:#090f16;background-image:radial-gradient(ellipse 58% 45% a
 @media(max-width:760px){.interaction-filters{grid-template-columns:1fr}.interaction-graph{height:360px}.interaction-strongest-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.interaction-strongest-head{align-items:flex-start}.interaction-strength-number{font-size:24px}}
 </style>
 <style>
-.eo-hero{isolation:isolate;min-height:286px;background:linear-gradient(110deg,rgba(19,32,44,.98) 0%,rgba(13,22,31,.97) 57%,rgba(11,24,34,.92) 100%)}
-.eo-hero::before{background:radial-gradient(ellipse 42% 100% at 83% 48%,rgba(58,145,158,.13),transparent 72%)}
+/* ═══════════════════════════════════════════════
+   EARTH OBSERVATION PAGE — PREMIUM UPGRADE
+═══════════════════════════════════════════════ */
+
+/* ── EO Hero ── */
+.eo-hero{
+  isolation:isolate;
+  min-height:320px;
+  background:linear-gradient(118deg,rgba(16,28,42,.99) 0%,rgba(11,20,30,.98) 52%,rgba(9,21,32,.95) 100%);
+  padding:52px clamp(28px,5vw,70px);
+  position:relative;overflow:hidden;
+}
+.eo-hero::before{
+  background:
+    radial-gradient(ellipse 44% 100% at 86% 48%,rgba(58,145,158,.16),transparent 68%),
+    radial-gradient(ellipse 25% 60% at 100% 0%,rgba(79,170,164,.08),transparent 55%);
+}
+/* subtle grid overlay */
+.eo-hero::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(121,170,164,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(121,170,164,.028) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:linear-gradient(90deg,transparent 0%,#000 30%,#000 70%,transparent 100%);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 30%,#000 70%,transparent 100%);
+}
 .eo-hero>.hero-eyebrow,.eo-hero>.hero-title,.eo-hero>.hero-sub{position:relative;z-index:2}
 .eo-hero>.hero-sub{max-width:640px}
-.eo-hero-globe-wrap{position:absolute;z-index:1;right:-15%;top:50%;width:clamp(620px,67vw,980px);height:660px;transform:translateY(-43%) rotate(-24deg);display:grid;place-items:center;pointer-events:none;mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.12) 24%,#000 43%);-webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.12) 24%,#000 43%)}
-.eo-hero-globe{position:absolute;inset:0;overflow:hidden;border-radius:50%;background:#071421;box-shadow:0 0 0 2px rgba(118,190,206,.26),0 0 22px 5px rgba(63,157,192,.25),0 0 80px 16px rgba(39,113,151,.12),inset -55px -10px 90px rgba(1,7,15,.68)}
-.eo-hero-globe-texture{position:absolute;inset:0;border-radius:50%;background-image:url("assets/earth_blue_marble.jpg");background-repeat:repeat-x;background-size:200% 100%;background-position:0 50%;animation:eo-globe-rotation 48s linear infinite;filter:saturate(.82) brightness(.78);will-change:background-position}
-.eo-hero-globe-shade{position:absolute;inset:0;border-radius:50%;background:radial-gradient(ellipse at 33% 31%,rgba(161,220,226,.15),transparent 37%),linear-gradient(90deg,rgba(2,8,18,.02) 45%,rgba(2,8,18,.22) 64%,rgba(2,8,18,.82) 100%),radial-gradient(ellipse at 50% 50%,transparent 57%,rgba(2,8,18,.62) 100%)}
-.eo-hero-globe-rim{position:absolute;inset:0;border:1px solid rgba(155,213,220,.2);border-radius:50%;box-shadow:inset 8px 0 22px rgba(110,210,220,.1)}
-.eo-hero-orbit{display:none}
-.eo-temporal-direction{display:flex;align-items:center;gap:12px;width:fit-content;max-width:100%;margin:-8px 0 12px;padding:10px 15px;border:1px solid rgba(142,164,180,.2);border-radius:12px;background:linear-gradient(110deg,rgba(21,34,47,.94),rgba(13,23,33,.92));box-shadow:0 8px 24px rgba(0,0,0,.12)}
-.eo-temporal-direction-mark{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;font-size:18px;line-height:1;background:rgba(141,161,175,.12);color:#aebdca}
-.eo-temporal-direction-copy{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.eo-temporal-direction-copy strong{font-size:13px;letter-spacing:.01em;color:#dce6ec}.eo-temporal-direction-copy small{font-size:11px;color:var(--t3)}
-.eo-temporal-direction.is-up{border-color:rgba(67,190,139,.3);background:linear-gradient(110deg,rgba(21,48,47,.92),rgba(13,27,35,.94))}.eo-temporal-direction.is-up .eo-temporal-direction-mark{color:#58d39a;background:rgba(49,196,141,.13)}.eo-temporal-direction.is-up .eo-temporal-direction-copy strong{color:#78dbae}
-.eo-temporal-direction.is-down{border-color:rgba(238,100,97,.3);background:linear-gradient(110deg,rgba(53,35,43,.92),rgba(24,25,35,.94))}.eo-temporal-direction.is-down .eo-temporal-direction-mark{color:#f17b78;background:rgba(239,100,97,.13)}.eo-temporal-direction.is-down .eo-temporal-direction-copy strong{color:#f18d89}
-@keyframes eo-globe-rotation{from{background-position:0 50%}to{background-position:200% 50%}}
-@media(max-width:760px){.eo-hero{min-height:340px}.eo-hero-globe-wrap{right:-70%;top:58%;width:760px;height:560px;transform:translateY(-25%) rotate(-24deg);opacity:.55;mask-image:linear-gradient(90deg,transparent 0%,#000 48%);-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 48%)}.eo-hero>.hero-sub{max-width:78%}}
-@media(prefers-reduced-motion:reduce){.eo-hero-globe-texture{animation:none}}
+.eo-hero>.hero-eyebrow{
+  background:rgba(58,145,158,.1);
+  border-color:rgba(58,145,158,.28);
+  box-shadow:0 0 16px rgba(58,145,158,.08);
+}
 
+/* ── EO Globe decoration ── */
+.eo-hero-globe-wrap{
+  position:absolute;z-index:1;right:-12%;top:50%;
+  width:clamp(580px,64vw,920px);height:640px;
+  transform:translateY(-43%) rotate(-22deg);
+  display:grid;place-items:center;pointer-events:none;
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 20%,#000 42%);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 20%,#000 42%);
+}
+.eo-hero-globe{
+  position:absolute;inset:0;overflow:hidden;border-radius:50%;background:#06121e;
+  box-shadow:
+    0 0 0 2px rgba(118,190,206,.28),
+    0 0 28px 6px rgba(63,157,192,.28),
+    0 0 90px 18px rgba(39,113,151,.14),
+    inset -55px -10px 90px rgba(1,7,15,.7);
+}
+.eo-hero-globe-texture{
+  position:absolute;inset:0;border-radius:50%;
+  background-image:url("assets/earth_blue_marble.jpg");
+  background-repeat:repeat-x;background-size:200% 100%;background-position:0 50%;
+  animation:eo-globe-rotation 48s linear infinite;
+  filter:saturate(.85) brightness(.78);will-change:background-position;
+}
+.eo-hero-globe-shade{
+  position:absolute;inset:0;border-radius:50%;
+  background:
+    radial-gradient(ellipse at 33% 31%,rgba(161,220,226,.18),transparent 36%),
+    linear-gradient(90deg,rgba(2,8,18,.02) 44%,rgba(2,8,18,.24) 63%,rgba(2,8,18,.84) 100%),
+    radial-gradient(ellipse at 50% 50%,transparent 55%,rgba(2,8,18,.65) 100%);
+}
+.eo-hero-globe-rim{
+  position:absolute;inset:0;border-radius:50%;
+  border:1px solid rgba(155,213,220,.22);
+  box-shadow:inset 8px 0 24px rgba(110,210,220,.12);
+}
+.eo-hero-orbit{display:none}
+@keyframes eo-globe-rotation{from{background-position:0 50%}to{background-position:200% 50%}}
+
+/* ── 3D Earth launch card ── */
+.eo-launch-card{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  padding:20px 26px;margin:0 0 24px;
+  border:1px solid rgba(121,170,164,.22);border-radius:18px;
+  background:linear-gradient(130deg,rgba(18,30,43,.98),rgba(12,21,32,.99));
+  box-shadow:0 4px 20px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.025);
+  position:relative;overflow:hidden;
+}
+.eo-launch-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(121,170,164,.22),transparent);
+}
+.eo-launch-title{font-size:.98rem;font-weight:700;color:var(--t1);margin-bottom:4px}
+.eo-launch-sub{font-size:.74rem;color:var(--t3);margin:0;line-height:1.5;max-width:560px}
+
+/* ── Playback controls card ── */
+.eo-controls-card{
+  padding:20px 24px;margin-bottom:24px;
+  border:1px solid rgba(121,170,164,.18);border-radius:18px;
+  background:linear-gradient(140deg,rgba(17,28,40,.98),rgba(12,21,31,.99));
+  box-shadow:0 4px 20px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.025);
+}
+.eo-controls-inner{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+
+/* Play button */
+.eo-play-btn{
+  display:inline-flex;align-items:center;gap:8px;justify-content:center;
+  min-width:100px;height:40px;padding:0 16px;
+  border:1px solid rgba(121,170,164,.4);border-radius:10px;
+  background:linear-gradient(135deg,rgba(121,170,164,.18),rgba(68,140,170,.1));
+  color:#c8eae6;font-family:inherit;font-size:.78rem;font-weight:700;
+  cursor:pointer;letter-spacing:.04em;
+  transition:border-color .2s ease,box-shadow .2s ease,transform .18s ease;
+  box-shadow:0 0 14px rgba(121,170,164,.1);
+}
+.eo-play-btn:hover{
+  border-color:rgba(121,170,164,.7);
+  box-shadow:0 0 22px rgba(121,170,164,.22);
+  transform:translateY(-1px);
+}
+
+/* Timeline */
+.eo-timeline-wrap{flex:1;min-width:200px}
+.eo-timeline-label{
+  font-size:.62rem;font-weight:800;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--t3);margin-bottom:7px;
+}
+.eo-timeline-row{display:flex;align-items:center;gap:10px}
+.eo-timeline-edge{font-size:.7rem;color:var(--t3);min-width:58px}
+.eo-timeline-edge:last-child{text-align:right}
+.eo-current-month{
+  text-align:center;font-size:.82rem;font-weight:800;
+  color:var(--accent);margin-top:5px;letter-spacing:.02em;
+}
+
+/* Control group labels */
+.eo-ctrl-group{display:flex;flex-direction:column;gap:7px}
+.eo-ctrl-label{
+  font-size:.62rem;font-weight:800;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--t3);
+}
+.eo-ctrl-tabs{display:flex;gap:5px;flex-wrap:wrap}
+
+/* ── Period badge ── */
+.eo-period-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 16px 7px 12px;margin-bottom:14px;
+  border:1px solid rgba(121,170,164,.3);border-radius:24px;
+  background:rgba(121,170,164,.07);backdrop-filter:blur(6px);
+  box-shadow:0 0 14px rgba(121,170,164,.08);
+}
+.eo-period-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 10px var(--accent);flex-shrink:0;
+  animation:sec-pulse 2.4s ease-in-out infinite;
+}
+.eo-period-label{font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
+.eo-period-month{font-size:.9rem;font-weight:800;color:var(--t1);letter-spacing:-.01em}
+.eo-period-sep{width:1px;height:14px;background:rgba(121,170,164,.22);flex-shrink:0}
+.eo-period-var{font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+
+/* ── Section headers on EO page ── */
+#page-earth .section-hdr{
+  margin:38px 0 18px;padding-bottom:14px;
+  border-bottom-color:rgba(121,170,164,.14);
+}
+#page-earth .section-hdr h2{font-size:1.1rem;letter-spacing:-.022em}
+
+/* ── Satellite map canvas card ── */
+.eo-map-card{
+  border:1px solid rgba(121,170,164,.18);border-radius:18px;
+  overflow:hidden;margin-bottom:18px;
+  box-shadow:0 6px 24px rgba(0,0,0,.18);
+  background:#07111a;
+}
+.eo-map-card canvas{display:block;width:100%}
+
+/* ── Signal / coverage banners ── */
+.eo-signal-banner{
+  display:flex;align-items:center;gap:16px;
+  padding:15px 20px;margin:0 0 24px;
+  border:1px solid rgba(121,170,164,.3);
+  border-left:4px solid var(--accent);
+  border-radius:14px;
+  background:linear-gradient(100deg,rgba(53,201,208,.08),rgba(13,22,33,.85));
+  box-shadow:0 4px 18px rgba(0,0,0,.14);
+}
+.eo-signal-icon{font-size:1.6rem;line-height:1;flex-shrink:0}
+.eo-signal-kicker{
+  font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#91a2b8;
+  margin-bottom:3px;
+}
+.eo-signal-title{display:block;font-size:1.05rem;font-weight:700;color:var(--accent);line-height:1.2}
+.eo-signal-detail{display:block;font-size:.8rem;color:#c4d0e0;margin-top:3px}
+
+.eo-coverage-banner{
+  display:flex;align-items:center;gap:16px;
+  padding:15px 20px;margin:0 0 24px;
+  border:1px solid rgba(120,168,140,.28);
+  border-left:4px solid var(--green);
+  border-radius:14px;
+  background:linear-gradient(100deg,rgba(49,196,141,.07),rgba(13,22,33,.85));
+  box-shadow:0 4px 18px rgba(0,0,0,.14);
+}
+.eo-cov-icon{font-size:1.5rem;line-height:1;flex-shrink:0}
+
+/* ── Validity guide card ── */
+.eo-validity-guide{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:18px 22px;margin-bottom:16px;
+  border:1px solid rgba(129,157,184,.16);border-radius:16px;
+  background:linear-gradient(130deg,rgba(17,27,38,.97),rgba(12,21,30,.98));
+  box-shadow:0 4px 16px rgba(0,0,0,.12);
+}
+.eo-validity-guide-icon{
+  font-size:1.4rem;flex-shrink:0;
+  width:40px;height:40px;border-radius:11px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(129,157,184,.14);
+  display:grid;place-items:center;
+}
+.eo-validity-guide-title{font-size:.86rem;font-weight:700;color:var(--t1);margin-bottom:6px}
+.eo-validity-guide-body{font-size:.8rem;line-height:1.65;color:var(--t2)}
+.eo-validity-guide-body strong{color:var(--t1)}
+
+/* ── Quality comparator ── */
+.eo-mean-comparator{
+  margin:0 0 20px;padding:22px 24px;
+  border:1px solid rgba(133,164,177,.18);border-radius:18px;
+  background:linear-gradient(118deg,rgba(22,38,51,.97),rgba(14,24,35,.98));
+  box-shadow:0 6px 24px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.03);
+}
+.eo-comparator-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
+.eo-comparator-kicker{font-size:.6rem;font-weight:800;letter-spacing:.14em;color:var(--accent)}
+.eo-comparator-head h3{margin:4px 0 0;font-size:.94rem;color:var(--t1)}
+.eo-comparator-head h3 span{color:var(--t2);font-weight:500}
+.eo-comparator-method{
+  padding:5px 11px;border:1px solid rgba(121,170,164,.2);border-radius:999px;
+  color:var(--t2);font-size:.68rem;
+  background:rgba(121,170,164,.06);
+}
+.eo-comparator-values{
+  display:grid;grid-template-columns:1fr minmax(190px,.72fr) 1fr;
+  align-items:stretch;gap:12px;
+}
+.eo-comparator-side,.eo-comparator-delta{
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  gap:6px;min-height:100px;padding:14px;
+  border:1px solid rgba(152,176,190,.12);border-radius:13px;
+  background:rgba(4,12,20,.28);text-align:center;
+}
+.eo-comparator-side>span{font-size:.58rem;letter-spacing:.12em;color:var(--t2);font-weight:800;text-transform:uppercase}
+.eo-comparator-side strong{font-size:1.5rem;color:var(--t1);font-variant-numeric:tabular-nums}
+.eo-comparator-side strong small{font-size:.72rem;font-weight:500;color:var(--t2)}
+.eo-comparator-side em,.eo-comparator-delta em{font-size:.65rem;color:var(--t3);font-style:normal}
+.eo-comparator-delta{
+  border-color:rgba(201,169,112,.22);
+  background:linear-gradient(148deg,rgba(201,169,112,.1),rgba(4,12,20,.24));
+}
+.eo-comparator-arrow{
+  display:grid;place-items:center;width:26px;height:26px;border-radius:50%;
+  background:rgba(201,169,112,.16);color:#d9b978;font-size:.9rem;
+  box-shadow:0 0 12px rgba(201,169,112,.18);
+}
+.eo-comparator-delta strong{font-size:1.6rem;line-height:1;color:#e0be79;font-variant-numeric:tabular-nums}
+.eo-comparator-delta small{font-size:.65rem;color:var(--t2)}
+.eo-comparator-delta.is-same strong,.eo-comparator-delta.is-same .eo-comparator-arrow{color:#82c1ac}
+.eo-comparator-delta.is-same .eo-comparator-arrow{background:rgba(121,170,164,.16)}
+.eo-comparator-delta.is-up .eo-comparator-arrow{color:#e0be79}
+.eo-comparator-delta.is-down .eo-comparator-arrow{color:#91b9d7}
+.eo-comparator-track{height:4px;margin:14px 10% 0;border-radius:9px;background:#293844;overflow:hidden}
+.eo-comparator-track i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#7eaaa4,#e0be79);transition:width .4s cubic-bezier(.4,0,.2,1)}
+.eo-comparator-note{margin:12px 0 0;color:var(--t3);font-size:.65rem;line-height:1.55;text-align:center}
+
+/* ── Temporal direction pill ── */
+.eo-temporal-direction{
+  display:flex;align-items:center;gap:14px;
+  width:fit-content;max-width:100%;
+  margin:-4px 0 16px;padding:12px 18px;
+  border:1px solid rgba(142,164,180,.18);border-radius:14px;
+  background:linear-gradient(112deg,rgba(20,32,45,.96),rgba(13,22,32,.95));
+  box-shadow:0 6px 22px rgba(0,0,0,.14);
+}
+.eo-temporal-direction-mark{
+  display:grid;place-items:center;width:34px;height:34px;border-radius:10px;
+  font-size:1.1rem;line-height:1;
+  background:rgba(141,161,175,.1);color:#aebdca;
+  border:1px solid rgba(141,161,175,.14);
+}
+.eo-temporal-direction-copy{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.eo-temporal-direction-copy strong{font-size:.85rem;letter-spacing:.01em;color:#dce6ec}
+.eo-temporal-direction-copy small{font-size:.7rem;color:var(--t3)}
+.eo-temporal-direction.is-up{
+  border-color:rgba(67,190,139,.28);
+  background:linear-gradient(112deg,rgba(18,46,44,.96),rgba(12,26,33,.96));
+}
+.eo-temporal-direction.is-up .eo-temporal-direction-mark{
+  color:#58d39a;background:rgba(49,196,141,.14);border-color:rgba(49,196,141,.22);
+}
+.eo-temporal-direction.is-up .eo-temporal-direction-copy strong{color:#78dbae}
+.eo-temporal-direction.is-down{
+  border-color:rgba(238,100,97,.26);
+  background:linear-gradient(112deg,rgba(50,32,42,.95),rgba(22,22,33,.96));
+}
+.eo-temporal-direction.is-down .eo-temporal-direction-mark{
+  color:#f17b78;background:rgba(239,100,97,.14);border-color:rgba(239,100,97,.22);
+}
+.eo-temporal-direction.is-down .eo-temporal-direction-copy strong{color:#f18d89}
+
+/* ── Dataset metadata ── */
+.eo-metadata{
+  border:1px solid rgba(129,157,184,.16);border-radius:18px;
+  overflow:hidden;margin-bottom:36px;
+  box-shadow:0 4px 16px rgba(0,0,0,.14);
+}
+.eo-metadata summary{
+  padding:16px 22px;cursor:pointer;
+  font-size:.88rem;font-weight:700;color:var(--t1);
+  background:linear-gradient(90deg,rgba(18,28,40,.98),rgba(13,21,31,.98));
+  list-style:none;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid transparent;
+  transition:border-color .2s ease,background .2s ease;
+}
+.eo-metadata[open] summary{border-bottom-color:rgba(129,157,184,.14)}
+.eo-metadata summary::-webkit-details-marker{display:none}
+.eo-metadata summary::after{
+  content:'↓';margin-left:auto;font-size:.8rem;color:var(--t3);
+  transition:transform .2s ease;
+}
+.eo-metadata[open] summary::after{transform:rotate(180deg)}
+.eo-metadata-body{
+  padding:20px 24px;
+  background:linear-gradient(145deg,rgba(14,22,32,.98),rgba(10,18,27,.99));
+}
+
+/* ── Chart containers ── */
+#page-earth .chart-ph{
+  border:1px solid rgba(121,170,164,.14);border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 4px 16px rgba(0,0,0,.14);
+  background:rgba(7,14,22,.6);
+}
+
+/* ── EO Page footer ── */
+.eo-page-footer{
+  margin-top:52px;padding:24px 0 6px;
+  border-top:1px solid rgba(129,157,184,.12);
+  text-align:center;font-size:.7rem;color:var(--t3);letter-spacing:.04em;
+  position:relative;
+}
+.eo-page-footer::before{
+  content:'';position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  width:80px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:.5;
+}
+
+/* ── Responsive ── */
+@media(max-width:760px){
+  .eo-hero{min-height:300px;padding:36px 24px}
+  .eo-hero-globe-wrap{right:-68%;top:56%;width:720px;height:540px;transform:translateY(-24%) rotate(-22deg);opacity:.45;mask-image:linear-gradient(90deg,transparent 0%,#000 46%);-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 46%)}
+  .eo-hero>.hero-sub{max-width:80%}
+  .eo-comparator-values{grid-template-columns:1fr 1fr;gap:9px}
+  .eo-comparator-delta{grid-column:1/-1;grid-row:2;min-height:82px}
+  .eo-comparator-side{min-height:86px}
+  .eo-comparator-side strong{font-size:1.2rem}
+  .eo-controls-inner{flex-direction:column;align-items:stretch}
+  .eo-timeline-wrap{min-width:0;width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  .eo-hero-globe-texture{animation:none}
+}
 </style>
 <style>
 /* ═══════════════════════════════════════════════
@@ -1962,14 +2309,14 @@ img, canvas, svg, table { max-width: 100%; }
     <p class="hero-sub">Explore NASA satellite observations across Uttarakhand. Each variable rendered on a geographic map from the native equal-area grid. District boundaries overlaid for spatial context.</p>
   </div>
 
-  <div class="banner info">
+  <div class="banner info" style="display:none">
     Explore NASA satellite observations across Uttarakhand. Each variable is rendered on a geographic map (lat/lon) from the native equal-area grid. District boundaries overlaid for spatial context.
   </div>
 
-  <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:18px 22px;margin:0 0 20px;border-color:rgba(121,170,164,.28)">
+  <div class="eo-launch-card">
     <div>
-      <div style="font-size:.95rem;font-weight:700;color:var(--t1);margin-bottom:4px">Explore Earth in 3D</div>
-      <div class="caption" style="margin:0">A global day/night and terrain view for geographic context. This basemap is separate from the analyzed 2015–2025 NASA satellite measurements below.</div>
+      <div class="eo-launch-title">Explore Earth in 3D</div>
+      <p class="eo-launch-sub">A global day/night and terrain view for geographic context. This basemap is separate from the analyzed 2015–2025 NASA satellite measurements below.</p>
     </div>
     <a class="hero-earth3d" href="earth-satellite.html" target="_blank" rel="noopener noreferrer" style="flex-shrink:0;white-space:nowrap">
       <span class="e3d-globe">🌏</span>
@@ -1979,43 +2326,42 @@ img, canvas, svg, table { max-width: 100%; }
   </div>
 
   <!-- ── PLAYBACK CONTROLS ── -->
-  <div class="eo-controls card" style="padding:16px 20px;margin-bottom:20px">
-    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+  <!-- ── PLAYBACK CONTROLS ── -->
+  <div class="eo-controls-card eo-controls">
+    <div class="eo-controls-inner">
 
-      <button id="eo-play-btn" class="chat-send" style="min-width:96px;display:flex;align-items:center;gap:7px;justify-content:center" onclick="eoTogglePlay()">
+      <button id="eo-play-btn" class="eo-play-btn" onclick="eoTogglePlay()">
         <span id="eo-play-icon">⏸</span> <span id="eo-play-label">Pause</span>
       </button>
 
-      <div style="flex:1;min-width:200px">
-        <div style="font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--t3);margin-bottom:6px">
-          Observation Timeline
-        </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:.72rem;color:var(--t3);min-width:60px" id="eo-timeline-start">2015-04</span>
+      <div class="eo-timeline-wrap">
+        <div class="eo-timeline-label">Observation Timeline</div>
+        <div class="eo-timeline-row">
+          <span class="eo-timeline-edge" id="eo-timeline-start">2015-04</span>
           <input type="range" id="eo-timeline-slider" min="0" max="125" value="0"
             style="flex:1;accent-color:var(--accent);cursor:pointer"
             oninput="eoSliderChange(this.value)" />
-          <span style="font-size:.72rem;color:var(--t3);min-width:60px;text-align:right" id="eo-timeline-end">2025-09</span>
+          <span class="eo-timeline-edge" style="text-align:right" id="eo-timeline-end">2025-09</span>
         </div>
-        <div style="text-align:center;font-size:.8rem;font-weight:700;color:var(--accent);margin-top:3px" id="eo-current-month-label">2015-04</div>
+        <div class="eo-current-month" id="eo-current-month-label">2015-04</div>
       </div>
 
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <div style="font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--t3)">Quality</div>
-        <div class="tab-row" style="margin:0;gap:5px">
+      <div class="eo-ctrl-group">
+        <div class="eo-ctrl-label">Quality</div>
+        <div class="eo-ctrl-tabs">
           <button class="tab-btn active" id="eo-q-strict" onclick="eoSetQuality('strict',this)">Strict</button>
           <button class="tab-btn" id="eo-q-relaxed" onclick="eoSetQuality('relaxed',this)">Relaxed</button>
         </div>
       </div>
 
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <div style="font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--t3)">Satellite Variable</div>
-        <div class="tab-row" style="margin:0;gap:5px" id="eo-var-tabs">
-          <button class="tab-btn active" data-eovar="lst" onclick="eoSetVar(this)">🌡️ LST</button>
+      <div class="eo-ctrl-group">
+        <div class="eo-ctrl-label">Satellite Variable</div>
+        <div class="eo-ctrl-tabs" id="eo-var-tabs">
+          <button class="tab-btn active" data-eovar="lst" onclick="eoSetVar(this)">🌡 LST</button>
           <button class="tab-btn" data-eovar="ndvi" onclick="eoSetVar(this)">🌿 NDVI</button>
           <button class="tab-btn" data-eovar="smap_am" onclick="eoSetVar(this)">💧 SMAP AM</button>
           <button class="tab-btn" data-eovar="smap_pm" onclick="eoSetVar(this)">💧 SMAP PM</button>
-          <button class="tab-btn" data-eovar="gpm" onclick="eoSetVar(this)">🌧️ GPM</button>
+          <button class="tab-btn" data-eovar="gpm" onclick="eoSetVar(this)">🌧 GPM</button>
         </div>
       </div>
 
@@ -2023,13 +2369,13 @@ img, canvas, svg, table { max-width: 100%; }
   </div>
 
   <!-- ── SELECTED PERIOD BADGE ── -->
-  <div id="eo-period-badge" style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
-    <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 10px;border:1px solid rgba(121,170,164,.35);border-radius:20px;background:rgba(121,170,164,.08);backdrop-filter:blur(6px)">
-      <span style="width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);flex-shrink:0"></span>
-      <span style="font-size:.67rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3)">Viewing period</span>
-      <span id="eo-period-month" style="font-size:.88rem;font-weight:800;color:var(--t1);letter-spacing:-.01em">—</span>
-      <span style="width:1px;height:14px;background:rgba(121,170,164,.25);flex-shrink:0"></span>
-      <span id="eo-period-var" style="font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent)">LST</span>
+  <div id="eo-period-badge" style="margin-bottom:16px">
+    <div class="eo-period-badge">
+      <span class="eo-period-dot"></span>
+      <span class="eo-period-label">Viewing period</span>
+      <span class="eo-period-month" id="eo-period-month">—</span>
+      <span class="eo-period-sep"></span>
+      <span class="eo-period-var" id="eo-period-var">LST</span>
     </div>
   </div>
 
@@ -2065,7 +2411,7 @@ img, canvas, svg, table { max-width: 100%; }
     <span class="s-sub" id="eo-map-sub">2015-04 · Strict quality · EPSG:6933 → WGS84</span>
   </div>
 
-  <div class="card" style="padding:0;overflow:hidden;margin-bottom:16px">
+  <div class="eo-map-card">
     <canvas id="eo-sat-canvas" style="display:block;width:100%;height:480px"></canvas>
   </div>
   <p class="caption" style="margin-bottom:24px">
@@ -2073,12 +2419,12 @@ img, canvas, svg, table { max-width: 100%; }
   </p>
 
   <!-- ── MONTH-TO-MONTH SIGNAL BANNER ── -->
-  <div id="eo-signal-banner" style="display:flex;align-items:center;gap:14px;padding:13px 17px;margin:0 0 20px;border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:12px;background:linear-gradient(100deg,rgba(53,201,208,.1),rgba(15,26,46,.72));font-family:'Urbanist',sans-serif">
-    <span id="eo-signal-icon" style="font-size:24px;color:var(--accent);font-weight:800">•</span>
+  <div id="eo-signal-banner" class="eo-signal-banner">
+    <span id="eo-signal-icon" class="eo-signal-icon">•</span>
     <div>
-      <div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#91A2B8">Month-to-month signal</div>
-      <strong id="eo-signal-title" style="font-size:17px;color:var(--accent)">Building baseline</strong>
-      <div id="eo-signal-detail" style="font-size:13px;color:#C4D0E0;margin-top:2px">Select a month on the timeline above.</div>
+      <div class="eo-signal-kicker">Month-to-month signal</div>
+      <strong id="eo-signal-title" class="eo-signal-title">Building baseline</strong>
+      <span id="eo-signal-detail" class="eo-signal-detail">Select a month on the timeline above.</span>
     </div>
   </div>
 
@@ -2122,30 +2468,33 @@ img, canvas, svg, table { max-width: 100%; }
     <span class="s-sub" id="eo-validity-sub">Valid vs. missing pixels inside Uttarakhand</span>
   </div>
 
-  <div class="card" style="padding:16px 20px;margin-bottom:14px">
-    <strong style="color:var(--t1);font-size:.88rem">How to read this map</strong>
-    <p style="margin-top:6px;font-size:.82rem">
-      This map shows <strong>where satellite readings are available</strong>, not how hot, wet, or unusual those readings are.
-      Each colored cell represents one satellite grid cell within Uttarakhand.
-      <strong style="color:var(--accent)">Teal</strong> means a valid reading is available;
-      <strong style="color:var(--red)">red</strong> means a reading is missing for this month, variable, and quality filter.
-      Areas outside the Uttarakhand outline are left blank and excluded from counts.
-    </p>
+  <div class="eo-validity-guide">
+    <div class="eo-validity-guide-icon">🗺</div>
+    <div>
+      <div class="eo-validity-guide-title">How to read this map</div>
+      <p class="eo-validity-guide-body">
+        This map shows <strong>where satellite readings are available</strong>, not how hot, wet, or unusual those readings are.
+        Each colored cell represents one satellite grid cell within Uttarakhand.
+        <strong style="color:var(--accent)">Teal</strong> means a valid reading is available;
+        <strong style="color:var(--red)">red</strong> means a reading is missing for this month, variable, and quality filter.
+        Areas outside the Uttarakhand outline are left blank and excluded from counts.
+      </p>
+    </div>
   </div>
 
-  <div class="card" style="padding:0;overflow:hidden;margin-bottom:16px">
+  <div class="eo-map-card">
     <canvas id="eo-validity-canvas" style="display:block;width:100%;height:380px"></canvas>
   </div>
 
   <!-- ── COVERAGE STATUS BANNER ── -->
-  <div id="eo-coverage-banner" style="display:flex;align-items:center;gap:14px;padding:12px 16px;margin:0 0 20px;border:1px solid var(--green);border-left:4px solid var(--green);border-radius:12px;background:linear-gradient(100deg,rgba(49,196,141,.1),rgba(15,26,46,.72));font-family:'Urbanist',sans-serif">
-    <span id="eo-cov-icon" style="font-size:23px;color:var(--green);font-weight:800">✓</span>
+  <div id="eo-coverage-banner" class="eo-coverage-banner">
+    <span id="eo-cov-icon" class="eo-cov-icon">✓</span>
     <div>
-      <div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#91A2B8" id="eo-cov-month-label">Current month · 2015-04</div>
-      <strong id="eo-cov-title" style="font-size:16px;color:var(--green)">Consistent coverage</strong>
-      <div id="eo-cov-detail" style="font-size:13px;color:#C4D0E0;margin-top:2px">—</div>
+      <div class="eo-signal-kicker" id="eo-cov-month-label">Current month · 2015-04</div>
+      <strong id="eo-cov-title" style="display:block;font-size:1rem;font-weight:700;color:var(--green);line-height:1.2">Consistent coverage</strong>
+      <span id="eo-cov-detail" class="eo-signal-detail">—</span>
     </div>
-  </div>
+  </div>>
 
   <!-- ── MONTHLY DATA COVERAGE CHART ── -->
   <div class="section-hdr">
@@ -2199,11 +2548,9 @@ img, canvas, svg, table { max-width: 100%; }
   </div>
 
   <!-- ── DATASET METADATA ── -->
-  <details style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:32px">
-    <summary style="padding:14px 18px;cursor:pointer;font-size:.88rem;font-weight:600;color:var(--t1);background:var(--bg-card);list-style:none;display:flex;align-items:center;gap:8px">
-      📖 Dataset Metadata
-    </summary>
-    <div style="padding:18px 20px;background:var(--bg-card);border-top:1px solid var(--border)">
+  <details class="eo-metadata">
+    <summary>📖 Dataset Metadata</summary>
+    <div class="eo-metadata-body">
       <div class="kpi-grid cols-3" style="margin-bottom:16px">
         <div><div class="kpi-label">Spatial resolution</div><div style="font-size:.88rem;color:var(--t1);font-weight:600;margin-top:4px">~9 km × 9 km</div></div>
         <div><div class="kpi-label">Projection</div><div style="font-size:.88rem;color:var(--t1);font-weight:600;margin-top:4px">EPSG:6933 → WGS84</div></div>
@@ -2214,7 +2561,7 @@ img, canvas, svg, table { max-width: 100%; }
     </div>
   </details>
 
-  <div class="ep-footer">EARTHPULSE-X · Earth Observation · NASA Space Apps 2026</div>
+  <div class="eo-page-footer">EARTHPULSE-X · Earth Observation · NASA Space Apps 2026</div>
 </section>
 
 <!-- ══════════════════════════════════════════
