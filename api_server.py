@@ -18,7 +18,7 @@ load_dotenv()
 
 _WINDOW_SECONDS = 60
 _MAX_REQUESTS_PER_WINDOW = 12
-_MAX_PROMPT_CHARS = 12_000
+_MAX_PROMPT_CHARS = 30_000
 _request_times: dict[str, deque[float]] = defaultdict(deque)
 
 
@@ -36,7 +36,7 @@ async def explain(request: Request) -> JSONResponse:
         return JSONResponse({"error": "Too many explanation requests. Please wait a minute."}, status_code=429)
     recent.append(now)
 
-    if request.headers.get("content-length", "0").isdigit() and int(request.headers["content-length"]) > 16_000:
+    if request.headers.get("content-length", "0").isdigit() and int(request.headers["content-length"]) > 32_000:
         return JSONResponse({"error": "The explanation context is too large."}, status_code=413)
     try:
         payload = await request.json()
@@ -61,7 +61,21 @@ async def explain(request: Request) -> JSONResponse:
         if "OPENROUTER_API_KEY" in str(exc):
             return JSONResponse({"error": "OpenRouter is not configured on the server."}, status_code=503)
         return JSONResponse({"error": "The explanation service is not configured."}, status_code=503)
-    except Exception:
+    except Exception as exc:
+        # Preserve actionable provider status codes without returning raw provider
+        # payloads or credentials to the browser.
+        provider_response = getattr(exc, "response", None)
+        provider_status = getattr(provider_response, "status_code", None)
+        if provider_status == 402:
+            return JSONResponse(
+                {"error": "AI credits are temporarily unavailable. Please retry later."},
+                status_code=402,
+            )
+        if provider_status == 429:
+            return JSONResponse(
+                {"error": "The AI service is busy. Please wait a moment and retry."},
+                status_code=429,
+            )
         return JSONResponse({"error": "OpenRouter could not generate an explanation right now."}, status_code=502)
     return JSONResponse({"answer": answer})
 
@@ -79,6 +93,7 @@ app = Starlette(routes=[Route("/health", health, methods=["GET"]), Route("/api/e
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
     max_age=600,
