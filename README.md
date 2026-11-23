@@ -1,157 +1,88 @@
 <p align="center">
-  <img src="assets/Space_Apps_2026_Logo_OG.jpg" alt="NASA Space Apps 2026" width="180"/>
+  <img src="assets/Space_Apps_2026_Logo_OG.jpg" alt="NASA Space Apps 2026" width="160"/>
 </p>
 
 <h1 align="center">🌍 EARTHPULSE-X</h1>
-<h3 align="center">Uncertainty-Guided Earth System Intelligence for Uttarakhand, India</h3>
 
 <p align="center">
-  <a href="https://thunderous-otter-920a93.netlify.app/"><strong>🚀 Live Project</strong></a>
-  &nbsp;|&nbsp;
-  <a href="https://github.com/Adirohansuyal/nasa2026"><strong>💻 GitHub Repository</strong></a>
-</p>
-
-
-<p align="center">
-  <strong>NASA Space Apps Challenge 2026 · "Be An Earth System Trend Detective"</strong>
+  <b>Uncertainty-Guided Earth System Intelligence for Uttarakhand, India</b><br/>
+  <sub>NASA International Space Apps Challenge 2026 &nbsp;·&nbsp; <i>"Be An Earth System Trend Detective"</i></sub>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.11+-blue?style=flat-square&logo=python" />
-  <img src="https://img.shields.io/badge/Streamlit-1.67-red?style=flat-square&logo=streamlit" />
-  <img src="https://img.shields.io/badge/NASA_Satellites-3-green?style=flat-square" />
-  <img src="https://img.shields.io/badge/Variables-5-orange?style=flat-square" />
-  <img src="https://img.shields.io/badge/Analysis_Period-10_Years-purple?style=flat-square" />
+  <a href="https://thunderous-otter-920a93.netlify.app/">
+    <img src="https://img.shields.io/badge/🚀%20Live%20Demo-Visit%20Now-brightgreen?style=for-the-badge" alt="Live Demo"/>
+  </a>
+  &nbsp;
+  <a href="https://github.com/Adirohansuyal/nasa2026">
+    <img src="https://img.shields.io/badge/💻%20GitHub-Repository-181717?style=for-the-badge&logo=github" alt="GitHub"/>
+  </a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Streamlit-1.67-FF4B4B?style=flat-square&logo=streamlit&logoColor=white"/>
+  <img src="https://img.shields.io/badge/NASA%20Satellites-4-1a73e8?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Variables-5-orange?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Analysis%20Period-10%20Years-8e44ad?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Spatial%20Records-50%2C449%2B-2ecc71?style=flat-square"/>
 </p>
 
 ---
 
-# Whaat is EARTHPULSE--X ?????
+## What is EARTHPULSE-X?
 
-EARTHPULSE-X is a **physics-aware, uncertainty-guided Earth system intelligence platform** that answers NASA's four core challenge questions using a decade of real satellite data:
+EARTHPULSE-X is a **physics-aware, uncertainty-guided Earth system intelligence platform** that answers NASA's four core challenge questions using a decade of real satellite data over Uttarakhand, India.
 
-| NASA Question | Our Answer |
-|---|---|
+| NASA Question | EARTHPULSE-X Answer |
+|:---|:---|
 | **WHAT** is changing? | LST declining (−0.173 K/yr) · NDVI rising (+0.00314/yr) |
-| **WHERE** is it changing? | Pixel-level choropleth maps across 13 Uttarakhand districts |
-| **HOW MUCH** is changing? | Autocorrelation-corrected Sen's slope estimates per variable |
-| **Is it significant?** | Modified Mann-Kendall + FDR correction (not naive p-values) |
+| **WHERE** is it changing? | Pixel-level choropleth maps across all 13 Uttarakhand districts |
+| **HOW MUCH** is changing? | Autocorrelation-corrected Sen's slope per variable |
+| **Is it significant?** | Modified Mann-Kendall + FDR correction — not naive p-values |
 
-**Study Region:** Uttarakhand, India — 13 districts, Himalayas to foothills  
-**Time Period:** April 2015 – September 2025 (126 months)  
-**Spatial Resolution:** ~9 km × 9 km pixels · 50,449+ pixel-level records
+> **Study Region:** Uttarakhand, India — 13 districts, Himalayas to foothills  
+> **Time Period:** April 2015 – September 2025 (126 months)  
+> **Spatial Resolution:** ~9 km × 9 km pixels · 50,449+ pixel-level records
 
 ---
 
-## Screenshots
+## 📸 Screenshots
 
 <table>
 <tr>
-<td align="center">
-  <img src="assets/AERIAL.jpg" alt="Aerial View – Study Region" width="380"/><br/>
-  <sub>Study Region — Uttarakhand from above</sub>
+<td align="center" width="50%">
+  <img src="assets/AERIAL.jpg" alt="Study Region — Aerial View" width="380"/><br/>
+  <sub><b>Study Region</b> — Uttarakhand from above</sub>
 </td>
-<td align="center">
+<td align="center" width="50%">
   <img src="assets/LST_UTTARAKHABD.webp" alt="LST Trend Map" width="380"/><br/>
-  <sub>Land Surface Temperature trends across districts</sub>
+  <sub><b>Land Surface Temperature</b> trend map across districts</sub>
 </td>
 </tr>
 <tr>
-<td align="center">
+<td align="center" width="50%">
   <img src="assets/NDVI_UTTARAKHAND.jpeg" alt="NDVI Greenness Map" width="380"/><br/>
-  <sub>NDVI vegetation greenness — 10-year satellite composite</sub>
+  <sub><b>NDVI</b> vegetation greenness — 10-year satellite composite</sub>
 </td>
-<td align="center">
+<td align="center" width="50%">
   <img src="assets/GRAPSH.jpeg" alt="Trend Analysis Charts" width="380"/><br/>
-  <sub>Multi-method statistical trend analysis output</sub>
+  <sub><b>Multi-method</b> statistical trend analysis output</sub>
 </td>
 </tr>
 <tr>
 <td colspan="2" align="center">
-  <img src="assets/Screenshot 2026-11-12 at 12.48.44 PM.png" alt="App Dashboard" width="780"/><br/>
-  <sub>EARTHPULSE-X live dashboard</sub>
+  <img src="assets/Screenshot 2026-11-12 at 12.48.44 PM.png" alt="EARTHPULSE-X Live Dashboard" width="780"/><br/>
+  <sub><b>EARTHPULSE-X</b> live dashboard</sub>
 </td>
 </tr>
 </table>
 
 ---
 
-## Causal Discovery Page: How the Relationship Analysis Works
+## 🧠 The UG-ESI Framework
 
-The **Causal Discovery** page explores how four monthly satellite signals move together across Uttarakhand, and whether a change in one signal is associated with a change in another signal in a later month. The page uses statistics written in JavaScript; it does not use logistic regression, a neural network, or an AI model. The word “causal” is the page's label, but the results are **lagged statistical associations** and do not prove cause and effect.
-
-### Signals and data
-
-The state-wide view uses 126 monthly observations from the page's preloaded satellite data:
-
-| Short name | Signal |
-|---|---|
-| GPM | Precipitation (rainfall) |
-| SMAP_AM | Morning soil moisture |
-| NDVI | Vegetation greenness |
-| LST | Land surface temperature |
-
-The district view uses monthly means of each district's satellite robust-z anomaly grid, with 117 observations from January 2016 through September 2025. These district values are deviations from the usual conditions in standard-deviation units, not raw rainfall in millimetres or temperature in degrees. A district can be selected from the map or the menu.
-
-### What time-lagged partial correlation means
-
-**Correlation** measures how two signals vary together. A positive value means they tend to rise or fall together; a negative value means one tends to be higher when the other is lower.
-
-**Partial correlation** asks how strongly two signals are related after accounting for the other measured signals. For example, rainfall and temperature might both vary with soil moisture and vegetation. The page tries to account for those other signals before measuring the rainfall–temperature relationship. In the code, it does this by fitting each series against the control series in turn, taking the residuals (the parts not explained by those controls), and correlating those residuals. This is a simple linear statistical adjustment, not a full causal model.
-
-**Time-lagged** means the two series are lined up at different months. At lag 2, for example, the source series from January onward is compared with the target series starting in March. The question is whether an earlier source value is associated with a target value two months later. Lag 0 compares values from the same month and has no time direction.
-
-For each pair of different signals, the analysis checks lag 0 and each lag up to the selected maximum (3, 4, or 6 months; default 6). At each lag it calculates a partial correlation and a p-value. For nonzero lags, the source is aligned with the later target; the other signals are used as controls over the target's aligned time window. The same-month pair is only included once because its correlation is symmetric.
-
-### Why Benjamini–Hochberg correction is used
-
-The page checks many signal pairs across several lags. If every test used an unadjusted significance cutoff, some links could pass simply by chance. **Benjamini–Hochberg (BH)** adjusts the p-values across the full set of links tested in that run, to control the expected false discovery rate (the expected share of false links among the links called significant).
-
-In plain terms, BH sorts p-values from smallest to largest, uses each value's rank and the total number of tests to calculate adjusted values (called **q-values**), and keeps links whose q-value is below the selected alpha. The default alpha is 0.05; the page also offers 0.01 and 0.10. The implementation applies the usual rank-based adjustment and a backwards running minimum so q-values remain monotonic. BH reduces false positives; it does not eliminate them, and a significant result still does not establish causation.
-
-### How to read the page
-
-- **Max lag** sets the longest delay to check. A six-month setting tests lag 0 through lag 6.
-- **Significance (alpha)** sets the q-value cutoff used after BH correction. A stricter cutoff generally keeps fewer links.
-- **Min strength to show** hides links whose absolute partial correlation is below the slider value. This is an additional display filter; it is not the significance correction.
-- **Graph colors:** green is a positive association; red is an inverse association. Wider lines represent stronger absolute partial correlations. Arrows point from source to target for nonzero lags; same-month relationships have no arrow.
-- **Link labels:** show the lag and an approximate effect size. The state graph labels use the partial-correlation value as a percent. The district graph labels use an estimated target shift as a share of its usual variation. These are not percentages of actual rainfall or temperature, and they are not accuracy or probability scores.
-- **Significant Links, Top Strength, and Chain Complete:** summarize links that pass both q-value and minimum-strength filters. “Chain Complete” means at least three of the page's predefined links were detected; it is not proof that the physical chain is true.
-- **District table and CSV:** list the selected district's retained relationships, their approximate usual-swing change, and timing.
-
-### Method details and limitations
-
-The calculations run in the browser in `assets/causal.js`, using ordinary JavaScript math helpers for Pearson correlation, residualization, approximate p-values, and BH q-values. Graphs are drawn with the Canvas 2D API; the district map is SVG. The page reads state-wide values from `assets/predictive_data.js` and district values from `assets/district_causal_data.js`. It does not call an AI service for this analysis.
-
-The p-value in this implementation is an approximation based on a normal CDF, not a full time-series significance test. Monthly environmental data can have seasonality, autocorrelation, missing-data and measurement issues, and unmeasured confounders. The displayed links should therefore be treated as exploratory evidence of association. District averaging also hides variation within each district, and monthly data cannot resolve events shorter than a month. A lagged association can help suggest what to investigate, but it cannot show that the source caused the target.
-
-### Visual guide
-
-**Time-lagged correlation:** shifting one monthly series relative to another to inspect whether their association changes with the delay.
-
-![Time-lagged correlation concept](assets/causal/Time-Lagged%20Correlation.png)
-
-**Uttarakhand-wide graph:** relationships retained for the state-wide monthly series.
-
-![Uttarakhand-wide relationship graph](assets/causal/Uttrakhand-wide-graph.png)
-
-**District drill-down:** select a district to see relationships calculated from its anomaly series.
-
-![District-wise relationship graph](assets/causal/District-wise.png)
-
-**Reading district links:** explains the source, target, approximate usual-swing change, and timing shown in the relationship table.
-
-![What each district relationship means](assets/causal/whateach.png)
-
-**Benjamini–Hochberg overview:** illustrates why many tests need a multiple-testing correction and how q-values determine which links are kept.
-
-![Benjamini–Hochberg correction overview](assets/causal/Benjamin-Hochberg.png)
-
----
-
-## 🧠 The UG-ESI Framework (Our Core Contribution)
-
-EARTHPULSE-X introduces **UG-ESI — Uncertainty-Guided Earth System Intelligence**, a 4-contribution methodology built on top of the NASA challenge requirements:
+EARTHPULSE-X introduces **UG-ESI — Uncertainty-Guided Earth System Intelligence**, a 4-contribution methodology built on top of the NASA challenge requirements.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -179,60 +110,37 @@ EARTHPULSE-X introduces **UG-ESI — Uncertainty-Guided Earth System Intelligenc
 
 ## 🛰️ Data Sources
 
-| Satellite | Instrument | Variables | Resolution |
-|---|---|---|---|
-| **Terra / Aqua** | MODIS | 🌡️ Land Surface Temperature (LST, Kelvin) | ~1 km |
+| Satellite | Instrument | Variable | Resolution |
+|:---|:---|:---|:---|
+| **Terra / Aqua** | MODIS | 🌡️ Land Surface Temperature (LST, K) | ~1 km |
 | **Terra / Aqua** | MODIS | 🌿 Vegetation Index (NDVI, 0–1) | ~500 m |
 | **SMAP** | L-band passive microwave | 💧 Soil Moisture AM & PM (m³/m³) | ~9 km |
 | **GPM** | Multi-satellite constellation | 🌧️ Monthly Precipitation (mm) | ~10 km |
 
-All data harmonized to monthly NetCDF grids (EPSG:6933 equal-area projection), then area-averaged to district scale via spatial join with Uttarakhand boundary polygons.
+> All data harmonized to monthly NetCDF grids (EPSG:6933 equal-area projection), then area-averaged to district scale via spatial join with Uttarakhand boundary polygons.
 
 ---
 
-## 🗺️ Application Pages
+## 🗺️ Application — 10 Pages
 
-### 🧭 Page 1 — UG-ESI Mission Control
-Run all four UG-ESI contributions interactively in one workflow:
-1. Choose a research objective (drought / flood / vegetation / temperature / general)
-2. Watch the system score and rank all 5 variables automatically
-3. Explore multi-method trend analysis with significance testing
-4. Navigate the uncertainty-guided interaction graph
-5. Generate a full AI research report grounded in your actual statistical outputs
+| # | Page | What It Does |
+|:--|:---|:---|
+| 🧭 1 | **UG-ESI Mission Control** | Interactive 4-step workflow: select objective → score variables → trend analysis → AI research report |
+| 🌍 2 | **Earth Observation** | Real NASA satellite heatmaps, pixel validity maps, 10-year temporal animation |
+| 📈 3 | **Trend Detective** | NASA's 4 questions answered — Modified MK vs. naive MK comparison, Sen's slope, FDR correction |
+| 🔎 4 | **Anomaly Intelligence** | District choropleth maps — Isolation Forest + robust Z-score on 50,449 pixel records |
+| 🕸️ 5 | **Interaction Network** | FDR-corrected variable relationship network with partial correlation spurious-edge flagging |
+| ⚗️ 6 | **Physics & Uncertainty** | Sensor coverage, quality threshold impact, physical plausibility checks, uncertainty propagation |
+| 🔎 7 | **Earth Change Detective** | Monthly sensor anomaly timeline, district spread, and regional satellite evidence per selection |
+| 🔮 8 | **Predictive Intelligence** | Custom AR-Fourier Ridge forecasting, rolling-origin cross-validation, Drought Risk Score (0–100) |
+| 🚨 9 | **Early Warning System** | Simultaneous detection of 6 hazard types using all 5 sensors — Chamoli 2021 historical validation |
+| 🔗 10 | **Causal Discovery** | Time-lagged partial correlations with Benjamini–Hochberg FDR correction across all variable pairs |
 
-### 🌍 Page 2 — Earth Observation
-Real NASA satellite data visualized as geographic heatmaps. Pixel-level validity maps. Strict vs. relaxed quality comparison. 10-year temporal animation.
+### 🚨 Early Warning System — 6-Hazard Detection
 
-### 📈 Page 3 — Trend Detective *(NASA's 4 Questions, answered)*
-Pre-computed autocorrelation-adjusted trend results across all 5 variables with:
-- Modified Mann-Kendall vs. naive MK comparison (see why autocorrelation correction matters)
-- Sen's slope annual change estimates
-- FDR-adjusted significance across all tests
-- Annual anomaly heatmaps — WHERE and WHEN things changed
-
-> **Key Finding:** LST is significantly **decreasing** at −0.173 K/yr (FDR p = 0.003). NDVI is significantly **increasing** at +0.00314/yr (FDR p ≈ 1.5 × 10⁻⁶). Soil moisture and precipitation trends are not statistically significant.
-
-### 🔎 Page 4 — Anomaly Intelligence
-Spatial choropleth maps showing which of the 13 Uttarakhand districts had the highest anomaly pixel percentage. Pixel-level Isolation Forest + robust Z-score detection (threshold |Z| > 3.5) on 50,449 spatial records.
-
-### 🕸️ Page 5 — Interaction Network
-FDR-corrected variable relationship network across lag windows 0–6 months. Edge width = |ρ|, edge color = direction (green positive / red negative). Partial correlation filtering flags spurious edges driven by confounders.
-
-### ⚗️ Page 6 — Physics & Uncertainty
-Data quality and reliability dashboard. Sensor coverage over 10 years. Strict vs. relaxed quality threshold impact analysis. Physical plausibility checks. Contradictory signal detection. Uncertainty propagation from coverage gaps.
-
-### 🔎 Page 7 — Earth Change Detective
-Choose an Earth-system signal, district, and month to inspect the monthly sensor anomaly timeline, district-level spread, and the regional satellite evidence for that month. Detected months are clearly separated from regional sensor context; the map summarizes district signals and does not imply confirmed impacts or causal relationships.
-
-### 🔮 Page 8 — Predictive Intelligence
-Custom seasonal AR-Fourier Ridge forecast model (zero dependency on Prophet/LSTM). Rolling-origin cross-validation auto-selects lag depth and regularization. Residual bootstrap forecast intervals. Cross-variable lag VAR analysis with F-test significance. Drought Risk Score (0–100) composite index.
-
-### 🚨 Page 9 — Early Warning System *(Multi-Hazard)*
-The most unique feature: simultaneous detection of **6 hazard types** using all 5 sensors together:
-
-| Hazard | Signal Pattern |
-|---|---|
-| 🌊 Flood | GPM high + SMAP high (saturated + heavy rain) |
+| Hazard | Sensor Pattern |
+|:---|:---|
+| 🌊 Flood | GPM high + SMAP high (saturated soil + heavy rain) |
 | 🏜️ Drought | GPM low + SMAP low + LST high |
 | 🔥 Heat Wave | LST high, SMAP near normal |
 | 🍂 Vegetation Loss | NDVI low + LST high + SMAP low |
@@ -243,43 +151,100 @@ The most unique feature: simultaneous detection of **6 hazard types** using all 
 
 ---
 
-## ✨ What Makes This Scientifically Rigorous?
+## ✨ Scientific Rigor — What Sets This Apart
 
-### 1. Autocorrelation-Corrected Significance Testing
-Environmental time series are serially correlated — naive Mann-Kendall over-rejects the null. For LST (lag-1 autocorrelation = **0.549**):
-- Naive MK p-value: **4 × 10⁻⁵**
-- Modified MK (Hamed & Rao 1998): **p = 0.003**
-- 120× more conservative. Still significant, but honestly so.
+### 1 · Autocorrelation-Corrected Significance Testing
+Environmental time series are serially correlated — naive Mann-Kendall over-rejects the null.  
+For LST (lag-1 autocorrelation = **0.549**):
 
-The app displays both values side by side so you can see the difference.
+| Test | p-value |
+|:---|:---|
+| Naive Mann-Kendall | 4 × 10⁻⁵ |
+| Modified MK (Hamed & Rao 1998) | **p = 0.003** |
 
-### 2. FDR Correction on All Tests
-Benjamini-Hochberg FDR correction applied to:
-- Trend tests (5 variables)
-- Interaction graph edges (70+ Spearman tests across variable pairs and lag windows)
+120× more conservative. Still significant — but honestly so. Both values are displayed side by side in the app.
 
-Without this, random false positives are guaranteed.
+### 2 · FDR Correction on All Tests
+Benjamini–Hochberg FDR correction applied to trend tests (5 variables) and all 70+ Spearman interaction graph edges. Without this, false positives are mathematically guaranteed.
 
-### 3. No Selection Bias in Variable Ranking
-Variables are scored on **data quality and signal properties** — never on p-values. Selecting variables because they are significant would invalidate all downstream statistical inference (Freedman's paradox). The two-pass greedy algorithm also penalizes redundancy between correlated variables.
+### 3 · No Selection Bias in Variable Ranking
+Variables are scored on **data quality and signal properties — never on p-values**. Selecting variables for significance would invalidate all downstream inference (Freedman's paradox). The two-pass greedy algorithm also penalizes redundancy between correlated variables.
 
-### 4. Partial Correlations for Spurious Edge Detection
-Interaction graph edges are flagged as "potentially spurious" when the partial correlation (controlling for the strongest confounder) drops below 50% of the raw Spearman ρ — a rare feature at this project scale.
+### 4 · Partial Correlations for Spurious Edge Detection
+Interaction graph edges are flagged as "potentially spurious" when the partial correlation (controlling for the strongest confounder) drops below 50% of the raw Spearman ρ.
 
-### 5. Physics Engine
-Physical plausibility bounds (e.g., LST 250–330 K, SMAP 0–0.60 m³/m³), cross-sensor consistency checks (SMAP AM vs PM diurnal range), and sensitivity analysis of trend conclusions under strict vs. relaxed quality thresholds.
+### 5 · Physics Engine
+Physical plausibility bounds (LST 250–330 K, SMAP 0–0.60 m³/m³), cross-sensor diurnal consistency checks (SMAP AM vs PM), and sensitivity analysis under strict vs. relaxed quality thresholds.
+
+---
+
+## 📊 Key Findings
+
+| Variable | Trend | Annual Rate | Significance |
+|:---|:---:|:---|:---|
+| 🌡️ Land Surface Temperature | **↓ Decreasing** | −0.173 K / year | ✅ FDR p = 0.003 |
+| 🌿 Vegetation (NDVI) | **↑ Increasing** | +0.00314 / year | ✅ FDR p ≈ 1.5 × 10⁻⁶ |
+| 💧 Soil Moisture AM | No significant trend | — | ⚪ Not significant |
+| 💧 Soil Moisture PM | No significant trend | — | ⚪ Not significant |
+| 🌧️ Precipitation | No significant trend | — | ⚪ Not significant |
+
+> All trends computed with Modified Mann-Kendall (Hamed & Rao 1998) + Benjamini–Hochberg FDR correction over 126 months of data.
+
+---
+
+## 🔗 Causal Discovery — Methodology
+
+The Causal Discovery page explores how four monthly satellite signals move together across Uttarakhand and whether a change in one signal is associated with a change in another signal in a later month.
+
+**Signals used:**
+
+| Short Name | Signal |
+|:---|:---|
+| GPM | Precipitation (rainfall) |
+| SMAP_AM | Morning soil moisture |
+| NDVI | Vegetation greenness |
+| LST | Land surface temperature |
+
+**Key methodological points:**
+- **Partial correlation** accounts for other measured signals before measuring any two-signal relationship.
+- **Time-lagged** analysis checks lags 0–6 months. At lag 2, January source values are compared with March target values.
+- **Benjamini–Hochberg correction** controls the false discovery rate across all tested pairs and lags, with q-values replacing raw p-values.
+- Results are **lagged statistical associations** and do not prove causation. All calculations run in-browser in `assets/causal.js` using ordinary JavaScript math.
+
+<table>
+<tr>
+<td align="center" width="50%">
+  <img src="assets/causal/Time-Lagged%20Correlation.png" alt="Time-Lagged Correlation Concept" width="360"/><br/>
+  <sub>Time-lagged correlation concept</sub>
+</td>
+<td align="center" width="50%">
+  <img src="assets/causal/Uttrakhand-wide-graph.png" alt="Uttarakhand-wide Graph" width="360"/><br/>
+  <sub>State-wide relationship graph</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+  <img src="assets/causal/District-wise.png" alt="District Drill-down" width="360"/><br/>
+  <sub>District-level drill-down</sub>
+</td>
+<td align="center" width="50%">
+  <img src="assets/causal/Benjamin-Hochberg.png" alt="Benjamini-Hochberg Correction" width="360"/><br/>
+  <sub>Benjamini–Hochberg FDR overview</sub>
+</td>
+</tr>
+</table>
 
 ---
 
 ## 🤖 AI Stack
 
 | Client | Model | Usage |
-|---|---|---|
-| **Groq** | `openai/gpt-oss-120b` | Trend explainer, variable selection explainer, interaction graph, research reports |
+|:---|:---|:---|
+| **Groq** | `openai/gpt-oss-120b` | Trend explainer, variable selection, interaction graph, research reports |
 | **Google Gemini** | `gemini-3.8-flash` | Shared explanation client |
 | **OpenRouter** | `meta-llama/llama-3.3-70b-instruct` | Vision-grounded chart explanations |
 
-All AI responses are **evidence-grounded**: actual statistical outputs are JSON-serialized and injected into every system prompt. The models explain; they do not invent.
+> All AI responses are **evidence-grounded** — actual statistical outputs are JSON-serialized and injected into every system prompt. The models explain; they do not invent.
 
 ---
 
@@ -287,9 +252,9 @@ All AI responses are **evidence-grounded**: actual statistical outputs are JSON-
 
 ### Prerequisites
 - Python 3.11+
-- Access to the EARTHPULSE-X research data directory (NASA processed NetCDF files)
+- API keys for Groq, Google Gemini, and OpenRouter
 
-### 1. Clone and set up environment
+### 1. Clone and set up
 
 ```bash
 git clone https://github.com/Adirohansuyal/nasa2026.git
@@ -300,16 +265,14 @@ source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 2. Configure environment variables
+### 2. Configure environment
 
 ```bash
 cp .env.example .env
-# Edit .env and add your API keys
+# Add your API keys to .env
 ```
 
-Required keys in `.env`:
-
-```
+```env
 GROQ_API_KEY=your_groq_api_key_here
 GEMINI_API_KEY=your_gemini_api_key_here
 OPENROUTER_API_KEY=your_openrouter_api_key_here
@@ -322,125 +285,107 @@ EARTHPULSE_PROJECT_ROOT=/path/to/your/EARTHPULSE_X/data/directory
 streamlit run app.py
 ```
 
-The app will open at `http://localhost:8501`.
+Opens at `http://localhost:8501`.
 
-### Static `index.html` AI explanations
-
-The Interaction Network and Haldwani-to-nearby-town explanation buttons use the small server-side OpenRouter proxy in `api_server.py`. Keep the OpenRouter key in the private `.env` file; never put it in browser JavaScript.
-
-Run the API and static site in separate terminals:
+### Static HTML + API server (Interaction Network / AI explanations)
 
 ```bash
+# Terminal 1
 uvicorn api_server:app --host 127.0.0.1 --port 8001
+
+# Terminal 2
 python -m http.server 5500
 ```
 
-Open `http://localhost:5500`. For deployment, host the API over HTTPS, set `EARTHPULSE_ALLOWED_ORIGINS` to the website's exact origin, and set `window.EARTHPULSE_API_BASE` in `index.html` to the API's public base URL.
+Open `http://localhost:5500`.  
+For deployment: host the API over HTTPS, set `EARTHPULSE_ALLOWED_ORIGINS` to the site origin, and point `window.EARTHPULSE_API_BASE` in `index.html` to the API's public base URL.
 
 ---
 
 ## 📁 Project Structure
 
 ```
-EARTHPULSE_APP/
+nasa2026/
 │
-├── app.py                          # Entry point, page registration
-├── config.py                       # Data paths, study region, constants
+├── app.py                              # Entry point, page registration
+├── config.py                           # Data paths, study region, constants
+├── api_server.py                       # OpenRouter proxy (FastAPI)
 ├── requirements.txt
 │
 ├── pages/
-│   ├── 01_Mission_Control.py       # UG-ESI interactive 4-step workflow
-│   ├── 02_Earth_Observation.py     # Satellite data heatmaps & validity
-│   ├── 03_Trend_Detective.py       # NASA 4 questions answered
-│   ├── 04_Anomaly_Intelligence.py  # District anomaly choropleth maps
-│   ├── 05_Interaction_Network.py   # FDR-corrected variable network
-│   ├── 06_Physics_Uncertainty.py   # Data quality & physics checks
-│   ├── 07_AI_Scientist.py          # Evidence-grounded AI chat
-│   ├── 08_Predictive_Intelligence.py  # AR-Fourier forecast + VAR
-│   └── 09_Early_Warning_System.py  # 6-hazard multi-sensor EWS
+│   ├── 01_Mission_Control.py           # UG-ESI interactive 4-step workflow
+│   ├── 02_Earth_Observation.py         # Satellite data heatmaps & validity
+│   ├── 03_Trend_Detective.py           # NASA 4 questions answered
+│   ├── 04_Anomaly_Intelligence.py      # District anomaly choropleth maps
+│   ├── 05_Interaction_Network.py       # FDR-corrected variable network
+│   ├── 06_Physics_Uncertainty.py       # Data quality & physics checks
+│   ├── 07_AI_Scientist.py              # Evidence-grounded AI chat
+│   ├── 08_Predictive_Intelligence.py   # AR-Fourier forecast + VAR
+│   ├── 09_Early_Warning_System.py      # 6-hazard multi-sensor EWS
+│   └── 10_Causal_Discovery.py          # Time-lagged partial correlations
 │
 ├── core/
-│   ├── ai_agent.py                 # Centralized AI prompt functions
-│   ├── anomaly_engine.py           # UG-ESI C1: Variable selection
-│   ├── trend_engine.py             # UG-ESI C2: Multi-method trend analysis
-│   ├── interaction_engine.py       # UG-ESI C3: Interaction graph
-│   ├── early_warning_engine.py     # 6-hazard detection rules
-│   ├── forecast_engine.py          # AR-Fourier Ridge forecasting
-│   ├── lagged_dynamics.py          # Cross-variable VAR lag model
-│   ├── physics_engine.py           # Physical plausibility checks
-│   ├── spatial_hotspot_engine.py   # DBSCAN pixel clustering
-│   ├── spatial_trend_engine.py     # District-scale NetCDF trends
-│   ├── data_loader.py              # Cached CSV/NetCDF loaders
-│   ├── gemini_client.py            # Google Gemini client
-│   └── openrouter_client.py        # OpenRouter / Llama vision client
+│   ├── ai_agent.py                     # Centralized AI prompt functions
+│   ├── anomaly_engine.py               # UG-ESI C1: Variable selection
+│   ├── trend_engine.py                 # UG-ESI C2: Multi-method trend analysis
+│   ├── interaction_engine.py           # UG-ESI C3: Interaction graph
+│   ├── early_warning_engine.py         # 6-hazard detection rules
+│   ├── forecast_engine.py              # AR-Fourier Ridge forecasting
+│   ├── lagged_dynamics.py              # Cross-variable VAR lag model
+│   ├── physics_engine.py               # Physical plausibility checks
+│   ├── spatial_hotspot_engine.py       # DBSCAN pixel clustering
+│   ├── spatial_trend_engine.py         # District-scale NetCDF trends
+│   ├── data_loader.py                  # Cached CSV/NetCDF loaders
+│   ├── gemini_client.py                # Google Gemini client
+│   └── openrouter_client.py            # OpenRouter / Llama vision client
 │
 ├── components/
-│   ├── theme.py                    # Custom dark UI theme
-│   ├── charts.py                   # Reusable Plotly chart functions
-│   ├── maps.py                     # GeoPandas → Plotly map utilities
-│   └── sidebar.py                  # Shared sidebar component
+│   ├── theme.py                        # Custom dark UI theme
+│   ├── charts.py                       # Reusable Plotly chart functions
+│   ├── maps.py                         # GeoPandas → Plotly map utilities
+│   └── sidebar.py                      # Shared sidebar component
 │
-└── assets/                         # Images used in this README
+└── assets/                             # Images, JS bundles, precomputed data
 ```
 
 ---
 
-## 📊 Key Findings
-
-| Variable | Trend | Rate | Significance |
-|---|---|---|---|
-| 🌡️ Land Surface Temperature | **↓ Decreasing** | −0.173 K / year | ✅ FDR p = 0.003 |
-| 🌿 Vegetation (NDVI) | **↑ Increasing** | +0.00314 / year | ✅ FDR p ≈ 1.5 × 10⁻⁶ |
-| 💧 Soil Moisture AM | No significant trend | — | ⚪ Not significant |
-| 💧 Soil Moisture PM | No significant trend | — | ⚪ Not significant |
-| 🌧️ Precipitation | No significant trend | — | ⚪ Not significant |
-
-> All trends computed with Modified Mann-Kendall (Hamed & Rao 1998) + Benjamini-Hochberg FDR correction over 126 months of data.
-
----
-
-## 🔭 Built For
-
-**NASA International Space Apps Challenge 2026**  
-Challenge: *"Be An Earth System Trend Detective"*
-
----
-
-## 👨‍🚀 Meet the Team
+## 👨‍🚀 Team
 
 <p align="center">
-  <em>The minds behind EARTHPULSE-X — bringing NASA satellite data to life.</em>
+  <em>The minds behind EARTHPULSE-X — analyzing the land we call home.</em>
 </p>
 
 <table align="center">
   <tr>
-    <td align="center" width="220">
-      <img src="assets/aditya_corporate.png" alt="Aditya Suyal" width="140" height="140" style="border-radius:50%; object-fit:cover; border: 3px solid #4A90D9;"/><br/><br/>
+    <td align="center" width="200">
+      <img src="assets/aditya_corporate.png" alt="Aditya Suyal" width="130" height="130" style="border-radius:50%; object-fit:cover; border:3px solid #4A90D9;"/><br/><br/>
       <strong>Aditya Suyal</strong>
     </td>
-    <td align="center" width="220">
-      <img src="assets/gaurav_negi.jpeg" alt="Gaurav Negi" width="140" height="140" style="border-radius:50%; object-fit:cover; border: 3px solid #4A90D9;"/><br/><br/>
+    <td align="center" width="200">
+      <img src="assets/gaurav_negi.jpeg" alt="Gaurav Negi" width="130" height="130" style="border-radius:50%; object-fit:cover; border:3px solid #4A90D9;"/><br/><br/>
       <strong>Gaurav Negi</strong>
     </td>
-  </tr>
-  <tr>
-    <td align="center" width="220">
-      <img src="assets/Nisha_Kumari.jpeg" alt="Nisha Kumari" width="140" height="140" style="border-radius:50%; object-fit:cover; border: 3px solid #4A90D9;"/><br/><br/>
+    <td align="center" width="200">
+      <img src="assets/Nisha_Kumari.jpeg" alt="Nisha Kumari" width="130" height="130" style="border-radius:50%; object-fit:cover; border:3px solid #4A90D9;"/><br/><br/>
       <strong>Nisha Kumari</strong>
     </td>
-    <td align="center" width="220">
-      <img src="assets/ritesh.jpeg" alt="Ritesh" width="140" height="140" style="border-radius:50%; object-fit:cover; border: 3px solid #4A90D9;"/><br/><br/>
+    <td align="center" width="200">
+      <img src="assets/ritesh.jpeg" alt="Ritesh" width="130" height="130" style="border-radius:50%; object-fit:cover; border:3px solid #4A90D9;"/><br/><br/>
       <strong>Ritesh</strong>
     </td>
   </tr>
 </table>
 
 <p align="center">
-  <em>🏔️ Team from Uttarakhand — analyzing the land we call home.</em>
+  🏔️ <em>Team from Uttarakhand — analyzing the land we call home.</em>
 </p>
 
 ---
 
 <p align="center">
-  Built with 🛰️ NASA satellite data · 🧪 rigorous statistics · 🤖 evidence-grounded AI
+  Built with 🛰️ NASA satellite data &nbsp;·&nbsp; 🧪 rigorous statistics &nbsp;·&nbsp; 🤖 evidence-grounded AI<br/><br/>
+  <a href="https://thunderous-otter-920a93.netlify.app/"><strong>🚀 Live Demo</strong></a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  <a href="https://github.com/Adirohansuyal/nasa2026"><strong>💻 GitHub</strong></a>
 </p>
