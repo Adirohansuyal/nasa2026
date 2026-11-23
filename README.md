@@ -1,32 +1,53 @@
 <p align="center">
-  <img src="assets/Space_Apps_2026_Logo_OG.jpg" alt="NASA Space Apps 2026" width="160"/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/NASA_logo.svg/1224px-NASA_logo.svg.png" alt="NASA" width="80"/>
+  &nbsp;&nbsp;&nbsp;
+  <img src="assets/Space_Apps_2026_Logo_OG.jpg" alt="NASA Space Apps 2026" width="140"/>
 </p>
 
-<h1 align="center">🌍 EARTHPULSE-X</h1>
+<br/>
 
 <p align="center">
-  <b>Uncertainty-Guided Earth System Intelligence for Uttarakhand, India</b><br/>
-  <sub>NASA International Space Apps Challenge 2026 &nbsp;·&nbsp; <i>"Be An Earth System Trend Detective"</i></sub>
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d1117,50:1a3a5c,100:0d47a1&height=200&section=header&text=EARTHPULSE-X&fontSize=56&fontColor=ffffff&fontAlignY=38&desc=Uncertainty-Guided%20Earth%20System%20Intelligence&descAlignY=58&descSize=18&descColor=90caf9&animation=fadeIn" width="100%"/>
 </p>
+
+<p align="center">
+  <sub>🛰️ &nbsp;<b>NASA International Space Apps Challenge 2026</b>&nbsp; · &nbsp;<i>"Be An Earth System Trend Detective"</i>&nbsp; · &nbsp;Uttarakhand, India</sub>
+</p>
+
+<br/>
 
 <p align="center">
   <a href="https://thunderous-otter-920a93.netlify.app/">
-    <img src="https://img.shields.io/badge/🚀%20Live%20Demo-Visit%20Now-brightgreen?style=for-the-badge" alt="Live Demo"/>
+    <img src="https://img.shields.io/badge/🚀%20Live%20Demo-Visit%20Now-00c853?style=for-the-badge&logoColor=white" alt="Live Demo"/>
   </a>
   &nbsp;
   <a href="https://github.com/Adirohansuyal/nasa2026">
-    <img src="https://img.shields.io/badge/💻%20GitHub-Repository-181717?style=for-the-badge&logo=github" alt="GitHub"/>
+    <img src="https://img.shields.io/badge/💻%20GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/>
   </a>
 </p>
 
+<br/>
+
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white"/>
+  &nbsp;
   <img src="https://img.shields.io/badge/Streamlit-1.67-FF4B4B?style=flat-square&logo=streamlit&logoColor=white"/>
-  <img src="https://img.shields.io/badge/NASA%20Satellites-4-1a73e8?style=flat-square"/>
-  <img src="https://img.shields.io/badge/Variables-5-orange?style=flat-square"/>
-  <img src="https://img.shields.io/badge/Analysis%20Period-10%20Years-8e44ad?style=flat-square"/>
-  <img src="https://img.shields.io/badge/Spatial%20Records-50%2C449%2B-2ecc71?style=flat-square"/>
+  &nbsp;
+  <img src="https://img.shields.io/badge/NASA%20Satellites-4-1a73e8?style=flat-square&logo=nasa&logoColor=white"/>
+  &nbsp;
+  <img src="https://img.shields.io/badge/Variables-5-f57c00?style=flat-square"/>
+  &nbsp;
+  <img src="https://img.shields.io/badge/Analysis%20Period-10%20Years-7b1fa2?style=flat-square"/>
+  &nbsp;
+  <img src="https://img.shields.io/badge/Spatial%20Records-50%2C449%2B-2e7d32?style=flat-square"/>
 </p>
+
+<br/>
+
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d47a1,50:1a3a5c,100:0d1117&height=80&section=footer" width="100%"/>
+</p>
+
 
 ---
 
