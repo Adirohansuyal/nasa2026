@@ -1,7 +1,5 @@
 <p align="center">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/NASA_logo.svg/1224px-NASA_logo.svg.png" alt="NASA" width="80"/>
-  &nbsp;&nbsp;&nbsp;
-  <img src="assets/Space_Apps_2026_Logo_OG.jpg" alt="NASA Space Apps 2026" width="140"/>
+  <img src="assets/Space_Apps_2026_Logo_OG.jpg" alt="NASA Space Apps 2026" width="150"/>
 </p>
 
 <br/>
