@@ -950,12 +950,12 @@ body{background-color:#090f16;background-image:radial-gradient(ellipse 58% 45% a
 
 /* ── Satellite map canvas card ── */
 .eo-map-card{
-  border:1px solid rgba(121,170,164,.18);border-radius:18px;
+  position:relative;border:1px solid rgba(121,170,164,.24);border-radius:20px;
   overflow:hidden;margin-bottom:18px;
-  box-shadow:0 6px 24px rgba(0,0,0,.18);
-  background:#07111a;
+  box-shadow:0 18px 46px rgba(0,0,0,.27),inset 0 1px 0 rgba(255,255,255,.035);
+  background:radial-gradient(ellipse at 48% 44%,rgba(24,43,57,.58),transparent 62%),linear-gradient(145deg,#0b1621,#07111a 72%);
 }
-.eo-map-card canvas{display:block;width:100%}
+.eo-map-card canvas{position:relative;z-index:1;display:block;width:100%;filter:drop-shadow(0 8px 20px rgba(0,0,0,.22))}
 
 /* ── Signal / coverage banners ── */
 .eo-signal-banner{
@@ -1347,7 +1347,20 @@ img, canvas, svg, table { max-width: 100%; }
 .trend-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:38px;padding:32px 38px;margin-bottom:24px;border-radius:16px;background:linear-gradient(105deg,#111c29 0%,#101923 100%);border:1px solid rgba(137,160,183,.2);box-shadow:inset 3px 0 0 rgba(121,170,164,.78)}.trend-hero::before,.trend-hero::after{display:none}.trend-hero-main{min-width:0}.trend-hero .hero-eyebrow{padding:0;margin:0 0 12px;background:none;border:0;border-radius:0;font-size:.66rem;letter-spacing:.14em;color:#91aaa9}.trend-hero .hero-title{margin:0 0 9px;gap:0}.trend-hero .hero-title h1{font-size:clamp(1.8rem,2.8vw,2.5rem);font-weight:700;letter-spacing:.015em}.trend-hero .hero-sub{max-width:680px;font-size:.98rem;line-height:1.65;color:#aebac7}.trend-hero-meta{display:grid;grid-template-columns:1fr;gap:0;min-width:230px;border-left:1px solid rgba(137,160,183,.2);padding-left:28px}.trend-hero-meta div{padding:8px 0}.trend-hero-meta div+div{border-top:1px solid rgba(137,160,183,.14)}.trend-hero-meta small{display:block;color:#7f91a3;font-size:.62rem;letter-spacing:.12em;margin-bottom:4px}.trend-hero-meta strong{font-size:.88rem;font-weight:600;color:#d8e1eb}.trend-status-dot{width:7px;height:7px;border-radius:50%;background:#79aaa4;display:inline-block;box-shadow:0 0 8px rgba(121,170,164,.4)}@media(max-width:760px){.trend-hero{grid-template-columns:1fr;gap:16px;padding:25px 22px}.trend-hero-meta{grid-template-columns:repeat(3,minmax(0,1fr));min-width:0;border-left:0;border-top:1px solid rgba(137,160,183,.2);padding:10px 0 0;gap:10px}.trend-hero-meta div+div{border:0}}
 /* Trend Detective: data-driven responsive analysis panels */
 .td-multi-heat{overflow:auto}.td-multi-row{display:grid;grid-template-columns:145px repeat(126,8px);gap:2px;align-items:center;min-width:max-content;margin:5px 0}.td-multi-row b{font-size:.74rem;color:var(--t2)}.td-multi-cell{height:15px;border-radius:2px}.td-explainer,.td-panel,.td-method,.td-chart-wrap,.td-map-wrap{background:rgba(15,26,46,.72);border:1px solid var(--border);border-radius:16px;padding:20px;margin:16px 0}.td-explainer{border-left:4px solid var(--accent);font-size:1.02rem;line-height:1.65}.td-controls{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:18px 0}.td-controls label{display:flex;flex-direction:column;gap:7px;color:var(--t2);font-size:.82rem;min-width:210px}.td-controls select{background:#111e33;color:var(--t1);border:1px solid var(--border);border-radius:9px;padding:11px 14px;font:inherit}.td-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}.td-kpi{background:#101d31;border:1px solid var(--border);border-radius:13px;padding:16px}.td-kpi small{color:var(--t3);display:block;margin-bottom:8px}.td-kpi strong{font-size:1.15rem}.td-kpi p{color:var(--t2);font-size:.8rem;margin:7px 0 0}.td-chart-wrap{height:360px;padding:12px}.td-chart-wrap canvas,.td-map-wrap canvas,.td-small-chart{width:100%;height:100%;display:block}.td-caption{color:var(--t3);font-size:.84rem;line-height:1.55}.td-two-col{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.td-panel{min-width:0}.td-heatmap{display:grid;grid-template-columns:repeat(12,minmax(14px,1fr));gap:4px;overflow:auto}.td-heat-cell{height:20px;border-radius:3px;min-width:14px;cursor:help}.td-heat-label{font-size:.67rem;color:var(--t3);text-align:center}.td-briefing{line-height:1.6;color:var(--t2)}.td-briefing strong{color:var(--t1)}.td-map-wrap{height:420px}.td-table-wrap{overflow:auto;max-height:430px}.td-table{width:100%;border-collapse:collapse;font-size:.82rem}.td-table th,.td-table td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--border);white-space:nowrap}.td-table th{color:var(--t3);position:sticky;top:0;background:#101d31}.td-table tr{cursor:pointer}.td-table tr:hover{background:rgba(114,194,182,.08)}.td-small-chart{height:260px}.td-method summary{cursor:pointer;font-weight:700}.td-method p{color:var(--t2);line-height:1.6}.td-up{color:#63e0b0}.td-down{color:#ff8c86}.td-flat{color:#b8c6d9}@media(max-width:850px){.td-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.td-two-col{grid-template-columns:1fr}.td-map-wrap{height:330px}.td-controls label{flex:1;min-width:160px}}
-#td-overview{grid-template-columns:repeat(5,minmax(0,1fr))}#td-overview .td-kpi{font:inherit}@media(max-width:850px){#td-overview{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#td-overview{grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px;margin:14px 0 22px}
+#td-overview .td-overview-card{display:flex;min-width:0;min-height:174px;flex-direction:column;align-items:stretch;gap:12px;padding:17px 18px 15px;border:1px solid rgba(137,160,183,.18);border-top:3px solid var(--td-signal-color);border-radius:14px;background:linear-gradient(150deg,rgba(18,34,52,.98),rgba(13,25,40,.98));box-shadow:0 9px 24px rgba(0,0,0,.13);color:var(--t1);font:inherit;text-align:left;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s,background .18s}
+#td-overview .td-overview-card:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--td-signal-color),transparent 48%);box-shadow:0 14px 30px rgba(0,0,0,.2)}
+#td-overview .td-overview-card:focus-visible{outline:2px solid var(--td-signal-color);outline-offset:3px}
+#td-overview .td-overview-card.is-selected{background:linear-gradient(150deg,rgba(25,48,66,.99),rgba(14,29,44,.99));border-color:color-mix(in srgb,var(--td-signal-color),transparent 36%);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--td-signal-color),transparent 78%),0 12px 26px rgba(0,0,0,.18)}
+.td-overview-label{color:#9eafbf;font-size:.75rem;font-weight:600;line-height:1.35;min-height:2.05em}
+.td-overview-trend{display:flex;align-items:center;gap:8px;color:var(--td-direction-color);font-size:1.03rem;font-weight:750;letter-spacing:-.025em;line-height:1.2}
+.td-overview-trend i{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:currentColor;box-shadow:0 0 10px color-mix(in srgb,currentColor,transparent 45%)}
+.td-overview-rate{margin-top:auto;color:#e1eaf1;font-size:1rem;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.td-overview-rate small{margin-left:5px;color:#8f9faf;font-size:.68rem;font-weight:500;letter-spacing:0}
+.td-overview-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:10px;border-top:1px solid rgba(150,173,194,.13);color:#8294a5;font-size:.68rem;font-variant-numeric:tabular-nums}
+.td-overview-meta span:first-child{padding:4px 7px;border:1px solid rgba(150,173,194,.15);border-radius:6px;background:rgba(255,255,255,.025)}
+@media(max-width:850px){#td-overview{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){#td-overview{grid-template-columns:1fr}#td-overview .td-overview-card{min-height:158px}}
 .trend-reading-guide{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0 22px}.trend-reading-guide article{padding:13px 15px;border:1px solid rgba(137,160,183,.16);border-radius:11px;background:rgba(15,26,46,.48)}.trend-reading-guide strong{display:block;margin-bottom:4px;color:#dce7ef;font-size:.78rem;letter-spacing:.01em}.trend-reading-guide p{margin:0;color:#9eacba;font-size:.76rem;line-height:1.5}.trend-reading-guide .term-mark{color:#8fc2b8;margin-right:5px}.td-kpis{grid-template-columns:minmax(220px,1.25fr) repeat(3,minmax(0,1fr));align-items:stretch;gap:14px;margin:14px 0 20px}.td-kpi{min-height:112px;padding:17px 18px;transition:border-color .18s,transform .18s,background .18s}.td-kpi:hover{border-color:rgba(121,170,164,.42);transform:translateY(-2px)}#td-kpis .td-kpi:first-child{display:flex;flex-direction:column;justify-content:center;border-color:rgba(121,170,164,.34);background:linear-gradient(145deg,rgba(31,60,67,.78),rgba(15,29,43,.96));box-shadow:inset 3px 0 0 #79aaa4,0 12px 26px rgba(0,0,0,.14)}#td-kpis .td-kpi:first-child small{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:#a7c5bf}#td-kpis .td-kpi:first-child strong{font-size:clamp(1.25rem,2vw,1.8rem);line-height:1.15;letter-spacing:-.02em}#td-kpis .td-kpi:first-child p{font-size:.76rem}.trend-chart-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:24px}.trend-chart-heading .section-hdr{margin:0}.trend-chart-heading .td-chart-hint{max-width:380px;margin:0 0 8px;text-align:right}.td-chart-wrap{position:relative;margin-top:10px;padding:18px;height:380px}.td-chart-tooltip{position:absolute;z-index:3;min-width:190px;padding:10px 12px;border:1px solid rgba(121,170,164,.38);border-radius:9px;background:rgba(7,16,27,.96);box-shadow:0 10px 28px rgba(0,0,0,.3);pointer-events:none;color:#dbe7ee;font-size:.7rem;line-height:1.5}.td-chart-tooltip[hidden]{display:none}.td-chart-tooltip strong,.td-chart-tooltip span{display:block}.td-chart-tooltip strong{margin-bottom:3px;color:#9bd5c9;font-size:.76rem}.td-chart-tooltip span{color:#c1ced8}.td-panel .section-hdr{margin-bottom:10px}.td-panel>.td-caption{max-width:980px}.td-multi-legend{display:flex;gap:14px;flex-wrap:wrap;margin:12px 0 6px;color:#9eacba;font-size:.7rem}.td-multi-legend span{display:inline-flex;align-items:center;gap:6px}.td-multi-legend i{width:9px;height:9px;border-radius:3px;display:inline-block}.td-multi-legend .above{background:#df6b70}.td-multi-legend .below{background:#4385c5}.td-multi-legend .missing{background:#344256}.td-method{margin-top:20px}.td-method summary{padding:3px 0;color:#c8d5df}.td-method>div{padding-top:8px}.td-controls button{min-height:43px;border-radius:9px;font-weight:700;letter-spacing:.01em}.td-controls label{flex:1 1 190px}.td-controls>button{flex:0 0 auto}@media(max-width:850px){.td-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.td-kpis .td-kpi:first-child{grid-column:1/-1}.trend-reading-guide{grid-template-columns:1fr}.trend-chart-heading{align-items:flex-start;flex-direction:column;gap:4px}.trend-chart-heading .td-chart-hint{text-align:left;margin:0 0 8px}}@media(max-width:560px){.td-kpis{grid-template-columns:1fr}.td-kpis .td-kpi:first-child{grid-column:auto}.td-chart-wrap{height:300px;padding:10px}.td-controls>button{width:100%}}
 .td-map-wrap{position:relative;overflow:hidden;height:580px;background:radial-gradient(ellipse at 50% 45%,rgba(48,78,111,.22),#0b1420 72%);display:flex;justify-content:center;align-items:center}.td-map-wrap canvas#td-district-map{display:block;width:min(100%,760px);height:520px;max-width:760px;margin:0 auto;cursor:crosshair}.td-map-tooltip{display:none;position:absolute;z-index:2;pointer-events:none;min-width:190px;max-width:240px;padding:11px 13px;border:1px solid rgba(151,180,210,.35);border-radius:10px;background:rgba(8,16,28,.96);box-shadow:0 12px 32px rgba(0,0,0,.34);font-size:.78rem;line-height:1.55;color:#cbd7e6}.td-map-tooltip strong{display:block;color:#fff;font-size:.9rem;margin-bottom:3px}.td-map-tooltip span{color:#8fa3bb}@media(max-width:850px){.td-map-wrap{height:400px}.td-map-wrap canvas#td-district-map{width:100%;height:360px}}
 .shell{isolation:isolate}
@@ -2576,7 +2589,7 @@ img, canvas, svg, table { max-width: 100%; }
   <div class="td-kpis" id="td-kpis"></div>
   <div class="trend-chart-heading"><div class="section-hdr"><span class="s-icon">📉</span><h2 id="td-chart-title">Observed signal over time</h2></div><p class="td-caption td-chart-hint">Faint line: monthly readings · bright line: smoothed pattern</p></div><div class="td-chart-wrap"><canvas id="td-timeseries" aria-label="Interactive monthly trend chart"></canvas><div id="td-chart-tooltip" class="td-chart-tooltip" role="status" hidden></div></div><p class="td-caption" id="td-chart-caption"></p>
   <div class="td-panel"><div class="section-hdr"><span class="s-icon">🌐</span><h2>Signals moving together?</h2></div><p class="td-caption">Is chart ko padhne ka tarika: har row ek environmental signal hai aur har box ek month. Har month ko usi calendar month ke usual level se compare kiya gaya hai. Rang ki intensity similar aur halki rahe, toh signal apne usual pattern ke aas-paas consistent hai—koi badi anomaly nahi. Tez laal rang usual se zyada aur tez neela rang usual se kam value dikhata hai; rang jitna tez, deviation utna zyada. Grey ka matlab data missing hai.</p><div class="td-multi-legend" aria-label="Heatmap legend"><span><i class="above"></i>Above usual</span><span><i class="below"></i>Below usual</span><span><i class="missing"></i>Missing data</span></div><div id="td-multivar-heatmap" class="td-multi-heat"></div><div id="td-correlation-note" class="td-caption"></div></div>
-  <div class="section-hdr"><span class="s-icon">🗺️</span><h2>Where is it changing?</h2><span class="s-sub">District averages from the same satellite grid cells</span></div><div class="td-map-wrap"><canvas id="td-district-map" aria-label="District-level long-term signal map"></canvas><div class="td-map-tooltip" id="td-map-tooltip" role="status"></div></div><p class="td-caption">Map proportions follow the district geography. Hover over a district for its direction, Sen slope, adjusted q-value and valid-month count. Red/blue show increasing/decreasing trends that pass q &lt; 0.05 after FDR correction across 65 district-variable tests; grey means the adjusted evidence did not pass this threshold or data coverage was insufficient. District tests are seasonally adjusted; averages are not ground-station measurements.</p>
+  <div class="section-hdr"><span class="s-icon">🗺️</span><h2>Where is it changing?</h2><span class="s-sub">District averages from the same satellite grid cells</span></div><div class="td-map-wrap"><canvas id="td-district-map" aria-label="District-level long-term signal map"></canvas><div class="td-map-tooltip" id="td-map-tooltip" role="status"></div></div><p class="td-caption" id="td-map-status"></p><p class="td-caption">Map proportions follow the district geography. Bright red/cyan marks an increase/decrease that passes q &lt; 0.05 after FDR correction across 65 district-variable tests. Muted warm/cool colors show the estimated direction when it does not pass that threshold; treat those as uncertain, not confirmed changes. The side scales show Sen slope magnitude per decade; red and blue use separate ranges, and darker shades mean a larger estimated change. Hover for the Sen slope, adjusted q-value and valid-month count. District tests are seasonally adjusted; averages are not ground-station measurements.</p>
   <div class="td-two-col"><div class="td-panel"><div class="section-hdr"><span class="s-icon">📊</span><h2 id="td-district-title">District comparison</h2></div><div id="td-district-table" class="td-table-wrap"></div></div><div class="td-panel"><div class="section-hdr"><span class="s-icon">🌦️</span><h2 id="td-season-title">District seasonal profile</h2></div><canvas id="td-season-chart" class="td-small-chart" aria-label="District monthly seasonal profile"></canvas><p class="td-caption" id="td-season-caption"></p></div></div>
   <div class="section-hdr"><span class="s-icon">🔬</span><h2>How to read this analysis</h2></div><details class="td-method"><summary>Technical details, thresholds, and limitations</summary><div><p><b>Regional strict-quality cards:</b> direction, Sen rate, autocorrelation-adjusted Modified Mann–Kendall result, and FDR q-value come from the same precomputed project report used by Streamlit. This keeps the regional findings consistent between the two interfaces.</p><p><b>Relaxed-quality regional results and district results:</b> these are calculated from the selected monthly grid cells in the browser. District trends first subtract each calendar month's usual average. FDR correction is applied across 65 district-variable tests.</p><p><b>Trend evidence:</b> Modified Mann–Kendall adjusts for lag-1 autocorrelation. Benjamini–Hochberg FDR correction accounts for testing multiple signals. q &lt; 0.05 is the displayed threshold; it is evidence against a no-trend null, not a guarantee or causal explanation.</p><p><b>OLS slope:</b> ordinary least squares fits a straight line through monthly means. <b>Sen slope:</b> the median of pairwise slopes, which is less sensitive to extreme observations. The 12-month mean smooths seasonal variation. A partial year at either end has fewer observations.</p><p><b>Limitations:</b> satellite trends show patterns, not causes; they are not ground measurements or official event reports. The relaxed-quality result is a separate sensitivity calculation and may differ from the official strict-quality summary.</p></div></details>
   <div class="ep-footer">EARTHPULSE-X · Trend Detective · NASA Space Apps 2026</div>
@@ -3173,7 +3186,7 @@ img, canvas, svg, table { max-width: 100%; }
 
   <div class="cd-district-layout" id="causal-district-layout">
     <div class="cd-map-card">
-      <div class="cd-map-label">Uttarakhand Districts</div>
+      <div class="cd-map-label">Uttarakhand Districts · Click a district to explore</div>
       <svg id="causal-district-map" viewBox="0 0 360 420" role="img"
         aria-label="Click a district to inspect its satellite relationships"
         style="width:100%;height:auto;max-height:470px;display:block;cursor:pointer;"></svg>
@@ -3212,17 +3225,6 @@ img, canvas, svg, table { max-width: 100%; }
         </table>
       </div>
       <button id="causal-dl-btn" onclick="causal.downloadCSV()">↓ Download CSV</button>
-    </div>
-  </details>
-
-  <details class="cd-details" style="margin-top:14px;">
-    <summary>🔬 Data and method</summary>
-    <div class="cd-details-body">
-      <div class="cd-method-body">
-        <p><strong>State graph:</strong> Uses the Uttarakhand-wide monthly GPM, SMAP, NDVI, and LST series (126 observations). <strong>District graph:</strong> Uses monthly means of each district&rsquo;s satellite robust-z anomaly grid (117 observations, Jan 2016–Sep 2025). District values are deviations from normal (σ), not raw mm or °C.</p>
-      <p style="margin-top:8px;"><strong>Method:</strong> Lagged partial correlations across each series, with Benjamini-Hochberg correction (q &lt; selected α). Green indicates positive association; red indicates negative association.</p>
-      <p style="margin-top:8px;"><strong>Limits:</strong> These are lagged associations, not causal effects. District averaging hides within-district variation, and monthly data cannot resolve shorter events.</p>
-      </div>
     </div>
   </details>
 
@@ -4210,12 +4212,11 @@ function eoDrawRealSat(ctx,W,H,varKey,quality,mi){
   });ctx.restore();
 
   // Geographic graticule and labels.
-  ctx.fillStyle='#AAB8CC';ctx.strokeStyle='rgba(42,63,95,.55)';ctx.lineWidth=1;ctx.font='11px Urbanist,sans-serif';
+  ctx.fillStyle='#AAB8CC';ctx.strokeStyle='rgba(150,177,195,.13)';ctx.lineWidth=1;ctx.font='11px Urbanist,sans-serif';
   const lonMin=Math.min(...bundle.lon),lonMax=Math.max(...bundle.lon),latMin=Math.min(...bundle.lat),latMax=Math.max(...bundle.lat);
-  for(let lo=Math.ceil(lonMin*2)/2;lo<=lonMax;lo+=.5){const [x]=eoGeoProject(lo,latMin,W,H);ctx.textAlign='center';ctx.fillText(lo.toFixed(1),x,H-8);}
-  for(let la=Math.ceil(latMin*2)/2;la<=latMax;la+=.5){const [,y]=eoGeoProject(lonMin,la,W,H);ctx.textAlign='right';ctx.fillText(la.toFixed(1),43,y+4);}
+  for(let lo=Math.ceil(lonMin*2)/2;lo<=lonMax;lo+=.5){const [x,y0]=eoGeoProject(lo,latMin,W,H),[,y1]=eoGeoProject(lo,latMax,W,H);ctx.beginPath();ctx.moveTo(x,y0);ctx.lineTo(x,y1);ctx.stroke();ctx.textAlign='center';ctx.fillText(lo.toFixed(1),x,H-8);}
+  for(let la=Math.ceil(latMin*2)/2;la<=latMax;la+=.5){const [x0,y]=eoGeoProject(lonMin,la,W,H),[x1]=eoGeoProject(lonMax,la,W,H);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x1,y);ctx.stroke();ctx.textAlign='right';ctx.fillText(la.toFixed(1),43,y+4);}
   ctx.save();ctx.translate(16,H/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillText('Latitude',0,0);ctx.restore();
-  ctx.textAlign='center';ctx.fillText('Longitude',(W-158)/2,H-7);
 
   // Vertical color scale, aligned like the Streamlit Plotly colorbar.
   const bx=W-112,by=H*.21,bw=16,bh=H*.58,grad=ctx.createLinearGradient(0,by+bh,0,by);
@@ -4225,7 +4226,6 @@ function eoDrawRealSat(ctx,W,H,varKey,quality,mi){
   for(let i=0;i<=4;i++){const value=mn+(mx-mn)*i/4,y=by+bh-bh*i/4;ctx.fillText(value.toFixed(dp),bx+bw+6,y+4);}
   ctx.save();ctx.translate(W-26,by+bh/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';
   ctx.fillText(`${meta.label}${meta.unit?` (${meta.unit})`:''}`,0,0);ctx.restore();
-  ctx.fillStyle='#F1F5FC';ctx.font='bold 13px Urbanist,sans-serif';ctx.textAlign='left';ctx.fillText(bundle.months[mi],54,H-8);
   return true;
 }
 
@@ -4345,7 +4345,10 @@ function eoDrawSat(canvasId,varKey,quality,mi){
   const H=parseInt(canvas.style.height)||480;
   canvas.width=W;canvas.height=H;
   const ctx=canvas.getContext('2d');
-  ctx.fillStyle='#080D18';ctx.fillRect(0,0,W,H);
+  ctx.clearRect(0,0,W,H);
+  const backdrop=ctx.createRadialGradient(W*.48,H*.48,20,W*.48,H*.48,Math.max(W,H)*.72);
+  backdrop.addColorStop(0,'rgba(21,39,53,.34)');backdrop.addColorStop(1,'rgba(5,12,20,0)');
+  ctx.fillStyle=backdrop;ctx.fillRect(0,0,W,H);
   if(window.EO_REAL_DATA&&eoDrawRealSat(ctx,W,H,varKey,quality,mi))return;
 
   const poly=scaleUK(W,H,28);
@@ -4423,11 +4426,6 @@ function eoDrawSat(canvasId,varKey,quality,mi){
   /* Color legend bottom-right */
   drawLegend(ctx,W,H,varKey,gMin,gMax);
 
-  /* Month label bottom-left */
-  ctx.fillStyle='rgba(241,245,252,.9)';
-  ctx.font='bold 13px Urbanist,sans-serif';ctx.textAlign='left';
-  const [lx]=lonLatToCanvas(UK_LON_MIN,UK_LAT_MIN,W,H,28);
-  ctx.fillText(EO_MONTHS[mi],lx,H-8);
 }
 
 /* ── Validity map ────────────────────────────────────────────────────── */

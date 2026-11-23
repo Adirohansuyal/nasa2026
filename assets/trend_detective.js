@@ -65,14 +65,14 @@
   function drawMap(key,q){
     const setup=canvasSetup('td-district-map');if(!setup)return;
     const {c,ctx,w,h}=setup,rep=trendReports(q),tip=$('td-map-tooltip');
-    const districts=districtFeatures.map(f=>{const name=f.properties.district_name||f.properties.shapeName,d=rep.districts.find(x=>x.key===key&&x.name===name),rate=d?.stats.sen===null?null:d?.stats.sen*120;return {f,name,d,rate};});
+    const districts=districtFeatures.map(f=>{const name=f.properties.district_name||f.properties.shapeName,d=rep.districts.find(x=>x.key===key&&x.name===name),slope=d?.stats?.sen,rate=Number.isFinite(slope)?slope*120:null;return {f,name,d,rate};});
     ctx.clearRect(0,0,w,h);ctx.fillStyle='#0b1420';ctx.fillRect(0,0,w,h);
     const significant=districts.filter(d=>d.d&&d.d.q<.05),maxIncrease=Math.max(0,...significant.filter(d=>d.rate>0).map(d=>d.rate)),maxDecrease=Math.max(0,...significant.filter(d=>d.rate<0).map(d=>Math.abs(d.rate)));
     const latCenter=(Math.min(...data.lat)+Math.max(...data.lat))/2*Math.PI/180,cosLat=Math.cos(latCenter),coords=[];
     for(const d of districts){const geom=d.f.geometry,polys=geom.type==='Polygon'?[geom.coordinates]:geom.coordinates;for(const poly of polys)for(const ring of poly)for(const [x,y] of ring)coords.push([x*cosLat,y]);}
     if(!coords.length){ctx.fillStyle='#aab8cc';ctx.textAlign='center';ctx.font='14px Urbanist, sans-serif';ctx.fillText('District boundary data is unavailable.',w/2,h/2);return;}
     let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;for(const [x,y] of coords){if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;}
-    const pad=20,legendH=30,availW=w-pad*2,availH=h-pad*2-legendH,scale=Math.min(availW/(maxX-minX),availH/(maxY-minY));
+    const pad=20,legendH=54,availW=w-pad*2,availH=h-pad*2-legendH,scale=Math.min(availW/(maxX-minX),availH/(maxY-minY));
     const mapW=(maxX-minX)*scale,mapH=(maxY-minY)*scale,left=(w-mapW)/2,top=pad+(availH-mapH)/2;
     const project=(x,y)=>[left+(x*cosLat-minX)*scale,top+(maxY-y)*scale];
     const pathByDistrict=new Map(),centers=[];
@@ -80,27 +80,77 @@
     for(const d of districts){
       const geom=d.f.geometry,polys=geom.type==='Polygon'?[geom.coordinates]:geom.coordinates,path=new Path2D();let cx=0,cy=0,n=0;
       for(const poly of polys)for(const ring of poly){ring.forEach(([x,y],i)=>{const [px,py]=project(x,y);i?path.lineTo(px,py):path.moveTo(px,py);if(i<ring.length-1){cx+=px;cy+=py;n++;}});path.closePath();}
-      pathByDistrict.set(d.name,{path,d});const ok=d.d&&d.d.q<.05,t=Math.min(1,Math.abs(d.rate||0)/(d.rate>=0?maxIncrease:maxDecrease||1));
-      const glow=!ok?'rgba(98,132,164,.12)':d.rate>=0?'rgba(255,126,99,.76)':'rgba(81,214,229,.78)';
+      pathByDistrict.set(d.name,{path,d});const hasSlope=Number.isFinite(d.rate),ok=hasSlope&&d.d&&d.d.q<.05,isUp=hasSlope&&d.rate>0,isDown=hasSlope&&d.rate<0,t=Math.min(1,Math.abs(d.rate||0)/(isUp?maxIncrease:maxDecrease||1));
+      const glow=ok?(isUp?'rgba(255,126,99,.76)':'rgba(81,214,229,.78)'):'rgba(98,132,164,.08)';
       ctx.save();ctx.strokeStyle=glow;ctx.lineWidth=ok?7:1.2;ctx.shadowColor=glow;ctx.shadowBlur=ok?15:0;ctx.stroke(path);ctx.restore();
-      ctx.fillStyle=!ok?'#263b53':d.rate>=0?mix('#ffb19a','#df5149',.28+.72*t):mix('#a1e9ef','#258ebf',.28+.72*t);
-      ctx.fill(path,'evenodd');ctx.strokeStyle=ok?(d.rate>=0?'rgba(255,196,175,.94)':'rgba(176,244,247,.94)'):'rgba(164,189,210,.72)';ctx.lineWidth=ok?1.35:1;ctx.stroke(path);
+      ctx.fillStyle=!hasSlope||(!isUp&&!isDown)?'#263b53':ok?(isUp?mix('#ffb19a','#df5149',.28+.72*t):mix('#a1e9ef','#258ebf',.28+.72*t)):(isUp?'#79594e':'#425d73');
+      ctx.fill(path,'evenodd');ctx.strokeStyle=ok?(isUp?'rgba(255,196,175,.94)':'rgba(176,244,247,.94)'):hasSlope?(isUp?'rgba(222,164,142,.78)':'rgba(137,174,199,.78)'):'rgba(164,189,210,.72)';ctx.lineWidth=ok?1.35:1;ctx.stroke(path);
       if(n)centers.push({name:d.name,x:cx/n,y:cy/n});
     }
     ctx.save();ctx.font='600 9px Urbanist, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=3;ctx.strokeStyle='rgba(8,16,28,.88)';ctx.fillStyle='#f3f6fb';
     centers.forEach(pt=>{ctx.strokeText(pt.name,pt.x,pt.y);ctx.fillText(pt.name,pt.x,pt.y);});ctx.restore();
-    const legendY=h-12;ctx.save();ctx.font='10px Urbanist, sans-serif';ctx.textBaseline='middle';ctx.shadowBlur=8;ctx.shadowColor='#ff7e63';ctx.fillStyle='#ff9d82';ctx.fillRect(Math.max(12,w*.18),legendY-5,11,10);ctx.fillStyle='#dce5f0';ctx.fillText('Increasing',Math.max(28,w*.18+16),legendY);ctx.shadowColor='#51d6e5';ctx.fillStyle='#72dce8';ctx.fillRect(Math.max(112,w*.36),legendY-5,11,10);ctx.fillStyle='#dce5f0';ctx.fillText('Decreasing',Math.max(128,w*.36+16),legendY);ctx.shadowBlur=0;ctx.fillStyle='#263b53';ctx.fillRect(Math.max(220,w*.55),legendY-5,11,10);ctx.fillStyle='#aab8cc';ctx.fillText('No reliable trend · q ≥ 0.05',Math.max(236,w*.55+16),legendY);ctx.restore();
-    c.onmousemove=e=>{const rect=c.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top,px=x*(w/rect.width),py=y*(h/rect.height);let hit=null;for(const entry of pathByDistrict.values())if(ctx.isPointInPath(entry.path,px,py,'evenodd')){hit=entry.d;break;}if(!hit){tip.style.display='none';c.style.cursor='crosshair';return;}c.style.cursor='pointer';const good=hit.d&&hit.d.q<.05,dir=good?(hit.rate>0?'Increasing':'Decreasing'):'No reliable trend';tip.innerHTML=`<strong>${esc(hit.name)}</strong>${esc(dir)} · Sen ${fmt(hit.rate,3)} ${esc(units[key])}/decade<br><span>Adjusted q = ${hit.d?.q?.toPrecision(3)||'—'} · ${hit.d?.n||0} months</span>`;tip.style.display='block';const box=c.parentElement.getBoundingClientRect(),offsetX=rect.left-box.left,offsetY=rect.top-box.top;tip.style.left=`${Math.min(Math.max(12,offsetX+x+18),box.width-250)}px`;tip.style.top=`${Math.min(Math.max(12,offsetY+y+14),box.height-100)}px`;};
+    const reliableUp=districts.filter(d=>Number.isFinite(d.rate)&&d.rate>0&&d.d?.q<.05).length;
+    const reliableDown=districts.filter(d=>Number.isFinite(d.rate)&&d.rate<0&&d.d?.q<.05).length;
+    const estimatedUp=districts.filter(d=>Number.isFinite(d.rate)&&d.rate>0&&!(d.d?.q<.05)).length;
+    const estimatedDown=districts.filter(d=>Number.isFinite(d.rate)&&d.rate<0&&!(d.d?.q<.05)).length;
+    const noDirection=districts.length-reliableUp-reliableDown-estimatedUp-estimatedDown;
+    $('td-map-status').textContent=`${names[key]} · Rising with supporting evidence: ${reliableUp}; falling with supporting evidence: ${reliableDown}. May rise: ${estimatedUp}; may fall: ${estimatedDown} (not confirmed, q ≥ 0.05). No clear direction: ${noDirection}.`;
+    const legendItems=[
+      {label:`Rising ${reliableUp}`,swatch:'#ff9d82',glow:'#ff7e63'},
+      {label:`Falling ${reliableDown}`,swatch:'#72dce8',glow:'#51d6e5'},
+      {label:`May rise ${estimatedUp}`,swatch:'#79594e',text:'#dab8a8'},
+      {label:`May fall ${estimatedDown}`,swatch:'#425d73',text:'#a9c2d4'},
+      {label:`No clear direction ${noDirection}`,swatch:'#263b53',text:'#aab8cc'}
+    ];
+    ctx.save();ctx.font='10px Urbanist, sans-serif';ctx.textBaseline='middle';
+    const gap=14,itemWidths=legendItems.map(item=>11+7+ctx.measureText(item.label).width),rows=[[]];let rowWidth=0;
+    legendItems.forEach((item,i)=>{const width=itemWidths[i];if(rowWidth&&rowWidth+gap+width>w-24){rows.push([]);rowWidth=0;}rows.at(-1).push({item,width});rowWidth+=width+(rows.at(-1).length>1?gap:0);});
+    rows.forEach((row,r)=>{const total=row.reduce((sum,entry)=>sum+entry.width,0)+gap*(row.length-1);let x=Math.max(8,(w-total)/2),y=h-12-(rows.length-1-r)*14;row.forEach(({item,width})=>{ctx.shadowBlur=item.glow?8:0;ctx.shadowColor=item.glow||'transparent';ctx.fillStyle=item.swatch;ctx.fillRect(x,y-5,11,10);ctx.shadowBlur=0;ctx.fillStyle=item.text||'#dce5f0';ctx.fillText(item.label,x+18,y);x+=width+gap;});});ctx.restore();
+    // Separate magnitude scales match the two independent fills used for
+    // statistically supported rises and falls. Keep them in the map's open
+    // right margin so they don't cover a district.
+    if(w>=700){
+      const sx=w-112,sy=Math.max(28,top+(mapH-150)/2),sw=100,sh=150;
+      ctx.save();ctx.fillStyle='rgba(7,16,27,.88)';ctx.strokeStyle='rgba(151,180,210,.24)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.roundRect(sx,sy,sw,sh,9);ctx.fill();ctx.stroke();
+      ctx.font='600 8px Urbanist, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#cbd7e6';ctx.fillText(`Sen / decade · ${units[key]}`,sx+sw/2,sy+13);
+      const columns=[
+        {x:sx+28,label:'↑',topColor:'#df5149',bottomColor:'#ffb19a',max:maxIncrease,value:maxIncrease?`+${maxIncrease.toPrecision(2)}`:'—'},
+        {x:sx+70,label:'↓',topColor:'#258ebf',bottomColor:'#a1e9ef',max:maxDecrease,value:maxDecrease?`−${maxDecrease.toPrecision(2)}`:'—'}
+      ];
+      for(const col of columns){ctx.fillStyle=col.topColor;ctx.fillText(col.label,col.x+4,sy+28);const gy=sy+39,gh=88,grad=ctx.createLinearGradient(0,gy,0,gy+gh);grad.addColorStop(0,col.topColor);grad.addColorStop(1,col.bottomColor);ctx.fillStyle=grad;ctx.fillRect(col.x,gy,8,gh);ctx.fillStyle='#aab8cc';ctx.font='7px Urbanist, sans-serif';ctx.fillText(col.value,col.x+4,sy+136);ctx.fillText('0',col.x+4,sy+146);}
+      ctx.restore();
+    }
+    c.onmousemove=e=>{
+      const rect=c.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
+      // Resolve the pointer in geographic coordinates. Canvas hit testing can
+      // disagree with the visible polygons after DPR scaling on Retina displays.
+      const px=x*(w/rect.width),py=y*(h/rect.height);
+      const lon=(px-left+minX)/(scale*cosLat),lat=maxY-(py-top)/scale;
+      const name=featuresAt(lon,lat),hit=name?districts.find(d=>d.name===name):null;
+      if(!hit){tip.style.display='none';c.style.cursor='crosshair';return;}
+      c.style.cursor='pointer';const good=hit.d&&hit.d.q<.05,dir=Number.isFinite(hit.rate)?(hit.rate>0?'increase':hit.rate<0?'decrease':'no clear direction'):'no slope estimate',certainty=good?'reliable':Number.isFinite(hit.rate)?'not reliable at q < 0.05':'';
+      tip.innerHTML=`<strong>${esc(hit.name)}</strong>${esc(dir)}${certainty?` · ${esc(certainty)}`:''}<br><span>Sen ${fmt(hit.rate,3)} ${esc(units[key])}/decade · q = ${hit.d?.q?.toPrecision(3)||'—'} · ${hit.d?.n||0} months</span>`;
+      tip.style.display='block';const box=c.parentElement.getBoundingClientRect(),offsetX=rect.left-box.left,offsetY=rect.top-box.top;
+      tip.style.left=`${Math.min(Math.max(12,offsetX+x+18),box.width-250)}px`;tip.style.top=`${Math.min(Math.max(12,offsetY+y+14),box.height-100)}px`;
+    };
     c.onmouseleave=()=>{tip.style.display='none';c.style.cursor='crosshair';};
   }
   function render(){const key=$('td-variable').value,q=$('td-quality').value,district=selectedDistrict,meta=vars[key],values=monthlySeries(key,q,district),stats=regression(values),valid=values.filter(Number.isFinite),mean=avg(valid),reports=trendReports(q),regional=reports.regional.find(r=>r.key===key),districtReport=district==='all'?null:reports.districts.find(r=>r.key===key&&r.name===district),result=districtReport||regional,trendSlope=districtReport?districtReport.stats.sen:regional.stats.sen,change=trendSlope===null?null:trendSlope*120,first=valid[0],last=valid[valid.length-1],significant=result.q<.05,direction=significant?(result.test.tau>0?'Increasing':'Decreasing'):'No reliable trend';lastRows=values.map((v,i)=>({month:months[i],value:v}));
-    $('td-overview-note').textContent=q==='strict'?'Regional trend direction · adjusted for multiple tests · select a signal to inspect':'Regional trend direction · recalculated with relaxed data quality';$('td-overview').innerHTML=reports.regional.map(r=>{const rate=r.stats.sen===null?null:r.stats.sen*120,sig=r.q<.05,dir=sig?(r.test.tau>0?'Increasing':'Decreasing'):'No reliable trend';return `<button type="button" class="td-kpi" data-var="${r.key}" style="text-align:left;color:var(--t1);cursor:pointer;border-top:3px solid ${palette[r.key]}"><small>${names[r.key]}</small><strong>${dir}</strong><p>${fmt(rate,3)} ${units[r.key]} per decade · q ${r.q.toPrecision(2)} · ${r.stats.valid||0} months</p></button>`;}).join('');$('td-overview').querySelectorAll('[data-var]').forEach(b=>b.addEventListener('click',()=>{$('td-variable').value=b.dataset.var;render();}));
+    $('td-overview-note').textContent=q==='strict'?'Regional trend direction · adjusted for multiple tests · select a signal to inspect':'Regional trend direction · recalculated with relaxed data quality';
+    const activeSignal=$('td-variable').value;
+    $('td-overview').innerHTML=reports.regional.map(r=>{
+      const rate=Number.isFinite(r.stats.sen)?r.stats.sen*120:null,sig=r.q<.05,dir=sig?(r.test.tau>0?'Increasing':'Decreasing'):'No reliable trend';
+      const directionColor=sig?(r.test.tau>0?'#63e0b0':'#ff8c86'):'#b8c6d9',qLabel=r.q<.001?r.q.toExponential(1):r.q.toFixed(3);
+      return `<button type="button" class="td-overview-card${r.key===activeSignal?' is-selected':''}" data-var="${r.key}" style="--td-signal-color:${palette[r.key]};--td-direction-color:${directionColor}" aria-pressed="${r.key===activeSignal}"><span class="td-overview-label">${names[r.key]}</span><span class="td-overview-trend"><i aria-hidden="true"></i>${dir}</span><span class="td-overview-rate">${fmt(rate,3)} ${units[r.key]}<small>per decade</small></span><span class="td-overview-meta"><span>q ${qLabel}</span><span>${r.stats.valid||0} months</span></span></button>`;
+    }).join('');
+    $('td-overview').querySelectorAll('[data-var]').forEach(b=>b.addEventListener('click',()=>{$('td-variable').value=b.dataset.var;render();}));
     $('td-summary').innerHTML=`<b>${esc(district==='all'?'Uttarakhand':district)} · ${esc(meta.label)}</b> · ${valid.length} usable monthly readings from ${months[0]} to ${months.at(-1)}. Choose a signal or district to explore how the pattern changes.`;
     $('td-chart-title').textContent=`${district==='all'?'Uttarakhand':district} · ${meta.label} through time`;$('td-chart-caption').textContent=`The faint line shows monthly readings; the brighter line smooths short-term ups and downs. The dashed lines show two trend estimates. District evidence uses seasonally adjusted readings.`;
     $('td-kpis').innerHTML=[['Trend signal',direction,`Adjusted trend test · lag-1 autocorrelation ${fmt(result.test.rho,2)}`],['Estimated change per decade',fmt(change,3)+' '+meta.unit,'District estimates account for the usual seasonal cycle'],['Multiple-test adjusted result',`q = ${result.q.toPrecision(3)}`,'q < 0.05 indicates evidence of a trend after adjustment'],['Data coverage',`${valid.length} / ${months.length} months`,`Average ${fmt(mean,3)} ${meta.unit}`]].map(([a,b,c],i)=>`<div class="td-kpi${i===0?' td-kpi-primary':''}"><small>${a}</small><strong>${b}</strong><p>${c}</p></div>`).join('');
     drawSeries(key,values,stats);drawMultiVar(q,district);drawMap(key,q);drawSeason(key,q,district);renderDistrictTable(key,q);$('td-season-title').textContent=`${district==='all'?'Regional':district} usual seasonal cycle`;$('td-season-caption').textContent='Bars show the average for each calendar month across available years; this is the recurring seasonal pattern, not the long-term trend.';
   }
-  function renderDistrictTable(key,q){const rep=trendReports(q),rows=districtFeatures.map(f=>{const name=f.properties.district_name||f.properties.shapeName,d=rep.districts.find(x=>x.key===key&&x.name===name);return {name,n:d.n,sen:d.stats.sen===null?null:d.stats.sen*120,q:d.q,significant:d.q<.05};}).sort((a,b)=>(b.sen||0)-(a.sen||0));$('td-district-title').textContent=`District comparison · ${names[key]} · seasonally adjusted`;$('td-district-table').innerHTML=`<table class="td-table"><thead><tr><th>District</th><th>Direction</th><th>Sen / decade (${esc(units[key])})</th><th>Adjusted q</th><th>Valid months</th></tr></thead><tbody>${rows.map(r=>`<tr data-district="${esc(r.name)}"><td>${esc(r.name)}</td><td class="${r.significant?(r.sen>0?'td-up':'td-down'):'td-flat'}">${r.significant?(r.sen>0?'Increasing':'Decreasing'):'No reliable trend'}</td><td>${fmt(r.sen,3)}</td><td>${r.q.toPrecision(3)}</td><td>${r.n}</td></tr>`).join('')}</tbody></table>`;$('td-district-table').querySelectorAll('tr[data-district]').forEach(tr=>tr.addEventListener('click',()=>{$('td-district').value=tr.dataset.district;selectedDistrict=tr.dataset.district;render();}));}
+  function renderDistrictTable(key,q){const rep=trendReports(q),rows=districtFeatures.map(f=>{const name=f.properties.district_name||f.properties.shapeName,d=rep.districts.find(x=>x.key===key&&x.name===name),slope=d?.stats?.sen,sen=Number.isFinite(slope)?slope*120:null,significant=Number.isFinite(sen)&&d.q<.05,direction=sen===null?'No slope estimate':significant?(sen>0?'Reliable increase':sen<0?'Reliable decrease':'No clear direction'):sen>0?'Estimated increase · not reliable':sen<0?'Estimated decrease · not reliable':'No clear direction';return {name,n:d.n,sen,q:d.q,significant,direction};}).sort((a,b)=>(b.sen||0)-(a.sen||0));$('td-district-title').textContent=`District comparison · ${names[key]} · seasonally adjusted`;$('td-district-table').innerHTML=`<table class="td-table"><thead><tr><th>District</th><th>Direction</th><th>Sen / decade (${esc(units[key])})</th><th>Adjusted q</th><th>Valid months</th></tr></thead><tbody>${rows.map(r=>`<tr data-district="${esc(r.name)}"><td>${esc(r.name)}</td><td class="${r.significant?(r.sen>0?'td-up':'td-down'):'td-flat'}">${esc(r.direction)}</td><td>${fmt(r.sen,3)}</td><td>${r.q.toPrecision(3)}</td><td>${r.n}</td></tr>`).join('')}</tbody></table>`;$('td-district-table').querySelectorAll('tr[data-district]').forEach(tr=>tr.addEventListener('click',()=>{$('td-district').value=tr.dataset.district;selectedDistrict=tr.dataset.district;render();}));}
   function download(){const key=$('td-variable').value,meta=vars[key],rows=['month,value,unit,selected_region',...lastRows.map(r=>`${r.month},${r.value===null?'':r.value},${meta.unit},${selectedDistrict}`)];const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download=`earthpulse-trend-${key}-${selectedDistrict==='all'?'uttarakhand':selectedDistrict}.csv`;a.click();URL.revokeObjectURL(a.href);}
   for(const f of districtFeatures){const o=document.createElement('option');o.value=f.properties.district_name||f.properties.shapeName;o.textContent=o.value;$('td-district').appendChild(o);}
   $('td-variable').addEventListener('change',render);$('td-quality').addEventListener('change',render);$('td-district').addEventListener('change',e=>{selectedDistrict=e.target.value;render();});$('td-download').addEventListener('click',download);window.addEventListener('resize',()=>{clearTimeout(window.__tdResize);window.__tdResize=setTimeout(render,120);});window.addEventListener('trend-page-open',()=>requestAnimationFrame(()=>requestAnimationFrame(render)));render();
