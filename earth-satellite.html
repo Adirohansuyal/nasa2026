@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Earth, Day and Night (satellite zoom)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.119.0/Build/Cesium/Widgets/widgets.css">
+<style>
+  :root{
+    --ink:#eef0f4; --ink-dim:#a3a9b6; --glass:rgba(12,14,20,.66); --line:rgba(190,198,215,.24); --accent:#ffb36b;
+    --font-ui:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  html,body{margin:0;height:100%;background:#02030a;color:var(--ink);font-family:var(--font-ui);overflow:hidden}
+  #globe{position:fixed;inset:0}
+  .cesium-viewer-bottom{z-index:1}
+  .top{position:fixed;top:12px;left:12px;right:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;pointer-events:none;z-index:5}
+  .panel{pointer-events:auto;background:var(--glass);border:1px solid var(--line);border-radius:12px;
+         backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  form.search{display:flex;gap:6px;padding:6px;flex:1 1 280px;max-width:460px}
+  [hidden]{display:none!important}
+  .keyhint{font-size:11px;line-height:1.45;color:var(--ink-dim)}
+  input[type=search],input[type=password]{flex:1;min-width:0;font:400 14px var(--font-ui);color:var(--ink);background:rgba(255,255,255,.07);
+         border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+  input::placeholder{color:var(--ink-dim)}
+  button{font:500 13px var(--font-ui);color:var(--ink);background:rgba(255,255,255,.08);border:1px solid var(--line);
+         border-radius:8px;padding:8px 12px;cursor:pointer;min-height:36px}
+  button:hover{background:rgba(255,255,255,.15)}
+  button[aria-pressed="true"]{background:var(--accent);color:#1a1006;border-color:var(--accent)}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .info{padding:8px 12px;font-size:12px;line-height:1.5;color:var(--ink-dim);font-variant-numeric:tabular-nums}
+  .info b{color:var(--ink);font-weight:500}
+  .bar{position:fixed;left:50%;transform:translateX(-50%);bottom:40px;width:min(640px,calc(100% - 24px));box-sizing:border-box;
+       padding:10px 12px;display:flex;flex-direction:column;gap:8px;z-index:5}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .row.nowrap{flex-wrap:nowrap}
+  input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:26px}
+  .time{font:500 12px var(--font-ui);min-width:118px;text-align:right;font-variant-numeric:tabular-nums}
+  .spacer{flex:1}
+  #fatal{position:fixed;inset:0;display:none;place-items:center;padding:24px;text-align:center;color:var(--ink);z-index:9;
+         background:rgba(2,3,10,.94);font-size:15px;line-height:1.6}
+  #fatal div{max-width:460px}
+  .cesium-viewer-toolbar{top:auto;bottom:90px}
+</style>
+</head>
+<body>
+<div id="globe"></div>
+
+<div class="top">
+  <form class="panel search" id="searchForm" autocomplete="off">
+    <input id="q" type="search" placeholder="Search a place, e.g. Taj Mahal, Agra" aria-label="Search a place">
+    <button type="submit">Go</button>
+  </form>
+  <div class="panel info" id="info"><b>Earth</b><br><span id="status">Starting…</span><br><span id="altitude"></span></div>
+</div>
+
+<div class="panel bar">
+  <div class="row nowrap">
+    <label for="clock" style="font-size:12px;color:var(--ink-dim)">Time</label>
+    <input id="clock" type="range" min="0" max="1440" step="1" value="0">
+    <span class="time" id="time">--:--</span>
+  </div>
+  <div class="row">
+    <button id="bLive" aria-pressed="true">Live</button>
+    <button id="bMorning" aria-pressed="false">Morning 6:30</button>
+    <button id="bNight" aria-pressed="false">Night 22:00</button>
+    <button id="bDrone" aria-pressed="false">Drone 3D</button>
+    <button id="bPhoto" aria-pressed="false">Photoreal</button>
+    <span class="spacer"></span>
+    <button id="bHome" aria-pressed="false">Whole Earth</button>
+  </div>
+  <div class="row nowrap" id="keyRow" hidden>
+    <input id="gkey" type="password" placeholder="Google Maps API key" aria-label="Google Maps API key" autocomplete="off">
+    <button id="bKeyGo">Turn on</button>
+  </div>
+  <div class="keyhint" id="keyHint" hidden>Photoreal needs a Google Cloud API key with "Map Tiles API" enabled. It is saved only in this browser.</div>
+</div>
+<div id="fatal"><div id="fatalMsg">Could not load the globe library. This page needs an internet connection.</div></div>
+
+<script>window.CESIUM_BASE_URL='https://cdn.jsdelivr.net/npm/cesium@1.119.0/Build/Cesium/';</script>
+<script src="https://cdn.jsdelivr.net/npm/cesium@1.119.0/Build/Cesium/Cesium.js"></script>
+<script>
+(function(){
+  if(typeof Cesium==='undefined'){ document.getElementById('fatal').style.display='grid'; return; }
+
+  var viewer = new Cesium.Viewer('globe', {
+    baseLayer:false,            // no Cesium ion imagery, so no account or token is needed
+    baseLayerPicker:false, geocoder:false, homeButton:false, sceneModePicker:false,
+    navigationHelpButton:false, animation:false, timeline:false, fullscreenButton:false,
+    infoBox:false, selectionIndicator:false,
+    showRenderLoopErrors:false  // we show our own message below instead of Cesium's raw error box
+  });
+  var scene=viewer.scene, globe=scene.globe, camera=viewer.camera;
+  scene.renderError.addEventListener(function(s,error){
+    var msg=String((error&&error.message)||error);
+    var box=document.getElementById('fatal'), txt=document.getElementById('fatalMsg');
+    txt.textContent = /Worker|blob|sandbox|origin/i.test(msg)
+      ? 'This page cannot run inside a preview window, which blocks the background workers the globe needs. Download the file, then open it from your computer by double-clicking it (use Chrome, Edge or Firefox).'
+      : 'The globe stopped drawing: '+msg;
+    box.style.display='grid';
+  });
+  viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
+  // ----- Realistic lighting: the sun is where it really is at the clock time -----
+  globe.enableLighting = true;
+  globe.dynamicAtmosphereLighting = true;
+  globe.showGroundAtmosphere = true;
+  globe.baseColor = Cesium.Color.fromCssColorString('#02030a');
+  scene.skyAtmosphere.show = true;
+  scene.highDynamicRange = false;
+  scene.screenSpaceCameraController.minimumZoomDistance = 3;      // metres above the ground
+  scene.screenSpaceCameraController.maximumZoomDistance = 4.0e7;
+  // The mouse wheel is handled by our own zoom-to-cursor code below; right-drag and pinch keep Cesium's zoom.
+  scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.RIGHT_DRAG, Cesium.CameraEventType.PINCH];
+  globe.maximumScreenSpaceError = 1.5;   // sharper tiles (default is 2)
+  globe.tileCacheSize = 300;
+
+  // ----- Imagery -----
+  // Daytime: Esri World Imagery, the true-colour satellite and aerial mosaic that goes down to rooftop level.
+  // The ArcGIS provider skips Esri's "Map data not yet available" placeholder tiles, so where no close-up
+  // photo exists the view falls back to the best lower-detail photo instead of showing a grey tile.
+  var ESRI='https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer';
+  var ESRI_CREDIT=new Cesium.Credit('Imagery: Esri, Maxar, Earthstar Geographics and the GIS User Community');
+  var dayLayer=null, failedOnce=false;
+  function addDay(provider){
+    dayLayer=viewer.imageryLayers.addImageryProvider(provider,0);   // index 0 = bottom layer
+    dayLayer.dayAlpha=1; dayLayer.nightAlpha=0;
+    provider.errorEvent.addEventListener(function(){
+      if(!failedOnce){ failedOnce=true; document.getElementById('status').textContent='Some satellite tiles failed to load. Check your connection.'; }
+    });
+  }
+  Cesium.ArcGisMapServerImageryProvider.fromUrl(ESRI,{enablePickFeatures:false,maximumLevel:19,credit:ESRI_CREDIT})
+    .then(addDay)
+    .catch(function(){
+      addDay(new Cesium.UrlTemplateImageryProvider({url:ESRI+'/tile/{z}/{y}/{x}',maximumLevel:19,credit:ESRI_CREDIT}));
+    });
+
+  // Night side: NASA Black Marble city lights (shown only where the sun is down).
+  var nightLayer = viewer.imageryLayers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
+    url:'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png',
+    maximumLevel:8,
+    credit:new Cesium.Credit('Night lights: NASA Earth Observatory / GIBS, Black Marble')
+  }));
+  nightLayer.dayAlpha=0; nightLayer.nightAlpha=1; nightLayer.brightness=1.6;
+
+  var statusEl=document.getElementById('status'), altEl=document.getElementById('altitude');
+
+  // ----- Time -----
+  var tzFmt=new Intl.DateTimeFormat(undefined,{hour:'2-digit',minute:'2-digit',hour12:false,timeZoneName:'short'});
+  var clock=document.getElementById('clock'), timeEl=document.getElementById('time');
+  var tzLon=-new Date().getTimezoneOffset()/4;
+  var live=true;
+  var btn={live:document.getElementById('bLive'),morning:document.getElementById('bMorning'),night:document.getElementById('bNight')};
+  function press(k){ Object.keys(btn).forEach(function(n){ btn[n].setAttribute('aria-pressed',String(n===k)); }); }
+  function localMidnight(){ var n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate(),0,0,0,0); }
+  function setLive(){
+    live=true; press('live');
+    viewer.clock.currentTime=Cesium.JulianDate.now(); viewer.clock.multiplier=1; viewer.clock.shouldAnimate=true;
+    statusEl.textContent='Live, follows your clock';
+  }
+  function setManual(date,which){
+    live=false; press(which||'');
+    viewer.clock.shouldAnimate=false; viewer.clock.currentTime=Cesium.JulianDate.fromDate(date);
+    statusEl.textContent='Manual time, today in your time zone';
+    showTime(date);
+  }
+  function showTime(date){
+    timeEl.textContent=tzFmt.format(date);
+    clock.value=Math.round((date-localMidnight())/60000);
+  }
+  viewer.clock.onTick.addEventListener(function(c){
+    if(live) showTime(Cesium.JulianDate.toDate(c.currentTime));
+  });
+  btn.live.onclick=function(){ setLive(); };
+  btn.morning.onclick=function(){ setManual(new Date(localMidnight().getTime()+6.5*3600e3),'morning'); };
+  btn.night.onclick=function(){ setManual(new Date(localMidnight().getTime()+22*3600e3),'night'); };
+  clock.addEventListener('input',function(){ setManual(new Date(localMidnight().getTime()+parseInt(clock.value,10)*60000),''); });
+
+  // ----- Camera -----
+  function wholeEarth(){
+    camera.flyTo({destination:Cesium.Cartesian3.fromDegrees(tzLon,24,17.5e6),duration:2});
+  }
+  camera.setView({destination:Cesium.Cartesian3.fromDegrees(tzLon,24,17.5e6)});
+  document.getElementById('bHome').onclick=wholeEarth;
+
+  // ----- Zoom toward the mouse pointer, like Google Maps -----
+  // Scroll in: the camera moves along the line through the spot under the cursor, so that spot stays under the
+  // cursor all the way down to rooftops. Scroll out: it moves back the same way, and the view turns to face
+  // the centre of the Earth, so at full zoom-out the whole globe is back in the middle of the screen.
+  var ell=Cesium.Ellipsoid.WGS84, V3=Cesium.Cartesian3, cvs=viewer.canvas;
+  var MIN_H=3, MAX_H=2.8e7, MIN_DIST=6, pending=0, anchor=null;
+  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+  function pickGlobe(pos){
+    var ray=camera.getPickRay(pos), p;
+    if(photoreal && ray){ try{ var hit=scene.pickFromRay(ray); p=hit&&hit.position; }catch(err){} }   // Google 3D tiles
+    if(!p) p=ray?globe.pick(ray,scene):undefined;
+    return p || camera.pickEllipsoid(pos,ell);
+  }
+  function anchorFor(pos){
+    var p=pickGlobe(pos);
+    if(!p) p=pickGlobe(new Cesium.Cartesian2(cvs.clientWidth/2,cvs.clientHeight/2));
+    if(!p) p=ell.scaleToGeodeticSurface(camera.positionWC,new V3());
+    return p;
+  }
+  function cursorPos(e){
+    var r=cvs.getBoundingClientRect();
+    return new Cesium.Cartesian2(e.clientX-r.left,e.clientY-r.top);
+  }
+  cvs.addEventListener('wheel',function(e){
+    e.preventDefault(); camera.cancelFlight();
+    var dy=e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1);
+    anchor=anchorFor(cursorPos(e));
+    pending=clamp(pending+clamp(dy,-250,250)*0.005,-3,3);       // negative = zoom in, positive = zoom out
+  },{passive:false});
+  cvs.addEventListener('dblclick',function(e){
+    camera.cancelFlight(); anchor=anchorFor(cursorPos(e)); pending=-1.6;
+  });
+  scene.preRender.addEventListener(function(){
+    if(!anchor||Math.abs(pending)<0.0006){ pending=0; return; }
+    var part=pending*0.2; pending-=part;
+    var C=V3.clone(camera.positionWC), P=anchor, d=V3.distance(C,P);
+    if(d<1e-3) return;
+    var newD=Math.max(d*Math.exp(part),MIN_DIST);
+    var newC=V3.add(P,V3.multiplyByScalar(V3.subtract(C,P,new V3()),newD/d,new V3()),new V3());
+    var ca=ell.cartesianToCartographic(newC);
+    if(!ca) return;
+    if(ca.height>MAX_H){ ca.height=MAX_H; newC=ell.cartographicToCartesian(ca); }
+    else if(ca.height<MIN_H){ ca.height=MIN_H; newC=ell.cartographicToCartesian(ca); }
+    var dir=V3.clone(camera.directionWC), up=V3.clone(camera.upWC);
+    if(part>0 && ca.height>1.5e6){
+      var t=0.18*clamp((ca.height-1.5e6)/1.2e7,0,1);              // turn toward the Earth's centre while zooming out
+      var toCentre=V3.negate(V3.normalize(newC,new V3()),new V3());
+      var nd=V3.normalize(V3.lerp(dir,toCentre,t,new V3()),new V3());
+      var nu=V3.subtract(V3.UNIT_Z,V3.multiplyByScalar(nd,V3.dot(V3.UNIT_Z,nd),new V3()),new V3());
+      if(V3.magnitude(nu)>1e-3){ dir=nd; up=V3.normalize(nu,nu); }   // up = north
+    }
+    camera.setView({destination:newC,orientation:{direction:dir,up:up}});
+  });
+
+  camera.percentageChanged=0.01;
+  function fmtAlt(m){ return m>=1e5 ? Math.round(m/1000).toLocaleString()+' km' : m>=1000 ? (m/1000).toFixed(1)+' km' : Math.round(m)+' m'; }
+  function showAlt(){ altEl.textContent='Height above ground: '+fmtAlt(camera.positionCartographic.height); }
+  camera.changed.addEventListener(showAlt); showAlt();
+
+  // ----- Place search (OpenStreetMap Nominatim) -----
+  document.getElementById('searchForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var q=document.getElementById('q').value.trim(); if(!q) return;
+    var prev=statusEl.textContent; statusEl.textContent='Searching…';
+    fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q))
+      .then(function(r){ return r.json(); })
+      .then(function(res){
+        if(!res.length){ statusEl.textContent='No place found for "'+q+'"'; return; }
+        var p=res[0], bb=p.boundingbox.map(parseFloat);   // south, north, west, east
+        var rect=Cesium.Rectangle.fromDegrees(bb[2],bb[0],bb[3],bb[1]);
+        // very small places (a building) get a minimum width so the camera stays a little above the roofs
+        var minSpan=Cesium.Math.toRadians(0.0012);
+        if(rect.east-rect.west<minSpan||rect.north-rect.south<minSpan){
+          var c=Cesium.Rectangle.center(rect);
+          rect=new Cesium.Rectangle(c.longitude-minSpan,c.latitude-minSpan,c.longitude+minSpan,c.latitude+minSpan);
+        }
+        if(droneOn||photoreal){
+          // in 3D mode, arrive as a drone: low and tilted, looking at the place
+          flyView(Cesium.Cartesian3.fromDegrees(parseFloat(p.lon),parseFloat(p.lat),0),650,-40,0.35,5);
+        } else {
+          camera.flyTo({destination:rect,duration:3.5});
+        }
+        statusEl.textContent=p.display_name.length>70 ? p.display_name.slice(0,67)+'…' : p.display_name;
+      })
+      .catch(function(){ statusEl.textContent='Search failed. Check your connection.'; });
+  });
+
+  // ----- Drone view: tilted camera, 3D buildings, shadows -----
+  var droneOn=false, photoreal=false, tileset=null, lastFetch=null, fetchCtl=null, fetchSeq=0, fetchTimer=null;
+  var bDrone=document.getElementById('bDrone'), bPhoto=document.getElementById('bPhoto');
+  var keyRow=document.getElementById('keyRow'), keyHint=document.getElementById('keyHint'), keyInput=document.getElementById('gkey');
+  var bldgs=new Cesium.CustomDataSource('buildings'); viewer.dataSources.add(bldgs);
+  viewer.creditDisplay.addStaticCredit(new Cesium.Credit('Buildings: OpenStreetMap contributors, via Overpass API'));
+  viewer.shadowMap.maximumDistance=3000; viewer.shadowMap.size=2048; viewer.shadowMap.softShadows=true; viewer.shadowMap.darkness=0.45;
+
+  function flyView(target,range,pitchDeg,headingRad,dur){
+    camera.flyToBoundingSphere(new Cesium.BoundingSphere(target,1),{
+      offset:new Cesium.HeadingPitchRange(headingRad,Cesium.Math.toRadians(pitchDeg),range), duration:dur});
+  }
+  function screenCentre(){ return new Cesium.Cartesian2(cvs.clientWidth/2,cvs.clientHeight/2); }
+  function readyStatus(){ statusEl.textContent = live ? 'Live, follows your clock' : 'Manual time, today in your time zone'; }
+
+  var OVERPASS=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
+  function overpass(q,signal,i){
+    i=i||0;
+    return fetch(OVERPASS[i]+'?data='+encodeURIComponent(q),{signal:signal})
+      .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .catch(function(err){ if(err.name==='AbortError'||i+1>=OVERPASS.length) throw err; return overpass(q,signal,i+1); });
+  }
+  function clearBuildings(){
+    fetchSeq++; if(fetchCtl) fetchCtl.abort(); lastFetch=null;
+    bldgs.entities.removeAll();
+  }
+  function drawBuildings(data){
+    var els=data.elements||[], n=0;
+    bldgs.entities.suspendEvents(); bldgs.entities.removeAll();
+    els.forEach(function(el){
+      var g=el.geometry; if(!g||g.length<4) return;
+      var flat=[];
+      g.forEach(function(pt,idx){
+        if(idx===g.length-1 && pt.lon===g[0].lon && pt.lat===g[0].lat) return;   // drop the repeated closing point
+        flat.push(pt.lon,pt.lat);
+      });
+      if(flat.length<6) return;
+      var t=el.tags||{}, ht=parseFloat(t.height);
+      if(!(ht>0)){ var lv=parseFloat(t['building:levels']); ht = lv>0 ? lv*3.3+1 : 7+(el.id%9)*1.5; }
+      ht=clamp(ht,3,600);
+      var light=0.60+((el.id*7)%100)/100*0.22;
+      bldgs.entities.add({polygon:{
+        hierarchy:new Cesium.PolygonHierarchy(V3.fromDegreesArray(flat)),
+        height:0, extrudedHeight:ht, outline:false,
+        material:Cesium.Color.fromHsl(0.10,0.07,light,1),
+        shadows:Cesium.ShadowMode.ENABLED
+      }});
+      n++;
+    });
+    bldgs.entities.resumeEvents();
+    statusEl.textContent = n ? n+' buildings from OpenStreetMap' : 'No building data for this spot';
+  }
+  function loadBuildings(){
+    if(!droneOn||photoreal) return;
+    var h=camera.positionCartographic.height;
+    if(h>3500){ statusEl.textContent='Zoom closer to see buildings'; return; }
+    var p=anchorFor(screenCentre()), c=ell.cartesianToCartographic(p); if(!c) return;
+    var lat=Cesium.Math.toDegrees(c.latitude), lon=Cesium.Math.toDegrees(c.longitude);
+    var half=clamp(h*0.9,250,800);
+    if(lastFetch && V3.distance(p,lastFetch.p)<0.3*lastFetch.half && Math.abs(half-lastFetch.half)<0.25*lastFetch.half) return;
+    var dLat=half/111320, dLon=dLat/Math.cos(c.latitude);
+    var box=[lat-dLat,lon-dLon,lat+dLat,lon+dLon].map(function(v){ return v.toFixed(6); }).join(',');
+    var q='[out:json][timeout:20];way["building"]('+box+');out geom 2500;';
+    statusEl.textContent='Loading buildings…';
+    var seq=++fetchSeq; if(fetchCtl) fetchCtl.abort(); fetchCtl=new AbortController();
+    overpass(q,fetchCtl.signal).then(function(data){
+      if(seq!==fetchSeq||!droneOn) return;
+      lastFetch={p:p,half:half}; drawBuildings(data);
+    }).catch(function(err){
+      if(err.name==='AbortError') return;
+      statusEl.textContent='Building data is busy right now. Move the view a little to retry.';
+    });
+  }
+  camera.moveEnd.addEventListener(function(){
+    if(!droneOn||photoreal) return;
+    clearTimeout(fetchTimer); fetchTimer=setTimeout(loadBuildings,700);
+  });
+
+  bDrone.onclick=function(){
+    droneOn=!droneOn; bDrone.setAttribute('aria-pressed',String(droneOn));
+    viewer.shadows=droneOn&&!photoreal;
+    var tgt=anchorFor(screenCentre()), h=camera.positionCartographic.height;
+    if(droneOn){
+      flyView(tgt, h>3000?700:clamp(h*1.1,200,1500), -40, 0.35, 3);
+      statusEl.textContent=photoreal?'Drone view':'Drone view, buildings load as you get close';
+    } else {
+      clearBuildings(); viewer.shadows=false;
+      flyView(tgt, V3.distance(camera.positionWC,tgt), -90, 0, 1.5);
+      readyStatus();
+    }
+  };
+
+  // ----- Photoreal: Google Photorealistic 3D Tiles (needs the person's own API key) -----
+  function storedKey(){ try{ return localStorage.getItem('gmaps3dkey')||''; }catch(err){ return ''; } }
+  function setPhotoreal(on,key){
+    if(!on){
+      photoreal=false; if(tileset) tileset.show=false; globe.show=true;
+      bPhoto.setAttribute('aria-pressed','false'); viewer.shadows=droneOn; statusEl.textContent='Photoreal off';
+      if(droneOn) loadBuildings();
+      return;
+    }
+    statusEl.textContent='Loading Google 3D…';
+    var p = tileset ? Promise.resolve(tileset)
+      : Cesium.Cesium3DTileset.fromUrl('https://tile.googleapis.com/v1/3dtiles/root.json?key='+encodeURIComponent(key),
+          {showCreditsOnScreen:true,maximumScreenSpaceError:8});
+    p.then(function(ts){
+      if(!tileset){ tileset=ts; scene.primitives.add(ts); }
+      ts.show=true; photoreal=true; globe.show=false; clearBuildings(); viewer.shadows=false;
+      keyRow.hidden=true; keyHint.hidden=true; bPhoto.setAttribute('aria-pressed','true');
+      statusEl.textContent='Google Photorealistic 3D on (its own lighting, no live day/night)';
+      if(!droneOn){ bDrone.onclick(); viewer.shadows=false; }
+    }).catch(function(){
+      statusEl.textContent='Google 3D failed. Check the key and that "Map Tiles API" is enabled.';
+      keyRow.hidden=false; keyHint.hidden=false;
+    });
+  }
+  bPhoto.onclick=function(){
+    if(photoreal){ setPhotoreal(false); return; }
+    var k=storedKey();
+    if(k||tileset){ setPhotoreal(true,k); }
+    else { keyRow.hidden=false; keyHint.hidden=false; keyInput.focus(); }
+  };
+  document.getElementById('bKeyGo').onclick=function(){
+    var k=keyInput.value.trim(); if(!k) return;
+    try{ localStorage.setItem('gmaps3dkey',k); }catch(err){}
+    setPhotoreal(true,k);
+  };
+  keyInput.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('bKeyGo').onclick(); } });
+
+  setLive();
+})();
+</script>
+</body>
+</html>
