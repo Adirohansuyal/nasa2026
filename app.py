@@ -21,6 +21,7 @@ pages = [
     st.Page("pages/07_AI_Scientist.py", title="AI Scientist", icon="🤖"),
     st.Page("pages/08_Predictive_Intelligence.py", title="Predictive Intelligence", icon="🔮"),
     st.Page("pages/09_Early_Warning_System.py", title="Early Warning System", icon="🚨"),
+    st.Page("pages/10_Causal_Discovery.py",    title="Causal Discovery",     icon="🔗"),
 ]
 
 selected_page = st.navigation(pages, position="sidebar")
