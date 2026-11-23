@@ -3256,10 +3256,10 @@ window.earthpulseExplain=async(prompt,signal)=>{
 <script src="assets/interaction.js?v=20261115-static-guide"></script>
 <script src="assets/predictive_data.js"></script>
 <script src="assets/district_causal_data.js?v=20261121-district-relationships"></script>
-<script src="assets/predictive.js?v=20261115-server-proxy"></script>
+<script src="assets/predictive.js?v=20261124-render-guard"></script>
 <script src="assets/satellite.min.js"></script>
 <script src="assets/satellite_orbits.js"></script>
-<script src="assets/causal.js?v=20261122-usual-swing-percent"></script>
+<script src="assets/causal.js?v=20261124-hidpi-graph"></script>
 <script>
 /* ═══════════════════════════════════════════════
    NAVIGATION
@@ -3290,6 +3290,13 @@ function navigate(id){
   if(id==='anomaly')requestAnimationFrame(()=>window.renderAnomalyPage?.());
   if(id==='network')requestAnimationFrame(()=>{window.renderInteractionNetwork?.();window.dispatchEvent(new Event('local-impact-page-open'));});
   if(id==='causal'){requestAnimationFrame(()=>{setTimeout(()=>causal?.onPageOpen?.(),120);});}
+  if(id==='predict'){
+    requestAnimationFrame(()=>{
+      setTimeout(()=>{
+        try{ window.renderPredictivePage?.(); }catch(e){ console.warn('predict render error:',e); }
+      }, 80);
+    });
+  }
 }
 
 // Orbital position is projected in 3D: near-side craft draw above the globe,
@@ -3900,6 +3907,18 @@ setTimeout(initCharts,80);
 setTimeout(initSatelliteOrbits,140);
 setTimeout(satInitTracker,180);
 
+// Auto-rerender Forecasts page when it becomes visible (fixes blank charts on first open)
+(function(){
+  const predictPage = document.getElementById('page-predict');
+  if(!predictPage) return;
+  const obs = new MutationObserver(()=>{
+    if(predictPage.classList.contains('active')){
+      setTimeout(()=>{ window.renderPredictivePage?.(); }, 60);
+    }
+  });
+  obs.observe(predictPage, { attributes:true, attributeFilter:['class'] });
+})();
+
 // Redraw on page navigate
 const origNavigate=navigate;
 window.navigate=function(id){
@@ -3908,6 +3927,9 @@ window.navigate=function(id){
     drawGraph('interaction-svg');
     window.renderInteractionNetwork?.();
   },50);
+  if(id==='predict'){
+    setTimeout(()=>{ window.renderPredictivePage?.(); }, 120);
+  }
 };
 
 /* ═══════════════════════════════════════════════

@@ -333,11 +333,16 @@ window.causal = (function () {
   function drawGraph(canvasId, edges, opts) {
     var canvas = document.getElementById(canvasId);
     if (!canvas) return;
-    var ctx = canvas.getContext('2d');
     var W = canvas.clientWidth || canvas.offsetWidth || 800;
     var H = canvas.clientHeight || 520;
-    canvas.width = W;
-    canvas.height = H;
+    // Keep the canvas backing store sharp on Retina/high-DPI displays.
+    // CSS dimensions remain in logical pixels; drawing coordinates are
+    // scaled once, so the graph layout and hit targets stay predictable.
+    var dpr = Math.min(window.devicePixelRatio || 1, 3);
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     ctx.fillStyle = '#0a1520';
     ctx.fillRect(0, 0, W, H);
@@ -399,14 +404,14 @@ window.causal = (function () {
       }
 
       // Label
-      ctx.font = 'bold 9px Urbanist,sans-serif';
+      ctx.font = '600 12px Urbanist,sans-serif';
       ctx.textAlign = 'center';
       ctx.fillStyle = 'rgba(10,21,32,0.82)';
       var shiftText = (e.effectPercent > 0 ? '+' : '−') + Math.abs(e.effectPercent).toFixed(0) + '% swing';
       var timingText = e.lag === 0 ? 'same mo' : e.lag + ' mo';
       var edgeLabel = timingText + ' · ' + shiftText;
-      var labelWidth = Math.max(56, ctx.measureText(edgeLabel).width + 10);
-      ctx.fillRect(cpx - labelWidth / 2, cpy - 9, labelWidth, 14);
+      var labelWidth = Math.max(72, ctx.measureText(edgeLabel).width + 14);
+      ctx.fillRect(cpx - labelWidth / 2, cpy - 11, labelWidth, 18);
       ctx.fillStyle = color;
       ctx.fillText(edgeLabel, cpx, cpy + 1);
       ctx.restore();
@@ -434,7 +439,7 @@ window.causal = (function () {
       ctx.fill(); ctx.stroke();
 
       ctx.fillStyle = '#F1F5FC';
-      ctx.font = 'bold 8.5px Urbanist,sans-serif';
+      ctx.font = '600 12px Urbanist,sans-serif';
       ctx.textAlign = 'center';
       if (vr.lines.length === 1) {
         ctx.fillText(vr.lines[0], p.x, p.y - 2);
@@ -443,12 +448,12 @@ window.causal = (function () {
         ctx.fillText(vr.lines[1], p.x, p.y + 2);
       }
       ctx.fillStyle = vr.color;
-      ctx.font = '10px sans-serif';
+      ctx.font = '15px sans-serif';
       ctx.fillText(vr.emoji, p.x, p.y + 17);
     }
 
     var ly = H - 16;
-    ctx.font = '9px Urbanist,sans-serif'; ctx.textAlign = 'left';
+    ctx.font = '12px Urbanist,sans-serif'; ctx.textAlign = 'left';
     ctx.fillStyle = '#31C48D'; ctx.fillRect(pad, ly - 8, 12, 8);
     ctx.fillText('positive · move together', pad + 17, ly);
     ctx.fillStyle = '#EF6461'; ctx.fillRect(pad + 150, ly - 8, 12, 8);
@@ -1022,7 +1027,7 @@ window.causal = (function () {
     if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) return;
 
     var mx = e.clientX - rect.left, my = e.clientY - rect.top;
-    var W = canvas.width, H = canvas.height, pad = 60;
+    var W = rect.width, H = rect.height, pad = 60;
     var clicked = null;
     for (var i = 0; i < VARS.length; i++) {
       var v = VARS[i];
@@ -1040,6 +1045,18 @@ window.causal = (function () {
   });
 
   initializeDistrictSelector();
+
+  // Rebuild the backing store when the visible graph changes size (including
+  // browser zoom and moving the window between displays with different DPR).
+  var graphResizeTimer = 0;
+  window.addEventListener('resize', function() {
+    if (!document.getElementById('page-causal')?.classList.contains('active')) return;
+    clearTimeout(graphResizeTimer);
+    graphResizeTimer = setTimeout(function() {
+      if (_edges.length) drawGraph('causal-graph-canvas', _edges, _selectedNode ? { hl: _selectedNode } : {});
+      if (_districtEdges.length) drawGraph('causal-district-graph-canvas', _districtEdges, _selectedDistrictNode ? { hl: _selectedDistrictNode } : {});
+    }, 120);
+  });
 
   /* ── PUBLIC API ─────────────────────────────────────────────── */
   return {
