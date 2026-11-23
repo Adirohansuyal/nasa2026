@@ -5,7 +5,11 @@
 <br/>
 
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d1117,50:1a3a5c,100:0d47a1&height=200&section=header&text=EARTHPULSE-X&fontSize=56&fontColor=ffffff&fontAlignY=38&desc=Uncertainty-Guided%20Earth%20System%20Intelligence&descAlignY=58&descSize=18&descColor=90caf9&animation=fadeIn" width="100%"/>
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d1117,50:1a3a5c,100:0d47a1&height=220&section=header&text=EarthPulse-X&fontSize=62&fontColor=ffffff&fontAlignY=40&fontAlign=50&desc=Uncertainty-Guided%20Earth%20System%20Intelligence&descAlignY=60&descSize=19&descColor=90caf9&animation=fadeIn&fontFamily=Nunito" width="100%"/>
+</p>
+
+<p align="center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Blue_Marble_rotating.gif/200px-Blue_Marble_rotating.gif" alt="Revolving Earth — NASA Blue Marble" width="110"/>
 </p>
 
 <p align="center">
@@ -276,35 +280,35 @@ Here is how to read it, using real rows from the data.
 
 ---
 
-**Worked examples from a real district:**
+**Worked examples from Chamoli district:**
 
 > **Surface temperature → Vegetation greenness · 40% lower · 1 month later**
 
-Think of it this way: in a typical month, surface temperature swings by a certain amount. When it rises by that usual amount, vegetation greenness tends to be about **40% lower than its own normal swing** — one month after. In plain terms: hotter land this month usually means noticeably less green vegetation next month.
+In a typical month, surface temperature swings by a certain amount. When it rises by that usual amount in Chamoli, vegetation greenness tends to be about **40% lower than its own normal swing** — one month after. Hotter land this month usually means noticeably less green vegetation next month. In a high-altitude district like Chamoli, where glaciers and snowmelt influence ground temperature, this heat-stress on vegetation is particularly significant.
 
 ---
 
 > **Precipitation (GPM) ↔ Soil moisture (morning) · 45% higher · Same month**
 
-When rainfall goes up by its usual amount in a given month, morning soil moisture in that same month tends to be about **45% higher than its normal swing**. No delay — the ground soaks up the rain immediately. This one is intuitive: more rain, wetter soil, right away.
+When rainfall goes up by its usual amount in Chamoli, morning soil moisture in that same month tends to be about **45% higher than its normal swing** — no delay. The ground soaks up the rain immediately. This is intuitive: more rain, wetter soil, right away. In Chamoli's steep Himalayan terrain, rapid soil saturation is also what makes the district prone to flash floods and landslides during heavy monsoon months.
 
 ---
 
 > **Surface temperature → Vegetation greenness · 35% lower · 2 months later**
 
-Same relationship as above, but the effect shows up **two months later** instead of one. The land gets hot, and two months down the line the vegetation is still feeling it — greenness is about 35% below its normal variation.
+The same heat-stress relationship, but the effect shows up **two months later** instead of one. The land gets hot, and two months down the line the vegetation is still feeling it — greenness is about 35% below its normal variation. This lagged effect likely reflects the time it takes for heat stress to work through the growing cycle in Chamoli's mid-to-high altitude forests.
 
 ---
 
 > **Vegetation greenness → Surface temperature · 32% lower · 2 months later**
 
-This one goes the other direction: when vegetation greenness rises by its usual amount, surface temperature tends to be about **32% lower than normal** two months later. More plants → more shade and evapotranspiration → cooler land. This is the feedback loop working in reverse.
+This one runs the other direction: when vegetation greenness rises by its usual amount, surface temperature tends to be about **32% lower than normal** two months later. More plants → more shade and evapotranspiration → cooler land. This is the ecosystem feedback loop working in reverse — and it shows up clearly in Chamoli, where dense forest cover in the lower valleys actively moderates land temperature.
 
 ---
 
 > **Soil moisture (morning) → Precipitation (GPM) · 54% lower · 6 months later**
 
-A wetter-than-usual soil today is linked to **54% less rainfall six months later**. This is a slower feedback — possibly reflecting seasonal patterns where moisture gets locked up in one phase of the year before precipitation drops off.
+A wetter-than-usual soil in Chamoli today is linked to **54% less rainfall six months later**. This is a slower, seasonal feedback — possibly reflecting how moisture gets locked into soil and snowpack during one phase of the year before the following dry season sets in. This is the longest lag detected in Chamoli's signal chain.
 
 ---
 
