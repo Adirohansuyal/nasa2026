@@ -240,7 +240,7 @@ The app shows a table for every district that lists which signals are linked, by
 
 <p align="center">
   <img src="assets/causal/whateach.png" alt="What each district relationship means" width="900"/><br/>
-  <sub>District relationship table — real output from the app</sub>
+  <sub>District relationship table — Chamoli district, real output from the app</sub>
 </p>
 
 Here is how to read it, using real rows from the data.
@@ -303,52 +303,6 @@ Each satellite signal fluctuates month to month. "Usual swing" is roughly the no
 - ❌ The percentages are not prediction accuracy scores. They describe the typical *size* of the association, not how reliably it repeats every month.
 
 Use these links as a starting point for investigation — they tell you *where to look*, not *what is definitely true*.
-
----
-
-## 🏔️ Case Study — Chamoli 2021 Glacial Flood
-
-On **February 7, 2021**, a glacial ice mass collapsed in the Nanda Devi region of Chamoli district, Uttarakhand. The resulting debris and meltwater surge traveled down the Rishiganga and Dhauliganga river valleys, destroying the Tapovan hydropower dam and killing approximately **200 people**. It is one of the deadliest glacial disasters in India's recent history.
-
-EARTHPULSE-X uses this event as a **ground-truth test** of what multi-sensor monthly satellite data can and cannot see.
-
----
-
-### What the satellite record shows around February 2021
-
-> *Monthly data averages across the entire month. A single-day event on Feb 7 is a fraction of one monthly reading — this is a known limitation, stated upfront.*
-
-| Signal | January 2021 | February 2021 | Observation |
-|:---|:---:|:---:|:---|
-| 🌡️ Surface Temperature (LST) | Elevated anomaly | Spike detected | Anomalously warm for a Himalayan winter month |
-| 💧 Soil Moisture AM (SMAP) | Near normal | Sharp rise | Sudden moisture surge consistent with meltwater flooding |
-| 🌧️ Precipitation (GPM) | Low | Low | No heavy rainfall — confirms this was a glacial event, not a rain flood |
-| 🌿 Vegetation (NDVI) | Suppressed | Suppressed | Winter baseline — no vegetation signal expected |
-
-**The key multi-sensor signature:** High LST + High SMAP + Low GPM in February 2021 matches the app's **Flood** detection rule (soil saturation without rainfall — glacial or snowmelt origin). The system correctly flags Chamoli district as a flood anomaly for that month.
-
----
-
-### What monthly data could not resolve
-
-Being transparent about limitations is part of the scientific method:
-
-- The collapse happened on a **single day** (Feb 7). Monthly averaging dilutes the signal — the spike is visible but not sharply isolated.
-- **Sub-district routing** of the flood (which river valley, which villages) is invisible at ~9 km pixel resolution.
-- **Ice mass loss leading up to the event** — the gradual weakening of the glacier over prior months — is not captured by SMAP or GPM. LST trends in the preceding months show elevated temperatures in Chamoli, which is consistent with glacial destabilization, but monthly averages cannot confirm it.
-- The system's **Early Warning** output for Jan–Feb 2021 shows elevated compound risk in Chamoli. It does not predict the exact date or mechanism. That is the honest capability boundary of any monthly satellite monitoring system.
-
----
-
-### What this validation demonstrates
-
-The Chamoli event proves three things about EARTHPULSE-X's design:
-
-1. **Multi-sensor fusion works better than any single signal.** GPM alone would show nothing (no rain). LST alone is ambiguous. Only combining SMAP + LST + GPM together isolates the glacial flood signature.
-2. **The 6-hazard rule engine is physically grounded.** The flood rule was written from physical reasoning — not tuned to match Chamoli. That it detects the event is validation, not overfitting.
-3. **Transparency over inflation.** The app reports exactly what it found and exactly where monthly data falls short. A system that claims to have "predicted Chamoli" from monthly averages would be misleading. EARTHPULSE-X reports what the data actually shows.
-
-> The Chamoli validation is accessible on **Page 9 — Early Warning System** in the live app. Select Chamoli district and navigate to February 2021 to see the sensor anomaly breakdown.
 
 ---
 
