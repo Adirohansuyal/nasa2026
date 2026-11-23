@@ -76,6 +76,79 @@ EARTHPULSE-X is a **physics-aware, uncertainty-guided Earth system intelligence 
 
 ---
 
+## Causal Discovery Page: How the Relationship Analysis Works
+
+The **Causal Discovery** page explores how four monthly satellite signals move together across Uttarakhand, and whether a change in one signal is associated with a change in another signal in a later month. The page uses statistics written in JavaScript; it does not use logistic regression, a neural network, or an AI model. The word “causal” is the page's label, but the results are **lagged statistical associations** and do not prove cause and effect.
+
+### Signals and data
+
+The state-wide view uses 126 monthly observations from the page's preloaded satellite data:
+
+| Short name | Signal |
+|---|---|
+| GPM | Precipitation (rainfall) |
+| SMAP_AM | Morning soil moisture |
+| NDVI | Vegetation greenness |
+| LST | Land surface temperature |
+
+The district view uses monthly means of each district's satellite robust-z anomaly grid, with 117 observations from January 2016 through September 2025. These district values are deviations from the usual conditions in standard-deviation units, not raw rainfall in millimetres or temperature in degrees. A district can be selected from the map or the menu.
+
+### What time-lagged partial correlation means
+
+**Correlation** measures how two signals vary together. A positive value means they tend to rise or fall together; a negative value means one tends to be higher when the other is lower.
+
+**Partial correlation** asks how strongly two signals are related after accounting for the other measured signals. For example, rainfall and temperature might both vary with soil moisture and vegetation. The page tries to account for those other signals before measuring the rainfall–temperature relationship. In the code, it does this by fitting each series against the control series in turn, taking the residuals (the parts not explained by those controls), and correlating those residuals. This is a simple linear statistical adjustment, not a full causal model.
+
+**Time-lagged** means the two series are lined up at different months. At lag 2, for example, the source series from January onward is compared with the target series starting in March. The question is whether an earlier source value is associated with a target value two months later. Lag 0 compares values from the same month and has no time direction.
+
+For each pair of different signals, the analysis checks lag 0 and each lag up to the selected maximum (3, 4, or 6 months; default 6). At each lag it calculates a partial correlation and a p-value. For nonzero lags, the source is aligned with the later target; the other signals are used as controls over the target's aligned time window. The same-month pair is only included once because its correlation is symmetric.
+
+### Why Benjamini–Hochberg correction is used
+
+The page checks many signal pairs across several lags. If every test used an unadjusted significance cutoff, some links could pass simply by chance. **Benjamini–Hochberg (BH)** adjusts the p-values across the full set of links tested in that run, to control the expected false discovery rate (the expected share of false links among the links called significant).
+
+In plain terms, BH sorts p-values from smallest to largest, uses each value's rank and the total number of tests to calculate adjusted values (called **q-values**), and keeps links whose q-value is below the selected alpha. The default alpha is 0.05; the page also offers 0.01 and 0.10. The implementation applies the usual rank-based adjustment and a backwards running minimum so q-values remain monotonic. BH reduces false positives; it does not eliminate them, and a significant result still does not establish causation.
+
+### How to read the page
+
+- **Max lag** sets the longest delay to check. A six-month setting tests lag 0 through lag 6.
+- **Significance (alpha)** sets the q-value cutoff used after BH correction. A stricter cutoff generally keeps fewer links.
+- **Min strength to show** hides links whose absolute partial correlation is below the slider value. This is an additional display filter; it is not the significance correction.
+- **Graph colors:** green is a positive association; red is an inverse association. Wider lines represent stronger absolute partial correlations. Arrows point from source to target for nonzero lags; same-month relationships have no arrow.
+- **Link labels:** show the lag and an approximate effect size. The state graph labels use the partial-correlation value as a percent. The district graph labels use an estimated target shift as a share of its usual variation. These are not percentages of actual rainfall or temperature, and they are not accuracy or probability scores.
+- **Significant Links, Top Strength, and Chain Complete:** summarize links that pass both q-value and minimum-strength filters. “Chain Complete” means at least three of the page's predefined links were detected; it is not proof that the physical chain is true.
+- **District table and CSV:** list the selected district's retained relationships, their approximate usual-swing change, and timing.
+
+### Method details and limitations
+
+The calculations run in the browser in `assets/causal.js`, using ordinary JavaScript math helpers for Pearson correlation, residualization, approximate p-values, and BH q-values. Graphs are drawn with the Canvas 2D API; the district map is SVG. The page reads state-wide values from `assets/predictive_data.js` and district values from `assets/district_causal_data.js`. It does not call an AI service for this analysis.
+
+The p-value in this implementation is an approximation based on a normal CDF, not a full time-series significance test. Monthly environmental data can have seasonality, autocorrelation, missing-data and measurement issues, and unmeasured confounders. The displayed links should therefore be treated as exploratory evidence of association. District averaging also hides variation within each district, and monthly data cannot resolve events shorter than a month. A lagged association can help suggest what to investigate, but it cannot show that the source caused the target.
+
+### Visual guide
+
+**Time-lagged correlation:** shifting one monthly series relative to another to inspect whether their association changes with the delay.
+
+![Time-lagged correlation concept](assets/causal/Time-Lagged%20Correlation.png)
+
+**Uttarakhand-wide graph:** relationships retained for the state-wide monthly series.
+
+![Uttarakhand-wide relationship graph](assets/causal/Uttrakhand-wide-graph.png)
+
+**District drill-down:** select a district to see relationships calculated from its anomaly series.
+
+![District-wise relationship graph](assets/causal/District-wise.png)
+
+**Reading district links:** explains the source, target, approximate usual-swing change, and timing shown in the relationship table.
+
+![What each district relationship means](assets/causal/whateach.png)
+
+**Benjamini–Hochberg overview:** illustrates why many tests need a multiple-testing correction and how q-values determine which links are kept.
+
+![Benjamini–Hochberg correction overview](assets/causal/Benjamin-Hochberg.png)
+
+---
+
 ## 🧠 The UG-ESI Framework (Our Core Contribution)
 
 EARTHPULSE-X introduces **UG-ESI — Uncertainty-Guided Earth System Intelligence**, a 4-contribution methodology built on top of the NASA challenge requirements:
@@ -363,7 +436,7 @@ Challenge: *"Be An Earth System Trend Detective"*
 </table>
 
 <p align="center">
-  <em>🏔️ Team from Uttarakhand + Bihar + Uttar Pradesh— analyzing the land we call home.</em>
+  <em>🏔️ Team from Uttarakhand — analyzing the land we call home.</em>
 </p>
 
 ---
