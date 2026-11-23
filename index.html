@@ -2765,82 +2765,350 @@ img, canvas, svg, table { max-width: 100%; }
 <section class="page" id="page-causal">
 
   <style>
-    /* Causal Discovery page: focused, report-ready layout */
-    #page-causal{--causal-line:rgba(151,170,183,.16);--causal-surface:#111b26;--causal-muted:#8fa0ad}
-    #page-causal.active{animation:causalPageFade .35s ease both}
-    @keyframes causalPageFade{from{opacity:0}to{opacity:1}}
-    #page-causal> :not(style):not(.causal-earth-scene){position:relative;z-index:1}
-    #page-causal .hero{padding:clamp(30px,4vw,54px);min-height:280px;margin-bottom:22px;background:linear-gradient(115deg,rgba(23,38,51,.88) 0%,rgba(17,27,38,.84) 72%,rgba(20,37,42,.82) 100%);border-color:var(--causal-line)}
-    #page-causal .hero::before{background:radial-gradient(ellipse 52% 90% at 88% 52%,rgba(121,170,164,.1),transparent 72%)}
-    #page-causal .hero-eyebrow{font-size:.64rem;letter-spacing:.13em;padding:7px 12px;background:rgba(121,170,164,.08);border-color:rgba(121,170,164,.2)}
-    #page-causal .hero-title{gap:13px;margin-bottom:12px}
-    #page-causal .hero-title .icon{font-size:1.8rem;color:var(--accent)}
-    #page-causal .hero-title h1{font-size:clamp(2rem,3vw,2.8rem);font-weight:700;letter-spacing:-.055em}
-    #page-causal .hero-sub{max-width:690px;font-size:.94rem;line-height:1.7;color:#aab8c2}
-    #page-causal .hero-actions{margin-top:20px}
-    #page-causal .hero-primary{box-shadow:0 5px 18px rgba(121,170,164,.15)}
-    #page-causal .hero-footnote{margin-top:19px;color:#92a2ad}
-    #page-causal .hero-footnote b{color:#d1dbe0;font-weight:600}
-    #page-causal .causal-earth-scene{position:fixed;z-index:0;right:-6%;top:50vh;width:min(58vw,660px);aspect-ratio:1;transform:translateY(-50%);border-radius:50%;opacity:.26;background:radial-gradient(circle at 50% 50%,rgba(75,130,153,.2),transparent 69%);pointer-events:none}
-    #page-causal .causal-earth{position:absolute;inset:8%;overflow:hidden;border-radius:50%;background-color:#07101b;background-image:url('assets/earth_blue_marble.jpg');background-repeat:repeat-x;background-position:0 center;background-size:auto 100%;animation:causalEarthRotate 38s linear infinite;box-shadow:inset -24px -4px 36px rgba(1,7,15,.8),inset 10px 3px 28px rgba(116,194,214,.12),0 0 28px rgba(67,148,169,.18);isolation:isolate}
-    #page-causal .causal-earth::before{content:'';position:absolute;inset:0;border-radius:50%;background:linear-gradient(90deg,rgba(2,8,16,.74),transparent 38%,rgba(2,8,16,.08) 67%,rgba(1,6,14,.75)),radial-gradient(ellipse at 36% 33%,rgba(151,214,228,.13),transparent 52%);pointer-events:none}
-    #page-causal .causal-earth::after{content:'';position:absolute;inset:-1px;border:1px solid rgba(117,192,211,.36);border-radius:50%;box-shadow:inset 0 0 15px rgba(100,190,216,.12),0 0 12px rgba(100,190,216,.13);pointer-events:none}
-    @keyframes causalEarthRotate{from{background-position:0 center}to{background-position:-200% center}}
-    #page-causal .banner.info{margin:0 0 30px;padding:15px 18px;background:rgba(121,170,164,.045);border-color:rgba(121,170,164,.18);border-radius:10px;font-size:.82rem;color:#aab7c0}
-    #page-causal .section-hdr{margin:32px 0 15px;padding-bottom:12px;border-color:var(--causal-line)}
-    #page-causal .section-hdr h2{font-size:1rem;font-weight:650;letter-spacing:-.015em}
-    #page-causal .section-hdr .s-icon{color:var(--accent)}
-    #page-causal .section-hdr .s-icon::before{content:'';width:7px;height:7px;border-radius:2px;background:var(--accent);box-shadow:0 0 12px rgba(121,170,164,.28)}
-    #page-causal .section-hdr .s-sub{font-size:.68rem;color:#8a9ba7}
-    #page-causal .pred-panel{border:1px solid var(--causal-line);border-radius:12px;background:linear-gradient(145deg,rgba(20,31,42,.96),rgba(16,25,35,.98));box-shadow:0 10px 28px rgba(0,0,0,.12)}
-    #page-causal #causal-settings{align-items:end;gap:18px 22px;padding:20px 22px}
-    #page-causal .causal-control{display:grid;gap:8px;min-width:150px;font-size:.68rem;font-weight:650;letter-spacing:.025em;color:#aebbc4}
-    #page-causal select{height:39px!important;min-width:150px;padding:0 32px 0 12px!important;border:1px solid rgba(151,170,183,.24)!important;border-radius:8px!important;background-color:#111c27!important;color:#e2e9ed!important;font:500 .78rem 'Urbanist',sans-serif!important;outline:none}
-    #page-causal select:focus{border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(121,170,164,.1)}
-    #page-causal .causal-range{min-width:210px}
-    #page-causal .causal-range-row{display:flex;align-items:center;gap:12px}
-    #page-causal .causal-range input{width:150px;accent-color:var(--accent)}
-    #page-causal #causal-min-str-val{min-width:34px;font-size:.74rem!important;font-weight:700;color:#c6d9d6!important}
-    #page-causal #causal-run-btn{height:39px!important;padding:0 18px!important;border-radius:8px!important;background:#8fb8b1!important;color:#0d1a1c!important;font:700 .76rem 'Urbanist',sans-serif!important;transition:transform .18s ease,filter .18s ease}
-    #page-causal #causal-run-btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
-    #page-causal #causal-status{font-size:.72rem!important;color:#91a3ae!important}
-    #page-causal .kpi-grid{gap:12px;margin:15px 0 30px!important}
-    #page-causal .kpi{padding:17px 19px;background:linear-gradient(145deg,#172431,#131e29);border-color:var(--causal-line);border-radius:11px}
-    #page-causal .kpi-label{font-size:.62rem;letter-spacing:.1em;color:#91a2ae}
-    #page-causal .kpi-value{font-size:1.55rem;font-weight:700}
-    #page-causal .kpi::after{background:linear-gradient(90deg,transparent,rgba(143,184,177,.5),transparent)}
-    #page-causal .causal-graph-card{background:#0e1822;border:1px solid var(--causal-line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.14)}
-    #page-causal canvas{background:radial-gradient(ellipse at 50% 35%,#142330,#0c151e 78%)!important}
-    #page-causal .causal-map-card,#page-causal .causal-district-card{padding:20px!important;background:linear-gradient(145deg,#172431,#131d27);border-color:var(--causal-line);border-radius:12px}
-    #page-causal #causal-district-layout{gap:14px;margin-bottom:10px}
-    #page-causal #causal-district-title{font-size:.92rem}
-    #page-causal #causal-district-map{max-height:430px}
-    #page-causal .caption{font-size:.72rem;line-height:1.6;color:#8799a6}
-    #page-causal .causal-details{margin-top:18px!important;border:1px solid var(--causal-line);border-radius:10px;background:rgba(17,27,38,.72);overflow:hidden}
-    #page-causal .causal-details summary{padding:15px 18px!important;border:0!important;color:#c5d0d7!important;font-size:.79rem!important;font-weight:650!important;list-style-position:inside}
-    #page-causal .causal-details[open] summary{border-bottom:1px solid var(--causal-line)!important}
-    #page-causal .causal-details>div{padding:15px 18px!important}
-    #page-causal .table-wrap{border-color:var(--causal-line);border-radius:9px}
-    #page-causal .ep-table th{font-size:.62rem}
-    #page-causal #causal-dl-btn{height:36px!important;border-radius:7px!important;color:#c7d2d8!important}
-    #page-causal .ep-footer{margin-top:35px;color:#758793}
-    @media(max-width:760px){#page-causal .hero{min-height:0;padding:28px 24px}#page-causal .causal-earth-scene{right:-24%;width:420px;opacity:.18}#page-causal .hero>div[aria-hidden="true"]{width:75%!important;opacity:.1!important}#page-causal .section-hdr .s-sub{display:none}#page-causal #causal-settings{padding:16px}#page-causal .causal-control{flex:1 1 145px}#page-causal .causal-range{flex-basis:100%}#page-causal #causal-run-btn{flex:1}#page-causal .kpi-grid.cols-5{grid-template-columns:repeat(2,minmax(0,1fr))}#page-causal .kpi:last-child{grid-column:span 2}}
-    @media(max-width:480px){#page-causal .causal-earth-scene{right:-42%;width:340px;opacity:.14}#page-causal .hero-title h1{font-size:1.9rem}#page-causal .hero-title .icon{font-size:1.4rem}#page-causal .hero-footnote{font-size:.62rem}#page-causal .kpi{padding:15px}#page-causal .kpi-value{font-size:1.35rem}}
-    @media(prefers-reduced-motion:reduce){#page-causal .causal-earth{animation:none;background-position:center}}
+/* ═══════════════════════════════════════════════
+   CAUSAL DISCOVERY PAGE — PREMIUM CORPORATE UI
+═══════════════════════════════════════════════ */
+#page-causal{
+  --cd-accent:   #79aaa4;
+  --cd-accent2:  #8297b3;
+  --cd-accent3:  #c6a16d;
+  --cd-green:    #78a88c;
+  --cd-red:      #c87979;
+  --cd-line:     rgba(121,170,164,.14);
+  --cd-surface:  rgba(14,22,32,.98);
+  --cd-panel:    rgba(18,28,40,.98);
+  --cd-muted:    #8fa0ad;
+}
+
+/* ── Page fade-in ── */
+#page-causal.active{animation:causalPageFade .32s cubic-bezier(.4,0,.2,1) both}
+@keyframes causalPageFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+#page-causal > :not(style):not(.causal-earth-scene){position:relative;z-index:1}
+
+/* ── Background earth decoration ── */
+#page-causal .causal-earth-scene{
+  position:fixed;z-index:0;right:-8%;top:50vh;
+  width:min(56vw,640px);aspect-ratio:1;
+  transform:translateY(-50%);border-radius:50%;
+  opacity:.22;pointer-events:none;
+  background:radial-gradient(circle at 50% 50%,rgba(75,130,153,.22),transparent 68%);
+}
+#page-causal .causal-earth{
+  position:absolute;inset:8%;overflow:hidden;border-radius:50%;
+  background-color:#06101a;
+  background-image:url('assets/earth_blue_marble.jpg');
+  background-repeat:repeat-x;background-position:0 center;background-size:auto 100%;
+  animation:causalEarthRotate 40s linear infinite;
+  box-shadow:inset -26px -4px 38px rgba(1,7,15,.82),inset 10px 3px 28px rgba(116,194,214,.14),0 0 32px rgba(67,148,169,.2);
+}
+#page-causal .causal-earth::before{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:linear-gradient(90deg,rgba(2,8,16,.76),transparent 36%,rgba(2,8,16,.1) 65%,rgba(1,6,14,.78)),
+             radial-gradient(ellipse at 36% 33%,rgba(151,214,228,.14),transparent 50%);
+  pointer-events:none;
+}
+#page-causal .causal-earth::after{
+  content:'';position:absolute;inset:-1px;border-radius:50%;
+  border:1px solid rgba(117,192,211,.38);
+  box-shadow:inset 0 0 16px rgba(100,190,216,.14),0 0 14px rgba(100,190,216,.15);
+  pointer-events:none;
+}
+@keyframes causalEarthRotate{from{background-position:0 center}to{background-position:-200% center}}
+
+/* ── Hero ── */
+#page-causal .hero{
+  padding:clamp(32px,4.5vw,58px);min-height:300px;margin-bottom:28px;
+  background:linear-gradient(118deg,rgba(20,34,48,.99) 0%,rgba(14,24,35,.98) 68%,rgba(17,33,42,.97) 100%);
+  border-color:rgba(121,170,164,.16);
+  box-shadow:0 2px 0 rgba(255,255,255,.025) inset;
+  position:relative;overflow:hidden;
+}
+#page-causal .hero::before{
+  background:
+    radial-gradient(ellipse 50% 90% at 90% 52%,rgba(121,170,164,.12),transparent 70%),
+    radial-gradient(ellipse 22% 55% at 100% 0%,rgba(79,170,164,.07),transparent 55%);
+}
+#page-causal .hero::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(121,170,164,.026) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(121,170,164,.026) 1px,transparent 1px);
+  background-size:54px 54px;
+  mask-image:linear-gradient(90deg,transparent,#000 25%,#000 70%,transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 25%,#000 70%,transparent);
+}
+#page-causal .hero-eyebrow{
+  font-size:.62rem;letter-spacing:.14em;padding:7px 15px;
+  background:rgba(121,170,164,.09);border-color:rgba(121,170,164,.24);
+  box-shadow:0 0 14px rgba(121,170,164,.07);
+}
+#page-causal .hero-title{gap:14px;margin-bottom:14px}
+#page-causal .hero-title .icon{font-size:2rem;line-height:1;filter:drop-shadow(0 0 10px rgba(121,170,164,.5))}
+#page-causal .hero-title h1{font-size:clamp(2rem,3.2vw,2.9rem);font-weight:700;letter-spacing:-.058em}
+#page-causal .hero-sub{max-width:700px;font-size:.95rem;line-height:1.74;color:#aab8c2}
+#page-causal .hero-actions{margin-top:22px}
+#page-causal .hero-primary{box-shadow:0 5px 20px rgba(121,170,164,.18),0 1px 0 rgba(255,255,255,.18) inset}
+#page-causal .hero-primary:hover{box-shadow:0 8px 28px rgba(121,170,164,.34),0 1px 0 rgba(255,255,255,.22) inset}
+#page-causal .hero-footnote{margin-top:22px;color:#8fa0ad;font-size:.67rem;padding-top:16px;border-top:1px solid rgba(121,170,164,.1)}
+#page-causal .hero-footnote b{color:#c8d5db;font-weight:600}
+
+/* ── Info banner ── */
+#page-causal .banner.info{
+  margin:0 0 32px;padding:16px 20px;
+  background:rgba(121,170,164,.05);border-color:rgba(121,170,164,.18);
+  border-radius:14px;font-size:.82rem;color:#aab7c0;line-height:1.68;
+  box-shadow:0 2px 12px rgba(0,0,0,.1);
+}
+#page-causal .banner.info strong{color:#d0dce2}
+
+/* ── Section headers ── */
+#page-causal .section-hdr{
+  margin:38px 0 18px;padding-bottom:14px;
+  border-color:var(--cd-line);
+}
+#page-causal .section-hdr h2{font-size:1.05rem;font-weight:700;letter-spacing:-.018em}
+#page-causal .section-hdr .s-icon{color:var(--cd-accent)}
+#page-causal .section-hdr .s-icon::before{
+  content:'';width:8px;height:8px;border-radius:3px;
+  background:var(--cd-accent);box-shadow:0 0 14px rgba(121,170,164,.35);
+}
+#page-causal .section-hdr .s-sub{font-size:.68rem;color:#8a9ba7}
+
+/* ── Settings panel ── */
+.cd-settings-panel{
+  display:flex;align-items:end;gap:16px;flex-wrap:wrap;
+  padding:22px 26px;margin-bottom:4px;
+  border:1px solid rgba(121,170,164,.18);border-radius:18px;
+  background:linear-gradient(142deg,rgba(18,28,40,.98),rgba(13,21,32,.99));
+  box-shadow:0 6px 24px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+/* Controls inside settings */
+#page-causal .causal-control{
+  display:grid;gap:8px;min-width:148px;
+  font-size:.62rem;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:#a2b0bc;
+}
+#page-causal select{
+  height:40px!important;min-width:150px;
+  padding:0 32px 0 13px!important;
+  border:1px solid rgba(121,170,164,.22)!important;border-radius:10px!important;
+  background:rgba(10,17,26,.9)!important;color:#dde6ea!important;
+  font:500 .78rem 'Urbanist',sans-serif!important;
+  outline:none;cursor:pointer;
+  transition:border-color .18s ease,box-shadow .18s ease;
+  appearance:auto;
+}
+#page-causal select:hover{border-color:rgba(121,170,164,.4)!important}
+#page-causal select:focus{border-color:var(--cd-accent)!important;box-shadow:0 0 0 3px rgba(121,170,164,.12)!important}
+#page-causal .causal-range{min-width:220px}
+#page-causal .causal-range-row{display:flex;align-items:center;gap:12px;margin-top:4px}
+#page-causal .causal-range input[type=range]{width:160px;accent-color:var(--cd-accent)}
+#page-causal #causal-min-str-val{
+  min-width:34px;font-size:.8rem!important;font-weight:800;
+  color:var(--cd-accent)!important;letter-spacing:.02em;
+}
+#page-causal #causal-run-btn{
+  height:40px!important;padding:0 22px!important;border-radius:10px!important;
+  background:linear-gradient(135deg,#79aaa4,#6a9d97)!important;
+  color:#071a1a!important;border:none!important;
+  font:700 .78rem 'Urbanist',sans-serif!important;cursor:pointer;
+  box-shadow:0 4px 16px rgba(121,170,164,.22)!important;
+  transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+#page-causal #causal-run-btn:hover{
+  transform:translateY(-2px)!important;
+  box-shadow:0 8px 24px rgba(121,170,164,.36)!important;
+  filter:brightness(1.06)!important;
+}
+#page-causal #causal-status{
+  font-size:.7rem!important;color:#8fa0ad!important;
+  align-self:center;letter-spacing:.03em;
+}
+
+/* ── KPI strip ── */
+#page-causal .kpi-grid{gap:12px;margin:20px 0 32px!important}
+#page-causal .kpi{
+  padding:18px 20px;
+  background:linear-gradient(148deg,rgba(20,32,45,.97),rgba(14,22,33,.98));
+  border-color:rgba(121,170,164,.14);border-radius:14px;
+  box-shadow:0 2px 0 rgba(255,255,255,.02) inset,0 6px 20px rgba(0,0,0,.14);
+}
+#page-causal .kpi-label{font-size:.6rem;letter-spacing:.12em;color:#8fa0ad;text-transform:uppercase}
+#page-causal .kpi-value{font-size:1.6rem;font-weight:700;letter-spacing:-.03em}
+#page-causal .kpi::after{background:linear-gradient(90deg,transparent,rgba(121,170,164,.44),transparent)}
+
+/* ── Graph cards ── */
+.cd-graph-card{
+  border:1px solid rgba(121,170,164,.18);border-radius:18px;
+  overflow:hidden;position:relative;
+  box-shadow:0 8px 28px rgba(0,0,0,.2);
+  background:#0b1420;
+}
+.cd-graph-card canvas{
+  display:block;width:100%;
+  background:radial-gradient(ellipse at 50% 35%,rgba(14,32,46,.95),rgba(8,14,22,.98) 78%)!important;
+}
+.cd-graph-placeholder{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;pointer-events:none;
+  color:var(--cd-muted);font-size:.84rem;text-align:center;
+  background:radial-gradient(ellipse at 50% 50%,rgba(14,22,32,.8),rgba(8,14,22,.96));
+}
+.cd-graph-placeholder .cd-ph-icon{font-size:2.4rem;opacity:.4}
+.cd-graph-caption{
+  font-size:.72rem;color:#8799a6;line-height:1.6;
+  margin:10px 0 0;padding:0 2px;
+}
+
+/* ── District layout ── */
+.cd-district-layout{
+  display:grid;grid-template-columns:minmax(250px,.7fr) minmax(0,1.8fr);
+  align-items:stretch;gap:16px;margin-bottom:8px;
+}
+.cd-map-card{
+  padding:20px;
+  border:1px solid rgba(121,170,164,.18);border-radius:18px;
+  background:linear-gradient(148deg,rgba(17,27,40,.98),rgba(12,20,31,.99));
+  box-shadow:0 6px 22px rgba(0,0,0,.16);
+}
+.cd-map-label{
+  font-size:.6rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--cd-accent);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.cd-map-label::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:var(--cd-accent);box-shadow:0 0 8px rgba(121,170,164,.8);flex-shrink:0;
+  animation:sec-pulse 2.4s ease-in-out infinite;
+}
+.cd-map-hint{font-size:.7rem;color:var(--cd-muted);margin-top:10px;line-height:1.5}
+
+.cd-district-card{
+  padding:22px;min-width:0;
+  border:1px solid rgba(121,170,164,.18);border-radius:18px;
+  background:linear-gradient(148deg,rgba(17,27,40,.98),rgba(12,20,31,.99));
+  box-shadow:0 6px 22px rgba(0,0,0,.16);
+}
+.cd-district-head{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:14px;flex-wrap:wrap;margin-bottom:16px;
+  padding-bottom:14px;border-bottom:1px solid var(--cd-line);
+}
+.cd-district-head h3{margin:0;font-size:.92rem;font-weight:700;color:var(--t1);letter-spacing:-.015em}
+.cd-district-select-wrap{
+  display:flex;align-items:center;gap:8px;
+  font-size:.68rem;font-weight:700;color:var(--cd-muted);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+#page-causal #causal-district-status{
+  font-size:.7rem!important;color:var(--cd-muted)!important;
+  margin-top:10px;line-height:1.5;
+}
+
+/* ── Edge table (details accordion) ── */
+.cd-details{
+  margin-top:22px;
+  border:1px solid var(--cd-line);border-radius:16px;
+  overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.12);
+}
+.cd-details summary{
+  display:flex;align-items:center;gap:10px;
+  padding:15px 20px;cursor:pointer;
+  font-size:.86rem;font-weight:700;color:var(--t1);
+  background:linear-gradient(90deg,rgba(17,27,38,.98),rgba(13,21,31,.98));
+  list-style:none;
+  transition:background .18s ease;
+}
+.cd-details summary::-webkit-details-marker{display:none}
+.cd-details summary::after{
+  content:'↓';margin-left:auto;font-size:.78rem;color:var(--cd-muted);
+  transition:transform .22s ease;
+}
+.cd-details[open] summary{
+  background:linear-gradient(90deg,rgba(20,32,44,.99),rgba(14,23,33,.99));
+  border-bottom:1px solid var(--cd-line);
+}
+.cd-details[open] summary::after{transform:rotate(180deg)}
+.cd-details-body{
+  padding:18px 20px;
+  background:linear-gradient(145deg,rgba(14,22,32,.98),rgba(10,17,25,.99));
+}
+/* Method text */
+.cd-method-body{
+  font-size:.82rem;line-height:1.75;color:var(--t2);
+}
+.cd-method-body p{margin:0 0 10px}
+.cd-method-body p:last-child{margin:0}
+.cd-method-body strong{color:var(--t1)}
+
+/* ── DL button ── */
+#page-causal #causal-dl-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  margin-top:14px;height:36px!important;padding:0 16px!important;
+  border:1px solid rgba(121,170,164,.24)!important;border-radius:9px!important;
+  background:rgba(121,170,164,.07)!important;color:var(--t2)!important;
+  font:600 .72rem 'Urbanist',sans-serif!important;cursor:pointer;
+  transition:border-color .18s ease,background .18s ease;
+}
+#page-causal #causal-dl-btn:hover{
+  border-color:rgba(121,170,164,.5)!important;
+  background:rgba(121,170,164,.14)!important;
+  color:var(--t1)!important;
+}
+
+/* ── Page footer ── */
+#page-causal .ep-footer{
+  margin-top:48px;padding:22px 0 6px;
+  border-top:1px solid rgba(121,170,164,.12);
+  text-align:center;font-size:.7rem;color:#758793;letter-spacing:.04em;
+  position:relative;
+}
+#page-causal .ep-footer::before{
+  content:'';position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  width:80px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--cd-accent),transparent);opacity:.5;
+}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  .cd-district-layout{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  #page-causal .hero{min-height:0;padding:30px 24px}
+  #page-causal .causal-earth-scene{right:-22%;width:380px;opacity:.16}
+  #page-causal .section-hdr .s-sub{display:none}
+  .cd-settings-panel{padding:16px 18px}
+  #page-causal .causal-control{flex:1 1 140px}
+  #page-causal .causal-range{flex-basis:100%}
+  #page-causal #causal-run-btn{flex:1}
+  #page-causal .kpi-grid.cols-5{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #page-causal .kpi:last-child{grid-column:span 2}
+}
+@media(max-width:480px){
+  #page-causal .causal-earth-scene{right:-40%;width:300px;opacity:.12}
+  #page-causal .hero-title h1{font-size:1.95rem}
+  #page-causal .hero-title .icon{font-size:1.5rem}
+  #page-causal .kpi-value{font-size:1.3rem}
+}
+@media(prefers-reduced-motion:reduce){
+  #page-causal .causal-earth{animation:none;background-position:center}
+}
   </style>
 
-  <div class="hero" style="position:relative;overflow:hidden;">
-    <div style="position:relative;z-index:1;">
-      <div class="hero-eyebrow"><i style="width:7px;height:7px;border-radius:50%;background:#54d0a4;box-shadow:0 0 10px rgba(84,208,164,.6);display:inline-block;"></i>UTTARAKHAND-WIDE + DISTRICT DRILL-DOWN</div>
-      <div class="hero-title"><h1>Causal Discovery</h1></div>
-      <p class="hero-sub">The state-wide graph stays at the top. Below it, choose a district from the map to inspect its own rainfall, soil moisture, vegetation and temperature anomaly relationships and lags. These are statistical associations, with no AI explanation.</p>
-      <div class="hero-actions">
-        <button class="hero-primary" onclick="causal.runAnalysis()">Run Causal Analysis <span>&#8594;</span></button>
-      </div>
-      <div class="hero-footnote">
-        <i style="width:7px;height:7px;border-radius:50%;background:#54d0a4;display:inline-block;"></i>
-        <b>126 state-wide monthly observations</b> &nbsp;&middot;&nbsp; 13 district drill-downs &nbsp;&middot;&nbsp; GPM, SMAP, NDVI, LST
-      </div>
+  <div class="hero">
+    <div class="hero-eyebrow"><i></i>UTTARAKHAND-WIDE + DISTRICT DRILL-DOWN</div>
+    <div class="hero-title">
+      <span class="icon">🔗</span>
+      <h1>Causal Discovery</h1>
+    </div>
+    <p class="hero-sub">The state-wide graph stays at the top. Below it, choose a district from the map to inspect its own rainfall, soil moisture, vegetation and temperature anomaly relationships and lags. These are statistical associations, not proved causes.</p>
+    <div class="hero-actions">
+      <button class="hero-primary" onclick="causal.runAnalysis()">Run Causal Analysis <span>→</span></button>
+    </div>
+    <div class="hero-footnote">
+      <span class="hero-footnote-dot"></span>
+      <b>126 state-wide monthly observations</b>
+      <b>·</b> 13 district drill-downs <b>·</b> GPM · SMAP · NDVI · LST
     </div>
   </div>
 
@@ -2848,84 +3116,117 @@ img, canvas, svg, table { max-width: 100%; }
 
   <div class="banner info"><strong>How to read both graphs:</strong> Green means the signals tend to move together; red means they tend to move in opposite directions. A label such as “−20% usual swing · 2 mo” means the target tends to move down by about one-fifth of its usual variation, two months after a typical rise in the source. This percentage describes relationship size—not accuracy, probability, or a 20% change in actual rainfall/temperature. Same-month lines have no arrow because neither signal came first.</div>
 
-  <div class="section-hdr"><span class="s-icon">&#9881;</span><h2>Analysis settings</h2></div>
-  <div class="pred-panel" id="causal-settings" style="display:flex;align-items:end;gap:16px;flex-wrap:wrap;">
+  <div class="section-hdr"><span class="s-icon">⚙</span><h2>Analysis settings</h2></div>
+  <div class="cd-settings-panel" id="causal-settings">
     <label class="causal-control">Max lag (months)
-      <select id="causal-tau-max" style="height:36px;padding:0 10px;border:1px solid var(--border-h);border-radius:7px;color:var(--t1);background:var(--bg-base);font-family:inherit;">
-        <option value="3">3 months</option><option value="4">4 months</option><option value="6" selected>6 months</option>
+      <select id="causal-tau-max">
+        <option value="3">3 months</option>
+        <option value="4">4 months</option>
+        <option value="6" selected>6 months</option>
       </select>
     </label>
-    <label class="causal-control">Significance (&alpha;)
-      <select id="causal-alpha" style="height:36px;padding:0 10px;border:1px solid var(--border-h);border-radius:7px;color:var(--t1);background:var(--bg-base);font-family:inherit;">
-        <option value="0.01">0.01 (strict)</option><option value="0.05" selected>0.05 (standard)</option><option value="0.10">0.10 (lenient)</option>
+    <label class="causal-control">Significance (α)
+      <select id="causal-alpha">
+        <option value="0.01">0.01 — strict</option>
+        <option value="0.05" selected>0.05 — standard</option>
+        <option value="0.10">0.10 — lenient</option>
       </select>
     </label>
     <label class="causal-control causal-range">Min strength to show
-      <span class="causal-range-row"><input id="causal-min-strength" type="range" min="0" max="0.5" step="0.01" value="0.05" style="width:130px;accent-color:var(--accent);" oninput="document.getElementById('causal-min-str-val').textContent=parseFloat(this.value).toFixed(2)">
-      <output id="causal-min-str-val" style="font-size:.65rem;color:var(--accent);">0.05</output></span>
+      <span class="causal-range-row">
+        <input id="causal-min-strength" type="range" min="0" max="0.5" step="0.01" value="0.05"
+          oninput="document.getElementById('causal-min-str-val').textContent=parseFloat(this.value).toFixed(2)">
+        <output id="causal-min-str-val">0.05</output>
+      </span>
     </label>
-    <button id="causal-run-btn" onclick="causal.runAnalysis()" style="height:42px;padding:0 24px;background:var(--accent);color:#092027;border:none;border-radius:9px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;">&#9654; Update graphs</button>
-    <div id="causal-status" style="font-size:.75rem;color:var(--t3);align-self:center;"></div>
+    <button id="causal-run-btn" onclick="causal.runAnalysis()">▶ Update graphs</button>
+    <div id="causal-status"></div>
   </div>
 
-  <div class="kpi-grid cols-5" style="margin-top:20px;">
-    <div class="kpi"><div class="kpi-label">Significant Links</div><div class="kpi-value" id="kpi-causal-links">&#8212;</div></div>
-    <div class="kpi"><div class="kpi-label">State Months</div><div class="kpi-value" id="kpi-causal-observations">126</div></div>
-    <div class="kpi"><div class="kpi-label">Variables Tested</div><div class="kpi-value">4</div></div>
-    <div class="kpi"><div class="kpi-label">Chain Complete</div><div class="kpi-value" id="kpi-causal-chain">&#8212;</div></div>
-    <div class="kpi"><div class="kpi-label">Top Strength</div><div class="kpi-value" id="kpi-causal-top">&#8212;</div></div>
+  <div class="kpi-grid cols-5">
+    <div class="kpi" style="--kpi-color:var(--accent)"><div class="kpi-label">Significant Links</div><div class="kpi-value" id="kpi-causal-links">—</div><div class="kpi-delta">FDR-adjusted pairs</div></div>
+    <div class="kpi" style="--kpi-color:var(--accent2)"><div class="kpi-label">State Months</div><div class="kpi-value" id="kpi-causal-observations">126</div><div class="kpi-delta">monthly observations</div></div>
+    <div class="kpi" style="--kpi-color:var(--green)"><div class="kpi-label">Variables Tested</div><div class="kpi-value">4</div><div class="kpi-delta">satellite signals</div></div>
+    <div class="kpi" style="--kpi-color:var(--accent3)"><div class="kpi-label">Chain Complete</div><div class="kpi-value" id="kpi-causal-chain">—</div><div class="kpi-delta">full causal chain</div></div>
+    <div class="kpi" style="--kpi-color:var(--purple)"><div class="kpi-label">Top Strength</div><div class="kpi-value" id="kpi-causal-top">—</div><div class="kpi-delta">highest |ρ| found</div></div>
   </div>
 
-  <div class="section-hdr"><span class="s-icon">&#128312;</span><h2>Uttarakhand-wide relationship graph</h2><span class="s-sub">All-state monthly series &middot; Green = positive &middot; Red = inverse &middot; Labels show approximate change</span></div>
-  <div class="card causal-graph-card" style="padding:0;overflow:hidden;position:relative;">
-    <canvas id="causal-graph-canvas" style="width:100%;height:520px;display:block;background:#0a1520;"></canvas>
-    <div id="causal-graph-placeholder" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:.88rem;pointer-events:none;">Run analysis to draw the state-wide graph.</div>
+  <div class="section-hdr">
+    <span class="s-icon">🔵</span>
+    <h2>Uttarakhand-wide relationship graph</h2>
+    <span class="s-sub">All-state monthly series · Green = positive · Red = inverse · Labels show approximate change</span>
   </div>
-  <p class="caption" style="margin-top:8px;">Nodes: precipitation, morning soil moisture, vegetation greenness, and surface temperature. Click a node to highlight its links.</p>
-
-  <div class="section-hdr" style="margin-top:34px;"><span class="s-icon">&#128269;</span><h2>District-by-district view</h2><span class="s-sub">Select from the map or menu · local graph updates without AI</span></div>
-  <style>@media(max-width:760px){#causal-district-layout{grid-template-columns:1fr!important;}}</style>
-  <div class="card-grid" id="causal-district-layout" style="grid-template-columns:minmax(260px,.72fr) minmax(0,1.7fr);align-items:stretch;">
-    <div class="card causal-map-card" style="padding:18px;">
-      <div style="font-size:.68rem;color:var(--t3);letter-spacing:.1em;font-weight:700;margin-bottom:8px;">UTTARAKHAND DISTRICTS</div>
-      <svg id="causal-district-map" viewBox="0 0 360 420" role="img" aria-label="Click a district to inspect its satellite relationships" style="width:100%;height:auto;max-height:470px;display:block;cursor:pointer;"></svg>
-      <div style="font-size:.72rem;color:var(--t3);margin-top:8px;">Selected district is highlighted in teal. Click a district to switch the graph.</div>
+  <div class="cd-graph-card">
+    <canvas id="causal-graph-canvas" style="width:100%;height:520px;"></canvas>
+    <div id="causal-graph-placeholder" class="cd-graph-placeholder">
+      <span class="cd-ph-icon">🔗</span>
+      Run analysis to draw the state-wide graph.
     </div>
-    <div class="card causal-district-card" style="padding:18px;min-width:0;">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
-        <h3 id="causal-district-title" style="margin:0;">District lagged relationships</h3>
-        <label style="font-size:.72rem;color:var(--t2);">District <select id="causal-district" style="height:34px;margin-left:6px;padding:0 10px;border:1px solid var(--border-h);border-radius:7px;color:var(--t1);background:var(--bg-base);font-family:inherit;"></select></label>
+  </div>
+  <p class="cd-graph-caption">Nodes: precipitation, morning soil moisture, vegetation greenness, and surface temperature. Click a node to highlight its links.</p>
+
+  <div class="section-hdr" style="margin-top:40px;">
+    <span class="s-icon">🔍</span>
+    <h2>District-by-district view</h2>
+    <span class="s-sub">Select from the map or the menu · graph updates instantly</span>
+  </div>
+
+  <div class="cd-district-layout" id="causal-district-layout">
+    <div class="cd-map-card">
+      <div class="cd-map-label">Uttarakhand Districts</div>
+      <svg id="causal-district-map" viewBox="0 0 360 420" role="img"
+        aria-label="Click a district to inspect its satellite relationships"
+        style="width:100%;height:auto;max-height:470px;display:block;cursor:pointer;"></svg>
+      <p class="cd-map-hint">Selected district highlighted in teal. Click to switch the graph.</p>
+    </div>
+
+    <div class="cd-district-card">
+      <div class="cd-district-head">
+        <h3 id="causal-district-title">District lagged relationships</h3>
+        <div class="cd-district-select-wrap">
+          District
+          <select id="causal-district"></select>
+        </div>
       </div>
-      <div class="card causal-graph-card" style="padding:0;overflow:hidden;position:relative;">
-        <canvas id="causal-district-graph-canvas" style="width:100%;height:420px;display:block;background:#0a1520;"></canvas>
-        <div id="causal-district-graph-placeholder" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:.88rem;pointer-events:none;">Select a district to draw its graph.</div>
+      <div class="cd-graph-card">
+        <canvas id="causal-district-graph-canvas" style="width:100%;height:420px;"></canvas>
+        <div id="causal-district-graph-placeholder" class="cd-graph-placeholder">
+          <span class="cd-ph-icon">📍</span>
+          Select a district to draw its graph.
+        </div>
       </div>
-      <div id="causal-district-status" style="font-size:.73rem;color:var(--t3);margin-top:9px;"></div>
+      <div id="causal-district-status"></div>
     </div>
   </div>
-  <p class="caption" style="margin-top:8px;">District lines show the estimated target shift as a share of its usual monthly variation, not as raw rainfall or temperature percentages. For example, −20% means about one-fifth of the usual swing lower—not a 20% drop in actual temperature or rainfall.</p>
+  <p class="cd-graph-caption">District lines show the estimated target shift as a share of its usual monthly variation, not as raw mm or °C values.</p>
 
-  <details open class="causal-details" style="margin-top:28px;">
-    <summary style="cursor:pointer;font-size:.88rem;font-weight:600;color:var(--t2);padding:12px 0;border-top:1px solid var(--border);">&#128203; What each district relationship means</summary>
-    <div class="table-wrap" style="margin-top:12px;overflow-x:auto;">
-      <table class="ep-table" id="causal-edge-table">
-        <thead><tr><th>Signals</th><th>Approximate usual-swing change</th><th>When</th></tr></thead>
-        <tbody id="causal-edge-tbody"><tr><td colspan="3" style="color:var(--t3);text-align:center;padding:20px;">Select a district to populate.</td></tr></tbody>
-      </table>
+  <details open class="cd-details" style="margin-top:22px;">
+    <summary>📋 What each district relationship means</summary>
+    <div class="cd-details-body">
+      <div class="table-wrap" style="overflow-x:auto;">
+        <table class="ep-table" id="causal-edge-table">
+          <thead><tr><th>Signals</th><th>Approx. usual-swing change</th><th>When</th></tr></thead>
+          <tbody id="causal-edge-tbody">
+            <tr><td colspan="3" style="color:var(--t3);text-align:center;padding:22px;">Select a district to populate.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <button id="causal-dl-btn" onclick="causal.downloadCSV()">↓ Download CSV</button>
     </div>
-    <button id="causal-dl-btn" onclick="causal.downloadCSV()" style="margin-top:12px;height:34px;padding:0 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:7px;color:var(--t2);font-family:inherit;font-size:.76rem;cursor:pointer;">&#8595; Download CSV</button>
   </details>
 
-  <details class="causal-details" style="margin-top:14px;">
-    <summary style="cursor:pointer;font-size:.88rem;font-weight:600;color:var(--t2);padding:12px 0;border-top:1px solid var(--border);">&#128300; Data and method</summary>
-    <div style="font-size:.82rem;line-height:1.75;color:var(--t2);padding:14px 0;">
-      <p><strong>State graph:</strong> Uses the Uttarakhand-wide monthly GPM, SMAP, NDVI, and LST series (126 observations). <strong>District graph:</strong> Uses monthly means of each district&rsquo;s satellite robust-z anomaly grid (117 observations, Jan 2016–Sep 2025). District values are deviations from normal (σ), not raw mm or °C.</p>
+  <details class="cd-details" style="margin-top:14px;">
+    <summary>🔬 Data and method</summary>
+    <div class="cd-details-body">
+      <div class="cd-method-body">
+        <p><strong>State graph:</strong> Uses the Uttarakhand-wide monthly GPM, SMAP, NDVI, and LST series (126 observations). <strong>District graph:</strong> Uses monthly means of each district&rsquo;s satellite robust-z anomaly grid (117 observations, Jan 2016–Sep 2025). District values are deviations from normal (σ), not raw mm or °C.</p>
       <p style="margin-top:8px;"><strong>Method:</strong> Lagged partial correlations across each series, with Benjamini-Hochberg correction (q &lt; selected α). Green indicates positive association; red indicates negative association.</p>
       <p style="margin-top:8px;"><strong>Limits:</strong> These are lagged associations, not causal effects. District averaging hides within-district variation, and monthly data cannot resolve shorter events.</p>
+      </div>
     </div>
   </details>
 
-  <div class="ep-footer">EARTHPULSE-X &middot; Causal Discovery &middot; District Drill-Down &middot; NASA Space Apps 2026</div>
+  <div class="ep-footer">EARTHPULSE-X · Causal Discovery · District Drill-Down · NASA Space Apps 2026</div>
 </section>
 
 
