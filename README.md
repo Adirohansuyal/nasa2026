@@ -234,6 +234,69 @@ The Causal Discovery page explores how four monthly satellite signals move toget
 </tr>
 </table>
 
+### 📖 How to Read a District Relationship — Plain English Guide
+
+The app shows a table for every district that lists which signals are linked, by how much, and with what delay. Here is how to read it, using real rows from the data.
+
+---
+
+**The table has three columns:**
+
+| Column | What it means |
+|:---|:---|
+| **Signals** | Which two things are connected, and in which direction (→ means one comes before the other; ↔ means they move together in the same month) |
+| **Approximate Usual-Swing Change** | If the first signal goes up by its normal amount, how much does the second signal shift — expressed as a share of *its* normal range of movement |
+| **When** | How many months later the second signal responds |
+
+---
+
+**Worked examples from a real district:**
+
+> **Surface temperature → Vegetation greenness · 40% lower · 1 month later**
+
+Think of it this way: in a typical month, surface temperature swings by a certain amount. When it rises by that usual amount, vegetation greenness tends to be about **40% lower than its own normal swing** — one month after. In plain terms: hotter land this month usually means noticeably less green vegetation next month.
+
+---
+
+> **Precipitation (GPM) ↔ Soil moisture (morning) · 45% higher · Same month**
+
+When rainfall goes up by its usual amount in a given month, morning soil moisture in that same month tends to be about **45% higher than its normal swing**. No delay — the ground soaks up the rain immediately. This one is intuitive: more rain, wetter soil, right away.
+
+---
+
+> **Surface temperature → Vegetation greenness · 35% lower · 2 months later**
+
+Same relationship as above, but the effect shows up **two months later** instead of one. The land gets hot, and two months down the line the vegetation is still feeling it — greenness is about 35% below its normal variation.
+
+---
+
+> **Vegetation greenness → Surface temperature · 32% lower · 2 months later**
+
+This one goes the other direction: when vegetation greenness rises by its usual amount, surface temperature tends to be about **32% lower than normal** two months later. More plants → more shade and evapotranspiration → cooler land. This is the feedback loop working in reverse.
+
+---
+
+> **Soil moisture (morning) → Precipitation (GPM) · 54% lower · 6 months later**
+
+A wetter-than-usual soil today is linked to **54% less rainfall six months later**. This is a slower feedback — possibly reflecting seasonal patterns where moisture gets locked up in one phase of the year before precipitation drops off.
+
+---
+
+**What "usual swing" means — the key concept**
+
+Each satellite signal fluctuates month to month. "Usual swing" is roughly the normal size of that fluctuation (think of it as one standard deviation of the signal's monthly anomaly). The percentage in the table does **not** mean "40% less rainfall in millimetres." It means: given a one-standard-deviation rise in the source, the target shifts by 40% of *its own* standard deviation. It is a relative, standardised measure — which is why you can compare a temperature relationship and a rainfall relationship on the same scale.
+
+---
+
+**What these results are — and are not**
+
+- ✅ These are statistically significant associations after multiple-testing correction (Benjamini–Hochberg FDR, q < 0.05).
+- ✅ The time direction (→) shows which signal leads, based on the lag at which the association was strongest.
+- ❌ They do **not** prove that one signal *causes* the other. Unmeasured factors, seasonality, and district-level averaging can all create apparent links.
+- ❌ The percentages are not prediction accuracy scores. They describe the typical *size* of the association, not how reliably it repeats every month.
+
+Use these links as a starting point for investigation — they tell you *where to look*, not *what is definitely true*.
+
 ---
 
 ## 🤖 AI Stack
