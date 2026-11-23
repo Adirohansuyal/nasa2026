@@ -4,7 +4,7 @@ __pycache__/
 .venv/
 venv/
 
-# Environment variables
+# Environment
 .env
 
 # Jupyter
