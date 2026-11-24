@@ -12,7 +12,7 @@ research/.venv/bin/streamlit run research/app.py
 
 The **Land-cover distribution** page has a year selector for the annual Dynamic World distribution and vertical class bars labeled with hectares and the share of total district area. The **District trends** page compares all classes per district and statewide, shows annual class series, and ranks each district's largest estimated increase and decrease. Its map timeline renders the selected year's Dynamic World class mode inside the selected district; change the year and class to compare, for example, built-up pixels in Udham Singh Nagar.
 
-The map timeline queries Earth Engine when a new district/year/class is selected. It needs the same locally authenticated Earth Engine account and network access as the annual data script. The map renders native Dynamic World map tiles clipped to the selected GAUL district boundary; it is a spatial view of the annual modal labels, while the CSV trend estimates remain 500 m sampled district summaries. 2015 is partial.
+The map timeline queries Earth Engine when a new district/class is selected and provides a play/pause control across 2015–2025. Each year compares the annual modal class mask with the prior year: persistent class pixels keep the class color, new pixels are green, and pixels that left the class are blue. Frames cross-fade after the incoming map tiles load. The ha figure and net annual difference use the 500 m CSV estimates. It needs the same locally authenticated Earth Engine account and network access as the annual data script. The map itself renders native Dynamic World map tiles clipped to the selected GAUL district boundary over an attributed OpenStreetMap basemap. 2015 is partial.
 
 ## Generate annual land-cover data and trends
 

@@ -1,9 +1,9 @@
 from pathlib import Path
+import json
 
 import altair as alt
 import numpy as np
 import pandas as pd
-import pydeck as pdk
 import streamlit as st
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -113,8 +113,8 @@ def add_rate_end_labels(chart: alt.Chart, frame: pd.DataFrame, x_field: str) -> 
 
 
 @st.cache_data(ttl=1800, show_spinner=False)
-def get_dynamic_world_map(district_name: str, year: int, class_index: int, class_color: str):
-    """Return a temporary Earth Engine tile URL and its district outline."""
+def get_dynamic_world_timeline(district_name: str, class_index: int, class_color: str):
+    """Build short-lived annual EE map tile URLs and return the district outline."""
     import ee
 
     ee.Initialize(project=EE_PROJECT)
@@ -129,21 +129,49 @@ def get_dynamic_world_map(district_name: str, year: int, class_index: int, class
         raise ValueError(f"Earth Engine mein {district_name} district nahi mila.")
 
     region = district.geometry()
-    scenes = (
-        ee.ImageCollection(DYNAMIC_WORLD_ID)
-        .filterBounds(region)
-        .filterDate(f"{year}-01-01", f"{year + 1}-01-01")
-    )
-    if scenes.size().getInfo() == 0:
-        raise ValueError(f"Dynamic World mein {year} ke liye koi scenes nahi mile.")
-    source_projection = ee.Image(scenes.first()).select("label").projection()
-    annual_label = scenes.select("label").mode().setDefaultProjection(source_projection).clip(region)
-    class_mask = annual_label.eq(class_index).selfMask()
-    map_id = class_mask.getMapId({"min": 1, "max": 1, "palette": [class_color]})
-    geometry = region.simplify(500).getInfo()
-    outline = {"type": "Feature", "geometry": geometry, "properties": {"district": district_name}}
+    outline_geometry = region.simplify(500).getInfo()
+    map_urls = {}
+    annual_labels = {}
+    for year in range(2015, 2026):
+        start = ee.Date.fromYMD(year, 1, 1)
+        end = ee.Date.fromYMD(year + 1, 1, 1)
+        scenes = ee.ImageCollection(DYNAMIC_WORLD_ID).filterBounds(region).filterDate(start, end)
+        source_projection = ee.Image(scenes.first()).select("label").projection()
+        annual_label = (
+            scenes.select("label")
+            .mode()
+            .setDefaultProjection(source_projection)
+            .unmask(255)
+            .clip(region)
+        )
+        annual_labels[year] = annual_label
+        current = annual_label.eq(class_index)
+        if year == 2015:
+            status = current.selfMask()
+            palette = [class_color]
+        else:
+            previous_label = annual_labels[year - 1]
+            previous = previous_label.eq(class_index)
+            valid = annual_label.neq(255).And(previous_label.neq(255))
+            stable = valid.And(current).And(previous)
+            gained = valid.And(current).And(previous.Not())
+            lost = valid.And(previous).And(current.Not())
+            any_change = stable.Or(gained).Or(lost)
+            status = (
+                ee.Image.constant(0)
+                .setDefaultProjection(source_projection)
+                .where(stable, 1)
+                .where(gained, 2)
+                .where(lost, 3)
+                .updateMask(any_change)
+                .clip(region)
+            )
+            palette = [class_color, "#82e07b", "#59b7e4"]
+        map_id = status.getMapId({"min": 1, "max": len(palette), "palette": palette})
+        map_urls[year] = map_id["tile_fetcher"].url_format
+    outline = {"type": "Feature", "geometry": outline_geometry, "properties": {"district": district_name}}
     center = region.centroid(1000).coordinates().getInfo()
-    return map_id["tile_fetcher"].url_format, outline, center
+    return map_urls, outline, center
 
 with st.container(horizontal=True):
     st.metric("District", district, border=True)
@@ -173,58 +201,162 @@ st.markdown(
 
 with st.container(border=True):
     st.subheader(f"{cover_class} map timeline · {district}")
-    map_year = st.select_slider(
-        "Map year",
-        options=list(range(2015, 2026)),
-        value=2025,
-        key="dynamic_world_map_year",
-        help="2015 is partial because Dynamic World starts on 27 June; each other layer is the year's most frequent class label.",
-    )
     class_index = next(index for label, index, _ in MAP_CLASSES if label == cover_class)
     class_color = next(color for label, _, color in MAP_CLASSES if label == cover_class)
+    map_area_series = annual[
+        (annual["district"] == district) & (annual["class_label"] == cover_class)
+    ].set_index("year")["area_ha"]
+    map_areas = [
+        float(map_area_series.get(year, np.nan)) if pd.notna(map_area_series.get(year, np.nan)) else None
+        for year in range(2015, 2026)
+    ]
     try:
-        with st.spinner(f"Loading {map_year} Dynamic World map…"):
-            tile_url, district_outline, map_center = get_dynamic_world_map(
-                district, map_year, class_index, class_color
+        with st.spinner("Preparing annual Dynamic World maps…"):
+            map_urls, district_outline, map_center = get_dynamic_world_timeline(
+                district, class_index, class_color
             )
-        map_layers = [
-            pdk.Layer(
-                "TileLayer",
-                data=tile_url,
-                min_zoom=5,
-                max_zoom=15,
-                tile_size=256,
-                opacity=0.88,
-            ),
-            pdk.Layer(
-                "GeoJsonLayer",
-                data=district_outline,
-                stroked=True,
-                filled=False,
-                get_line_color=[235, 242, 237, 230],
-                get_line_width=2,
-                line_width_min_pixels=2,
-                pickable=False,
-            ),
-        ]
-        st.pydeck_chart(
-            pdk.Deck(
-                layers=map_layers,
-                initial_view_state=pdk.ViewState(
-                    latitude=map_center[1],
-                    longitude=map_center[0],
-                    zoom=7 if district == "Uttarakhand" else 8,
-                    pitch=0,
-                ),
-                map_style="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
-                tooltip={"text": "Dynamic World · " + cover_class + " · " + str(map_year)},
-            ),
-            height=560,
-            width="stretch",
+        timeline_data = json.dumps(
+            {
+                "years": list(map_urls),
+                "tiles": map_urls,
+                "outline": district_outline,
+                "center": map_center,
+                "areas": map_areas,
+                "classColor": class_color,
+            },
+            separators=(",", ":"),
         )
+        component_html = """
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+html, body { margin: 0; padding: 0; background: #101713; color: #e7f2ed; font-family: system-ui, sans-serif; }
+.timeline { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; background: #18221d; border: 1px solid #2c3b33; border-radius: 12px 12px 0 0; }
+.timeline button { border: 1px solid #3f6f5d; border-radius: 8px; color: #e7f2ed; background: #1b6d52; padding: 9px 15px; font-weight: 650; cursor: pointer; }
+.timeline input { width: 100%; accent-color: #42b883; cursor: pointer; }
+.year { min-width: 170px; text-align: right; color: #76d5ac; font-size: 20px; font-weight: 750; }
+.year small { display: block; color: #c4d1ca; font-size: 12px; font-weight: 500; }
+.map-wrap { position: relative; }
+#map { width: 100%; height: 550px; border-radius: 0 0 12px 12px; background: #18221d; }
+.map-legend { position: absolute; z-index: 500; top: 12px; right: 12px; display: grid; gap: 6px; padding: 10px 12px; border: 1px solid #526159; border-radius: 9px; background: #111a16eF; color: #f0f4f1; font-size: 12px; }
+.map-legend span { display: flex; gap: 8px; align-items: center; }
+.swatch { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+.leaflet-tile { transition: opacity 650ms ease-in-out !important; }
+.leaflet-control-attribution { font-size: 10px !important; }
+</style>
+<div class="timeline">
+  <button id="play" type="button" aria-label="Play timeline">▶ Play</button>
+  <input id="year-slider" type="range" min="0" max="10" step="1" value="0" aria-label="Map year">
+  <div class="year"><span id="year-label">2015</span><small id="area-label"></small></div>
+</div>
+<div class="map-wrap">
+  <div id="map" role="img" aria-label="Annual land-cover class map with year playback"></div>
+  <div class="map-legend">
+    <span><i class="swatch" id="stable-swatch"></i>Present in both years</span>
+    <span><i class="swatch" style="background:#82e07b"></i>New this year</span>
+    <span><i class="swatch" style="background:#59b7e4"></i>No longer this class</span>
+  </div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const data = __TIMELINE_DATA__;
+const years = data.years;
+document.getElementById('stable-swatch').style.background = data.classColor;
+const map = L.map('map', {zoomControl: true, scrollWheelZoom: true});
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+}).addTo(map);
+const outline = L.geoJSON(data.outline, {style: {color: '#f1f5f2', weight: 2, fill: false}}).addTo(map);
+const districtBounds = outline.getBounds();
+function fitDistrict() {
+  map.invalidateSize(false);
+  map.fitBounds(districtBounds, {paddingTopLeft: [48, 48], paddingBottomRight: [48, 48], maxZoom: 9});
+}
+requestAnimationFrame(() => requestAnimationFrame(fitDistrict));
+window.setTimeout(fitDistrict, 250);
+window.addEventListener('resize', fitDistrict);
+const slider = document.getElementById('year-slider');
+const yearLabel = document.getElementById('year-label');
+const areaLabel = document.getElementById('area-label');
+const playButton = document.getElementById('play');
+const stableLegend = document.querySelector('.map-legend span:first-child');
+let currentLayer = null;
+let transitionLayers = [];
+let playbackTimer = null;
+let isPlaying = false;
+function showYear(index) {
+  return new Promise(resolve => {
+    const year = years[index];
+    const incoming = L.tileLayer(data.tiles[year], {
+      opacity: currentLayer ? 0 : 0.92, maxZoom: 18,
+      attribution: 'Dynamic World V1 &copy; Google / WRI / National Geographic Society'
+    });
+    transitionLayers.push(incoming);
+    currentLayer = incoming;
+    incoming.once('load', () => {
+      if (currentLayer !== incoming) return resolve();
+      incoming.setOpacity(0.92);
+      yearLabel.textContent = year + (year === 2015 ? ' · partial' : '');
+      stableLegend.lastChild.textContent = year === 2015 ? 'Class in baseline year' : 'Present in both years';
+      const area = data.areas[index];
+      const prior = index > 0 ? data.areas[index - 1] : null;
+      if (area === null) areaLabel.textContent = 'area estimate unavailable';
+      else if (prior === null || prior === undefined) areaLabel.textContent = area.toLocaleString(undefined, {maximumFractionDigits: 0}) + ' ha · baseline';
+      else {
+        const delta = area - prior;
+        const sign = delta > 0 ? '+' : '';
+        areaLabel.textContent = area.toLocaleString(undefined, {maximumFractionDigits: 0}) + ' ha · ' + sign + delta.toLocaleString(undefined, {maximumFractionDigits: 0}) + ' ha vs prev year';
+      }
+      window.setTimeout(() => {
+        transitionLayers.forEach(layer => { if (layer !== incoming) map.removeLayer(layer); });
+        transitionLayers = [incoming];
+        incoming.bringToFront();
+        outline.bringToFront();
+        resolve();
+      }, 680);
+    });
+    incoming.addTo(map);
+    slider.value = index;
+    yearLabel.textContent = 'Loading ' + year + '…';
+    areaLabel.textContent = 'Loading year-to-year change…';
+  });
+}
+function stopPlayback() {
+  isPlaying = false;
+  if (playbackTimer !== null) window.clearTimeout(playbackTimer);
+  playbackTimer = null;
+  playButton.textContent = '▶ Play';
+  playButton.setAttribute('aria-label', 'Play timeline');
+}
+async function advancePlayback() {
+  if (!isPlaying) return;
+  const next = Number(slider.value) + 1;
+  if (next >= years.length) return stopPlayback();
+  await showYear(next);
+  if (isPlaying) playbackTimer = window.setTimeout(advancePlayback, 900);
+}
+slider.addEventListener('input', () => {
+  stopPlayback();
+  showYear(Number(slider.value));
+});
+playButton.addEventListener('click', () => {
+  if (isPlaying) return stopPlayback();
+  isPlaying = true;
+  playButton.textContent = 'Ⅱ Pause';
+  playButton.setAttribute('aria-label', 'Pause timeline');
+  if (Number(slider.value) >= years.length - 1) {
+    showYear(0).then(() => { if (isPlaying) advancePlayback(); });
+  } else {
+    advancePlayback();
+  }
+});
+showYear(Number(slider.value));
+</script>
+""".replace("__TIMELINE_DATA__", timeline_data)
+        st.components.v1.html(component_html, height=632, scrolling=False)
         st.caption(
-            f"Red/colored pixels mark {cover_class.lower()} in the {map_year} annual mode. "
-            "Drag the year slider to compare maps. Classification is from Dynamic World V1; 2015 is partial."
+            f"The map compares {cover_class.lower()} labels year to year: same-class pixels stay in the class color, new pixels turn green, and pixels that leave the class turn blue. "
+            "The ha figure and yearly net change use the existing 500 m district estimates; 2015 is partial."
         )
     except Exception as exc:
         st.warning(
