@@ -52,7 +52,162 @@
   }
   function ranks(values){const sorted=values.map((v,i)=>({v,i})).sort((a,b)=>a.v-b.v),out=Array(values.length);for(let i=0;i<sorted.length;){let j=i+1;while(j<sorted.length&&sorted[j].v===sorted[i].v)j++;const rank=(i+j-1)/2+1;for(let k=i;k<j;k++)out[sorted[k].i]=rank;i=j;}return out;}
   function pearson(a,b){const ma=avg(a),mb=avg(b);let num=0,da=0,db=0;for(let i=0;i<a.length;i++){const x=a[i]-ma,y=b[i]-mb;num+=x*y;da+=x*x;db+=y*y;}return da&&db?num/Math.sqrt(da*db):null;}
-  function drawMultiVar(q,district){const signals=Object.keys(names).map(key=>{const s=monthlySeries(key,q,district),base=Array.from({length:12},(_,m)=>avg(s.filter((_,i)=>Number(months[i].slice(5,7))===m+1))),depart=s.map((v,i)=>Number.isFinite(v)?v-base[Number(months[i].slice(5,7))-1]:null),valid=depart.filter(Number.isFinite),mu=avg(valid),sd=Math.sqrt(avg(valid.map(v=>(v-mu)**2))||0);return {key,values:depart.map(v=>Number.isFinite(v)&&sd?(v-mu)/sd:null)};});$('td-multivar-heatmap').innerHTML=signals.map(({key,values})=>`<div class="td-multi-row"><b>${names[key]}</b>${values.map((v,i)=>`<span class="td-multi-cell" title="${months[i]} · ${names[key]}: ${v===null?'missing':fmt(v,2)+'σ from that signal’s average seasonal anomaly'}" style="background:${v===null?'#344256':v>=0?`rgba(239,100,97,${.16+.76*Math.min(1,Math.abs(v)/2.5)})`:`rgba(67,133,197,${.16+.76*Math.min(1,Math.abs(v)/2.5)})`}"></span>`).join('')}</div>`).join('');const pairs=[];for(let i=0;i<signals.length;i++)for(let j=i+1;j<signals.length;j++){const aa=[],bb=[];signals[i].values.forEach((v,k)=>{if(Number.isFinite(v)&&Number.isFinite(signals[j].values[k])){aa.push(v);bb.push(signals[j].values[k]);}});if(aa.length>12)pairs.push({a:signals[i].key,b:signals[j].key,r:pearson(ranks(aa),ranks(bb)),n:aa.length});}pairs.sort((a,b)=>Math.abs(b.r||0)-Math.abs(a.r||0));const best=pairs[0];$('td-correlation-note').textContent=best?`Closest rank-based co-movement in this view: ${names[best.a]} and ${names[best.b]} (Spearman ρ=${best.r.toFixed(2)}, ${best.n} paired months). This is exploratory association only, not evidence that one signal caused the other.`:'Not enough paired months to compare signals.';}
+  function drawMultiVar(q,district){
+    /* ── 1. Compute standardised departures for every signal ── */
+    const signals=Object.keys(names).map(key=>{
+      const s=monthlySeries(key,q,district),
+        base=Array.from({length:12},(_,m)=>avg(s.filter((_,i)=>Number(months[i].slice(5,7))===m+1))),
+        depart=s.map((v,i)=>Number.isFinite(v)?v-base[Number(months[i].slice(5,7))-1]:null),
+        valid=depart.filter(Number.isFinite),
+        mu=avg(valid),
+        sd=Math.sqrt(avg(valid.map(v=>(v-mu)**2))||0);
+      return {key,values:depart.map(v=>Number.isFinite(v)&&sd?(v-mu)/sd:null)};
+    });
+
+    /* ── 2. Build area charts — one per signal ── */
+    const container=$('td-multivar-heatmap');
+    container.innerHTML='';
+    container.style.cssText='overflow:visible;display:flex;flex-direction:column;gap:6px;';
+
+    const CHART_H=72,EMOJI={LST:'🌡️',NDVI:'🌿',SMAP_AM:'💧',SMAP_PM:'💧',GPM:'🌧️'};
+    const dpr=window.devicePixelRatio||1;
+
+    signals.forEach(({key,values})=>{
+      const color=palette[key];
+      const wrap=document.createElement('div');
+      wrap.style.cssText='display:grid;grid-template-columns:148px 1fr;align-items:center;gap:0;';
+
+      /* label */
+      const lbl=document.createElement('div');
+      lbl.style.cssText=`font-size:11px;font-weight:700;color:${color};line-height:1.3;padding-right:8px;text-align:right;`;
+      lbl.innerHTML=`<span style="font-size:16px;display:block;margin-bottom:2px">${EMOJI[key]||'🔵'}</span>${names[key]}`;
+      wrap.appendChild(lbl);
+
+      /* canvas */
+      const c=document.createElement('canvas');
+      const parentW=container.getBoundingClientRect().width||800;
+      const W=Math.max(300,parentW-158);
+      c.width=W*dpr; c.height=CHART_H*dpr;
+      c.style.width=W+'px'; c.style.height=CHART_H+'px';
+      c.style.borderRadius='8px';
+      c.style.cursor='crosshair';
+      wrap.appendChild(c);
+
+      const ctx=c.getContext('2d');
+      ctx.scale(dpr,dpr);
+
+      const valid=values.filter(Number.isFinite);
+      const maxAbs=Math.max(2.5,...valid.map(v=>Math.abs(v)));
+      const PAD={l:4,r:4,t:8,b:14};
+      const pw=W-PAD.l-PAD.r, ph=CHART_H-PAD.t-PAD.b;
+      const zero=PAD.t+ph/2;
+      const xOf=i=>PAD.l+(i/(values.length-1))*pw;
+      const yOf=v=>zero-((v||0)/maxAbs)*(ph/2);
+
+      const NORMAL_BAND=0.5; /* ±0.5σ = "normal" zone */
+
+      function draw(){
+        ctx.clearRect(0,0,W,CHART_H);
+        ctx.fillStyle='rgba(15,26,46,0.72)';
+        ctx.beginPath(); ctx.roundRect(0,0,W,CHART_H,8); ctx.fill();
+
+        /* normal band: grey shaded zone ±0.5σ around zero */
+        const bandTop=yOf(NORMAL_BAND), bandBot=yOf(-NORMAL_BAND);
+        ctx.fillStyle='rgba(180,200,220,0.08)';
+        ctx.fillRect(PAD.l, bandTop, pw, bandBot-bandTop);
+        /* dashed border lines for the band */
+        ctx.setLineDash([3,4]);
+        ctx.strokeStyle='rgba(180,200,220,0.22)'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.moveTo(PAD.l,bandTop); ctx.lineTo(PAD.l+pw,bandTop); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(PAD.l,bandBot); ctx.lineTo(PAD.l+pw,bandBot); ctx.stroke();
+        ctx.setLineDash([]);
+        /* "Normal" label inside band */
+        ctx.fillStyle='rgba(180,200,220,0.35)'; ctx.font='7px Urbanist,sans-serif';
+        ctx.textAlign='left'; ctx.fillText('Normal',PAD.l+4,(bandTop+bandBot)/2+2.5);
+
+        /* year gridlines */
+        months.forEach((m,i)=>{
+          if(m.slice(5,7)==='01'){
+            const x=xOf(i);
+            ctx.beginPath(); ctx.moveTo(x,PAD.t); ctx.lineTo(x,CHART_H-PAD.b);
+            ctx.strokeStyle='rgba(42,63,95,0.6)'; ctx.lineWidth=1; ctx.stroke();
+            ctx.fillStyle='#687a90'; ctx.font='8px Urbanist,sans-serif';
+            ctx.textAlign='center'; ctx.fillText(m.slice(0,4),x,CHART_H-2);
+          }
+        });
+
+        /* zero line */
+        ctx.beginPath(); ctx.moveTo(PAD.l,zero); ctx.lineTo(PAD.l+pw,zero);
+        ctx.strokeStyle='rgba(200,220,255,0.35)'; ctx.lineWidth=1; ctx.stroke();
+
+        /* positive fill — only outside normal band */
+        ctx.beginPath();
+        let started=false, lastX=PAD.l;
+        values.forEach((v,i)=>{
+          if(v===null||v<=NORMAL_BAND){if(started){ctx.lineTo(lastX,yOf(NORMAL_BAND));ctx.closePath();ctx.fillStyle='rgba(239,100,97,0.30)';ctx.fill();ctx.beginPath();started=false;}return;}
+          const x=xOf(i);lastX=x;
+          if(!started){ctx.moveTo(x,yOf(NORMAL_BAND));started=true;}
+          ctx.lineTo(x,yOf(v));
+        });
+        if(started){ctx.lineTo(lastX,yOf(NORMAL_BAND));ctx.closePath();ctx.fillStyle='rgba(239,100,97,0.30)';ctx.fill();}
+
+        /* negative fill — only outside normal band */
+        ctx.beginPath();
+        started=false;
+        values.forEach((v,i)=>{
+          if(v===null||v>=-NORMAL_BAND){if(started){ctx.lineTo(lastX,yOf(-NORMAL_BAND));ctx.closePath();ctx.fillStyle='rgba(67,133,197,0.30)';ctx.fill();ctx.beginPath();started=false;}return;}
+          const x=xOf(i);lastX=x;
+          if(!started){ctx.moveTo(x,yOf(-NORMAL_BAND));started=true;}
+          ctx.lineTo(x,yOf(v));
+        });
+        if(started){ctx.lineTo(lastX,yOf(-NORMAL_BAND));ctx.closePath();ctx.fillStyle='rgba(67,133,197,0.30)';ctx.fill();}
+
+        /* signal line */
+        ctx.beginPath();
+        let inLine=false;
+        values.forEach((v,i)=>{
+          if(v===null){inLine=false;return;}
+          const x=xOf(i),y=yOf(v);
+          inLine?ctx.lineTo(x,y):ctx.moveTo(x,y);
+          inLine=true;
+        });
+        ctx.strokeStyle=color; ctx.lineWidth=1.6; ctx.lineJoin='round'; ctx.stroke();
+      }
+      draw();
+
+      /* hover tooltip */
+      const tip=document.createElement('div');
+      tip.style.cssText='position:fixed;background:rgba(7,16,27,.92);border:1px solid rgba(121,170,164,.35);border-radius:7px;padding:6px 10px;font-size:11px;color:#e5edf8;pointer-events:none;display:none;white-space:nowrap;z-index:9999;';
+      document.body.appendChild(tip);
+      c.addEventListener('mousemove',e=>{
+        const rect=c.getBoundingClientRect();
+        const mx=(e.clientX-rect.left)*(W/rect.width);
+        const idx=Math.round((mx-PAD.l)/pw*(values.length-1));
+        const i=Math.max(0,Math.min(values.length-1,idx));
+        const v=values[i];
+        const mo=months[i]||'';
+        tip.style.display='block';
+        tip.style.left=(e.clientX+12)+'px';
+        tip.style.top=(e.clientY-28)+'px';
+        if(v===null){
+          tip.innerHTML=`<b>${mo}</b> · ${names[key]}<br><span style="color:#687a90">No data</span>`;
+        } else {
+          const absV=Math.abs(v);
+          let label,col;
+          if(absV<=NORMAL_BAND){label='Normal range';col='#b3c8d6';}
+          else if(v>NORMAL_BAND){label=`${absV.toFixed(2)}\u03c3 above normal`;col='#ff8c86';}
+          else{label=`${absV.toFixed(2)}\u03c3 below normal`;col='#6ec6f5';}
+          tip.innerHTML=`<b>${mo}</b> · ${names[key]}<br><span style="color:${col}">${label}</span>`;
+        }
+      });
+      c.addEventListener('mouseleave',()=>{tip.style.display='none';});
+
+      container.appendChild(wrap);
+    });
+
+
+  }
+
   function drawSeason(key,q,district){
     const setup=canvasSetup('td-season-chart');if(!setup)return;
     const {ctx,w,h}=setup,p={l:48,r:12,t:18,b:28},pw=w-p.l-p.r,ph=h-p.t-p.b,series=monthlySeries(key,q,district),means=Array.from({length:12},(_,m)=>avg(series.filter((_,i)=>Number(months[i].slice(5,7))===m+1))),valid=means.filter(Number.isFinite);
@@ -62,10 +217,26 @@
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){draw(1);return;}
     const start=performance.now(),duration=700,frame=now=>{const t=Math.min(1,(now-start)/duration);draw(1-(1-t)*(1-t));if(t<1)requestAnimationFrame(frame);};requestAnimationFrame(frame);
   }
+  function strongestPositiveLink(key,q,districtName,rep){
+    const target=rep.districts.find(d=>d.key===key&&d.name===districtName)?.anomaly;
+    if(!target)return null;
+    let best=null;
+    for(const otherKey of Object.keys(names)){
+      if(otherKey===key)continue;
+      const other=rep.districts.find(d=>d.key===otherKey&&d.name===districtName)?.anomaly;
+      if(!other)continue;
+      const a=[],b=[];
+      target.forEach((v,i)=>{if(Number.isFinite(v)&&Number.isFinite(other[i])){a.push(v);b.push(other[i]);}});
+      if(a.length<24)continue;
+      const score=pearson(ranks(a),ranks(b));
+      if(score!==null&&score>=(best?.score??-Infinity))best={key:otherKey,score,n:a.length};
+    }
+    return best;
+  }
   function drawMap(key,q){
     const setup=canvasSetup('td-district-map');if(!setup)return;
     const {c,ctx,w,h}=setup,rep=trendReports(q),tip=$('td-map-tooltip');
-    const districts=districtFeatures.map(f=>{const name=f.properties.district_name||f.properties.shapeName,d=rep.districts.find(x=>x.key===key&&x.name===name),slope=d?.stats?.sen,rate=Number.isFinite(slope)?slope*120:null;return {f,name,d,rate};});
+    const districts=districtFeatures.map(f=>{const name=f.properties.district_name||f.properties.shapeName,d=rep.districts.find(x=>x.key===key&&x.name===name),slope=d?.stats?.sen,rate=Number.isFinite(slope)?slope*120:null,link=strongestPositiveLink(key,q,name,rep);return {f,name,d,rate,link};});
     ctx.clearRect(0,0,w,h);ctx.fillStyle='#0b1420';ctx.fillRect(0,0,w,h);
     const significant=districts.filter(d=>d.d&&d.d.q<.05),maxIncrease=Math.max(0,...significant.filter(d=>d.rate>0).map(d=>d.rate)),maxDecrease=Math.max(0,...significant.filter(d=>d.rate<0).map(d=>Math.abs(d.rate)));
     const latCenter=(Math.min(...data.lat)+Math.max(...data.lat))/2*Math.PI/180,cosLat=Math.cos(latCenter),coords=[];
@@ -83,6 +254,7 @@
       pathByDistrict.set(d.name,{path,d});const hasSlope=Number.isFinite(d.rate),ok=hasSlope&&d.d&&d.d.q<.05,isUp=hasSlope&&d.rate>0,isDown=hasSlope&&d.rate<0,t=Math.min(1,Math.abs(d.rate||0)/(isUp?maxIncrease:maxDecrease||1));
       const glow=ok?(isUp?'rgba(255,126,99,.76)':'rgba(81,214,229,.78)'):'rgba(98,132,164,.08)';
       ctx.save();ctx.strokeStyle=glow;ctx.lineWidth=ok?7:1.2;ctx.shadowColor=glow;ctx.shadowBlur=ok?15:0;ctx.stroke(path);ctx.restore();
+      if(d.link?.score>=0.5){ctx.save();ctx.strokeStyle='rgba(99,224,176,.98)';ctx.lineWidth=3.2;ctx.shadowColor='rgba(99,224,176,.9)';ctx.shadowBlur=10;ctx.stroke(path);ctx.restore();}
       ctx.fillStyle=!hasSlope||(!isUp&&!isDown)?'#263b53':ok?(isUp?mix('#ffb19a','#df5149',.28+.72*t):mix('#a1e9ef','#258ebf',.28+.72*t)):(isUp?'#79594e':'#425d73');
       ctx.fill(path,'evenodd');ctx.strokeStyle=ok?(isUp?'rgba(255,196,175,.94)':'rgba(176,244,247,.94)'):hasSlope?(isUp?'rgba(222,164,142,.78)':'rgba(137,174,199,.78)'):'rgba(164,189,210,.72)';ctx.lineWidth=ok?1.35:1;ctx.stroke(path);
       if(n)centers.push({name:d.name,x:cx/n,y:cy/n});
@@ -94,12 +266,14 @@
     const estimatedUp=districts.filter(d=>Number.isFinite(d.rate)&&d.rate>0&&!(d.d?.q<.05)).length;
     const estimatedDown=districts.filter(d=>Number.isFinite(d.rate)&&d.rate<0&&!(d.d?.q<.05)).length;
     const noDirection=districts.length-reliableUp-reliableDown-estimatedUp-estimatedDown;
-    $('td-map-status').textContent=`${names[key]} · Rising with supporting evidence: ${reliableUp}; falling with supporting evidence: ${reliableDown}. May rise: ${estimatedUp}; may fall: ${estimatedDown} (not confirmed, q ≥ 0.05). No clear direction: ${noDirection}.`;
+    const coMoving=districts.filter(d=>d.link?.score>=0.5).length;
+    $('td-map-status').textContent=`${names[key]} · Green outlines mark ${coMoving} district${coMoving===1?'':'s'} where this signal moves in the same direction as at least one other signal (score ≥ +0.50; pattern only, not proof of cause). Rising with supporting evidence: ${reliableUp}; falling with supporting evidence: ${reliableDown}. May rise: ${estimatedUp}; may fall: ${estimatedDown} (not confirmed, q ≥ 0.05). No clear direction: ${noDirection}.`;
     const legendItems=[
       {label:`Rising ${reliableUp}`,swatch:'#ff9d82',glow:'#ff7e63'},
       {label:`Falling ${reliableDown}`,swatch:'#72dce8',glow:'#51d6e5'},
       {label:`May rise ${estimatedUp}`,swatch:'#79594e',text:'#dab8a8'},
       {label:`May fall ${estimatedDown}`,swatch:'#425d73',text:'#a9c2d4'},
+      {label:`Moves together ≥ +0.50 (${coMoving})`,swatch:'#63e0b0',glow:'#63e0b0'},
       {label:`No clear direction ${noDirection}`,swatch:'#263b53',text:'#aab8cc'}
     ];
     ctx.save();ctx.font='10px Urbanist, sans-serif';ctx.textBaseline='middle';
@@ -130,14 +304,15 @@
       const name=featuresAt(lon,lat),hit=name?districts.find(d=>d.name===name):null;
       if(!hit){tip.style.display='none';c.style.cursor='crosshair';return;}
       c.style.cursor='pointer';const good=hit.d&&hit.d.q<.05,dir=Number.isFinite(hit.rate)?(hit.rate>0?'increase':hit.rate<0?'decrease':'no clear direction'):'no slope estimate',certainty=good?'reliable':Number.isFinite(hit.rate)?'not reliable at q < 0.05':'';
-      tip.innerHTML=`<strong>${esc(hit.name)}</strong>${esc(dir)}${certainty?` · ${esc(certainty)}`:''}<br><span>Sen ${fmt(hit.rate,3)} ${esc(units[key])}/decade · q = ${hit.d?.q?.toPrecision(3)||'—'} · ${hit.d?.n||0} months</span>`;
+      const linkText=hit.link?.score>=0.5?`<br><span>Moves with ${esc(names[hit.link.key])} · score +${hit.link.score.toFixed(2)} (${hit.link.n} months)</span>`:'<br><span>No strong same-direction link found for this signal.</span>';
+      tip.innerHTML=`<strong>${esc(hit.name)}</strong>${esc(dir)}${certainty?` · ${esc(certainty)}`:''}<br><span>Sen ${fmt(hit.rate,3)} ${esc(units[key])}/decade · q = ${hit.d?.q?.toPrecision(3)||'—'} · ${hit.d?.n||0} months</span>${linkText}`;
       tip.style.display='block';const box=c.parentElement.getBoundingClientRect(),offsetX=rect.left-box.left,offsetY=rect.top-box.top;
       tip.style.left=`${Math.min(Math.max(12,offsetX+x+18),box.width-250)}px`;tip.style.top=`${Math.min(Math.max(12,offsetY+y+14),box.height-100)}px`;
     };
     c.onmouseleave=()=>{tip.style.display='none';c.style.cursor='crosshair';};
   }
   function render(){const key=$('td-variable').value,q=$('td-quality').value,district=selectedDistrict,meta=vars[key],values=monthlySeries(key,q,district),stats=regression(values),valid=values.filter(Number.isFinite),mean=avg(valid),reports=trendReports(q),regional=reports.regional.find(r=>r.key===key),districtReport=district==='all'?null:reports.districts.find(r=>r.key===key&&r.name===district),result=districtReport||regional,trendSlope=districtReport?districtReport.stats.sen:regional.stats.sen,change=trendSlope===null?null:trendSlope*120,first=valid[0],last=valid[valid.length-1],significant=result.q<.05,direction=significant?(result.test.tau>0?'Increasing':'Decreasing'):'No reliable trend';lastRows=values.map((v,i)=>({month:months[i],value:v}));
-    $('td-overview-note').textContent=q==='strict'?'Regional trend direction · adjusted for multiple tests · select a signal to inspect':'Regional trend direction · recalculated with relaxed data quality';
+    $('td-overview-note').textContent=`${district==='all'?'Uttarakhand':district} · ${q==='strict'?'trend direction adjusted for multiple tests':'trend recalculated with relaxed data quality'} · select a signal to inspect`;
     const activeSignal=$('td-variable').value;
     $('td-overview').innerHTML=reports.regional.map(r=>{
       const rate=Number.isFinite(r.stats.sen)?r.stats.sen*120:null,sig=r.q<.05,dir=sig?(r.test.tau>0?'Increasing':'Decreasing'):'No reliable trend';
@@ -146,11 +321,14 @@
     }).join('');
     $('td-overview').querySelectorAll('[data-var]').forEach(b=>b.addEventListener('click',()=>{$('td-variable').value=b.dataset.var;render();}));
     $('td-summary').innerHTML=`<b>${esc(district==='all'?'Uttarakhand':district)} · ${esc(meta.label)}</b> · ${valid.length} usable monthly readings from ${months[0]} to ${months.at(-1)}. Choose a signal or district to explore how the pattern changes.`;
+    const areaName=district==='all'?'Uttarakhand':district;
+    $('td-multivar-title').textContent=`${areaName} · How environmental signals change together`;
+    $('td-map-title').textContent=`${meta.label} · Where is it changing?`;
     $('td-chart-title').textContent=`${district==='all'?'Uttarakhand':district} · ${meta.label} through time`;$('td-chart-caption').textContent=`The faint line shows monthly readings; the brighter line smooths short-term ups and downs. The dashed lines show two trend estimates. District evidence uses seasonally adjusted readings.`;
-    $('td-kpis').innerHTML=[['Trend signal',direction,`Adjusted trend test · lag-1 autocorrelation ${fmt(result.test.rho,2)}`],['Estimated change per decade',fmt(change,3)+' '+meta.unit,'District estimates account for the usual seasonal cycle'],['Multiple-test adjusted result',`q = ${result.q.toPrecision(3)}`,'q < 0.05 indicates evidence of a trend after adjustment'],['Data coverage',`${valid.length} / ${months.length} months`,`Average ${fmt(mean,3)} ${meta.unit}`]].map(([a,b,c],i)=>`<div class="td-kpi${i===0?' td-kpi-primary':''}"><small>${a}</small><strong>${b}</strong><p>${c}</p></div>`).join('');
-    drawSeries(key,values,stats);drawMultiVar(q,district);drawMap(key,q);drawSeason(key,q,district);renderDistrictTable(key,q);$('td-season-title').textContent=`${district==='all'?'Regional':district} usual seasonal cycle`;$('td-season-caption').textContent='Bars show the average for each calendar month across available years; this is the recurring seasonal pattern, not the long-term trend.';
+    $('td-kpis').innerHTML=[['Trend signal',direction,`Adjusted trend test · lag-1 autocorrelation ${fmt(result.test.rho,2)}`,'What this means',direction==='Increasing'?'The signal shows a consistent pattern of increasing over time.':'The data does not show a reliable pattern of increase or decrease.'],['Estimated change per decade',fmt(change,3)+' '+meta.unit,'District estimates account for the usual seasonal cycle','In plain English',`This estimates how much the signal changed over 10 years, after accounting for its usual seasonal ups and downs. It is an estimate based on past data, not a prediction.`],['Multiple-test adjusted result',`q = ${result.q.toPrecision(3)}`,'q < 0.05 indicates evidence of a trend after adjustment','How to read this',result.q<0.05?'The trend remains well supported even after checking multiple signals and districts.':'After checking multiple signals and districts, the evidence for a trend is not strong enough to be reliable.'],['Data coverage',`${valid.length} / ${months.length} months`,`Average ${fmt(mean,3)} ${meta.unit}`,'Data used',`${valid.length} of ${months.length} months had usable readings.`]].map(([a,b,c,d,e],i)=>`<div class="td-kpi${i===0?' td-kpi-primary':''}"><small>${a}</small><strong>${b}</strong><p>${c}</p><h4 class="td-kpi-plain-heading">${d}</h4><p class="td-kpi-plain">${e}</p></div>`).join('');
+    drawSeries(key,values,stats);drawMultiVar(q,district);drawMap(key,q);drawSeason(key,q,district);renderDistrictTable(key,q);$('td-season-title').textContent=`${areaName} · Usual seasonal cycle`;$('td-season-caption').textContent=`${areaName}: bars show the average for each calendar month across available years; this is the recurring seasonal pattern, not the long-term trend.`;
   }
-  function renderDistrictTable(key,q){const rep=trendReports(q),rows=districtFeatures.map(f=>{const name=f.properties.district_name||f.properties.shapeName,d=rep.districts.find(x=>x.key===key&&x.name===name),slope=d?.stats?.sen,sen=Number.isFinite(slope)?slope*120:null,significant=Number.isFinite(sen)&&d.q<.05,direction=sen===null?'No slope estimate':significant?(sen>0?'Reliable increase':sen<0?'Reliable decrease':'No clear direction'):sen>0?'Estimated increase · not reliable':sen<0?'Estimated decrease · not reliable':'No clear direction';return {name,n:d.n,sen,q:d.q,significant,direction};}).sort((a,b)=>(b.sen||0)-(a.sen||0));$('td-district-title').textContent=`District comparison · ${names[key]} · seasonally adjusted`;$('td-district-table').innerHTML=`<table class="td-table"><thead><tr><th>District</th><th>Direction</th><th>Sen / decade (${esc(units[key])})</th><th>Adjusted q</th><th>Valid months</th></tr></thead><tbody>${rows.map(r=>`<tr data-district="${esc(r.name)}"><td>${esc(r.name)}</td><td class="${r.significant?(r.sen>0?'td-up':'td-down'):'td-flat'}">${esc(r.direction)}</td><td>${fmt(r.sen,3)}</td><td>${r.q.toPrecision(3)}</td><td>${r.n}</td></tr>`).join('')}</tbody></table>`;$('td-district-table').querySelectorAll('tr[data-district]').forEach(tr=>tr.addEventListener('click',()=>{$('td-district').value=tr.dataset.district;selectedDistrict=tr.dataset.district;render();}));}
+  function renderDistrictTable(key,q){const rep=trendReports(q),rows=districtFeatures.map(f=>{const name=f.properties.district_name||f.properties.shapeName,d=rep.districts.find(x=>x.key===key&&x.name===name),slope=d?.stats?.sen,sen=Number.isFinite(slope)?slope*120:null,significant=Number.isFinite(sen)&&d.q<.05,direction=sen===null?'No slope estimate':significant?(sen>0?'Reliable increase':sen<0?'Reliable decrease':'No clear direction'):sen>0?'Estimated increase · not reliable':sen<0?'Estimated decrease · not reliable':'No clear direction';return {name,n:d.n,sen,q:d.q,significant,direction};}).sort((a,b)=>(b.sen||0)-(a.sen||0));$('td-district-title').textContent=`Uttarakhand · District comparison · ${names[key]} · seasonally adjusted`;$('td-district-table').innerHTML=`<table class="td-table"><thead><tr><th>District</th><th>Direction</th><th>Sen / decade (${esc(units[key])})</th><th>Adjusted q</th><th>Valid months</th></tr></thead><tbody>${rows.map(r=>`<tr data-district="${esc(r.name)}"><td>${esc(r.name)}</td><td class="${r.significant?(r.sen>0?'td-up':'td-down'):'td-flat'}">${esc(r.direction)}</td><td>${fmt(r.sen,3)}</td><td>${r.q.toPrecision(3)}</td><td>${r.n}</td></tr>`).join('')}</tbody></table>`;$('td-district-table').querySelectorAll('tr[data-district]').forEach(tr=>tr.addEventListener('click',()=>{$('td-district').value=tr.dataset.district;selectedDistrict=tr.dataset.district;render();}));}
   function download(){const key=$('td-variable').value,meta=vars[key],rows=['month,value,unit,selected_region',...lastRows.map(r=>`${r.month},${r.value===null?'':r.value},${meta.unit},${selectedDistrict}`)];const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download=`earthpulse-trend-${key}-${selectedDistrict==='all'?'uttarakhand':selectedDistrict}.csv`;a.click();URL.revokeObjectURL(a.href);}
   for(const f of districtFeatures){const o=document.createElement('option');o.value=f.properties.district_name||f.properties.shapeName;o.textContent=o.value;$('td-district').appendChild(o);}
   $('td-variable').addEventListener('change',render);$('td-quality').addEventListener('change',render);$('td-district').addEventListener('change',e=>{selectedDistrict=e.target.value;render();});$('td-download').addEventListener('click',download);window.addEventListener('resize',()=>{clearTimeout(window.__tdResize);window.__tdResize=setTimeout(render,120);});window.addEventListener('trend-page-open',()=>requestAnimationFrame(()=>requestAnimationFrame(render)));render();

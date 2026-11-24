@@ -1165,82 +1165,190 @@ st.dataframe(
 
 
 # ── Cross-variable visual and scientific interpretation ───────────────────
-section_header("How the variables move together over time", "🌐", "Monthly anomalies, standardised within each variable")
+section_header("Do these signals move together?", "🌐", "When one goes up, do others follow? — April 2015 to September 2025")
+
 anomaly_columns = {
     "LST": "lst_anomaly", "NDVI": "ndvi_anomaly", "SMAP_AM": "smap_am_anomaly",
     "SMAP_PM": "smap_pm_anomaly", "GPM": "gpm_anomaly",
 }
 available_anomalies = {key: col for key, col in anomaly_columns.items() if col in anomalies.columns}
-heat = anomalies.set_index("month")[[available_anomalies[key] for key in available_anomalies]].copy()
-heat = heat.apply(lambda column: (column - column.mean()) / column.std() if column.std() else column * 0)
-heat_for_ai = heat.copy()
+heat_for_ai = anomalies.set_index("month")[[available_anomalies[key] for key in available_anomalies]].copy()
 heat_for_ai.columns = list(available_anomalies)
-heat.columns = [f"{VAR_CONFIG[key]['emoji']} {VAR_CONFIG[key]['label']}" for key in available_anomalies]
-heat_fig = go.Figure(go.Heatmap(
-    z=heat.to_numpy(), x=heat.columns, y=heat.index.astype(str),
-    colorscale=[[0, "#4385C5"], [0.5, "#111C2D"], [1, "#EF6461"]],
-    zmid=0, colorbar={"title": "Relative difference from usual"},
-    hovertemplate="%{y}<br>%{x}<br>Relative reading: %{z:.2f}<extra></extra>",
-))
-heat_fig.update_layout(
-    template="plotly_dark", paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(15,26,46,0.55)", height=450,
-    margin={"l": 12, "r": 12, "t": 18, "b": 12},
-    xaxis={"side": "top"}, yaxis={"autorange": "reversed", "title": "Month"},
+heat_std = heat_for_ai.apply(lambda c: (c - c.mean()) / c.std() if c.std() else c * 0)
+
+# ── Plain-English intro ────────────────────────────────────────────────────
+st.markdown(
+    """
+<div style="background:rgba(99,180,255,0.07);border-left:3px solid #4385C5;
+            border-radius:6px;padding:14px 18px;margin-bottom:18px;">
+<b style="color:#E5EDF8;font-size:15px;">📖 How to read these charts</b><br>
+<span style="color:#AAB8CC;font-size:13px;line-height:1.7">
+The <b style="color:#EF6461">red area</b> means that signal was <b>higher than usual</b> that month.<br>
+The <b style="color:#4385C5">blue area</b> means it was <b>lower than usual</b> that month.<br>
+The <b style="color:#AAB8CC">zero line</b> is "completely normal." Bigger spikes = bigger deviation from normal.<br>
+If two charts spike <i>at the same time</i>, those signals <b>moved together</b> — possibly linked.
+</span>
+</div>
+""",
+    unsafe_allow_html=True,
 )
-st.plotly_chart(heat_fig, width="stretch", alt="Heatmap of monthly environmental anomalies from 2015 to 2025")
-st.caption("Each row is a month. Red is higher than usual and blue is lower for that signal. This shows unusual months, not the long-term direction; use the trend results above for that.")
 
-regional_context_lines = []
-for _, row in regional_trends.iterrows():
-    key = row["variable"]
-    if key not in VAR_CONFIG:
-        continue
-    status = str(row["modified_mk_trend"]) if bool(row["fdr_significant"]) else "no reliable trend"
-    rate = float(row["trend_slope_per_year"]) * 10
-    q_value = float(row["fdr_adjusted_p_value_modified"])
-    regional_context_lines.append(
-        f"{key}: {status}; estimated change {rate:+.4g} {VAR_CONFIG[key]['unit']} per decade; "
-        f"adjusted q={q_value:.3g}; {int(row['valid_months'])} months."
+# ── One chart per signal (area fill, clean, easy to scan) ─────────────────
+dates = pd.to_datetime(heat_std.index)
+
+for key in available_anomalies:
+    cfg = VAR_CONFIG[key]
+    vals = heat_std[key].to_numpy(dtype=float)
+
+    pos = np.where(vals >= 0, vals, 0.0)
+    neg = np.where(vals < 0, vals, 0.0)
+
+    fig_signal = go.Figure()
+
+    # positive fill (above normal) — red
+    fig_signal.add_trace(go.Scatter(
+        x=dates, y=pos,
+        fill="tozeroy", fillcolor="rgba(239,100,97,0.30)",
+        line={"color": "rgba(239,100,97,0.0)", "width": 0},
+        hoverinfo="skip", showlegend=False,
+    ))
+    # negative fill (below normal) — blue
+    fig_signal.add_trace(go.Scatter(
+        x=dates, y=neg,
+        fill="tozeroy", fillcolor="rgba(67,133,197,0.30)",
+        line={"color": "rgba(67,133,197,0.0)", "width": 0},
+        hoverinfo="skip", showlegend=False,
+    ))
+    # main line
+    fig_signal.add_trace(go.Scatter(
+        x=dates, y=vals,
+        mode="lines",
+        line={"color": cfg["color"], "width": 1.6},
+        name=cfg["label"],
+        hovertemplate="%{x|%b %Y}: %{y:+.2f} from usual<extra></extra>",
+    ))
+    # zero baseline
+    fig_signal.add_hline(y=0, line_color="rgba(200,220,255,0.35)", line_width=1)
+
+    fig_signal.update_layout(
+        template="plotly_dark",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(15,26,46,0.55)",
+        height=160,
+        margin={"l": 10, "r": 10, "t": 10, "b": 10},
+        showlegend=False,
+        hovermode="x",
+        yaxis={
+            "showticklabels": False,
+            "zeroline": False,
+            "gridcolor": "rgba(0,0,0,0)",
+            "range": [
+                min(-2.5, float(np.nanmin(vals)) * 1.15),
+                max(2.5, float(np.nanmax(vals)) * 1.15),
+            ],
+        },
+        xaxis={
+            "gridcolor": "rgba(42,63,95,0.5)",
+            "tickformat": "%Y",
+            "dtick": "M24",
+            "tickcolor": "#AAB8CC",
+            "tickfont": {"size": 10, "color": "#AAB8CC"},
+        },
     )
 
-district_context_lines = []
-for key in VAR_CONFIG:
-    group = district_report[district_report["variable"] == key]
-    reliable = group[group["significant"]].copy()
-    if reliable.empty:
-        district_context_lines.append(f"{key}: no district passed the adjusted significance threshold.")
-        continue
-    reliable["abs_rate"] = reliable["trend_per_year"].abs()
-    examples = ", ".join(
-        f"{item.district_name} ({item.direction}, {item.trend_per_year * 10:+.3g} {VAR_CONFIG[key]['unit']}/decade)"
-        for item in reliable.nlargest(2, "abs_rate").itertuples()
-    )
-    district_context_lines.append(
-        f"{key}: {len(reliable)} of 13 districts have a reliable adjusted trend; strongest-rate examples: {examples}."
-    )
+    label_col, chart_col = st.columns([1, 10])
+    with label_col:
+        st.markdown(
+            f"""<div style="display:flex;flex-direction:column;justify-content:center;
+                           height:160px;padding-right:6px;text-align:right;">
+                <span style="font-size:22px">{cfg['emoji']}</span>
+                <span style="color:{cfg['color']};font-size:11px;font-weight:700;
+                             line-height:1.3;margin-top:4px">{cfg['label']}</span>
+            </div>""",
+            unsafe_allow_html=True,
+        )
+    with chart_col:
+        st.plotly_chart(
+            fig_signal,
+            width="stretch",
+            alt=f"{cfg['label']} monthly deviation from usual — positive is red, negative is blue",
+        )
 
+st.caption(
+    "Each chart covers April 2015 – September 2025. Values show how far each month was from "
+    "its own usual level (standardised so all five signals fit the same scale). "
+    "This shows unusual months, not the long-term direction — use the trend results above for that."
+)
+
+# ── Summary scorecard: which pairs move together most? ───────────────────
 correlations = heat_for_ai.corr(method="spearman")
-fallback_explanation = _heatmap_fallback(heat_for_ai, correlations)
-vision_image = _heatmap_image_data_uri(
-    heat_for_ai.rename(columns={key: VAR_CONFIG[key]["label"] for key in heat_for_ai.columns})
+
+st.markdown("#### Which signals tend to move together?")
+st.markdown(
+    "<span style='color:#AAB8CC;font-size:13px'>A score closer to <b>+1.0</b> means they usually "
+    "go up and down at the same time. Closer to <b>−1.0</b> means they tend to move in opposite "
+    "directions. This does <i>not</i> mean one causes the other.</span>",
+    unsafe_allow_html=True,
 )
-section_header("AI interpretation", "🤖", "Automatic explanation of this heatmap using the plotted values and EARTHPULSE-X analysis")
-with st.container(border=True, key="ai-heatmap-response"):
-    try:
-        with st.spinner("Reading the monthly pattern and project findings…"):
-            ai_explanation = _generate_heatmap_explanation(
-                image_data_uri=vision_image,
-                regional_context="\n".join(regional_context_lines),
-                district_context="\n".join(district_context_lines),
-                monthly_values=heat_for_ai.to_csv(index_label="month", float_format="%.2f"),
-                correlation_context=correlations.to_csv(float_format="%.2f"),
-            )
-        st.markdown(ai_explanation)
-        st.caption("Explanation based on the heatmap, its monthly values, and this project's regional and district findings.")
-    except Exception:
-        st.markdown(fallback_explanation)
-        st.caption("OpenRouter is temporarily unavailable. This explanation is computed directly from the plotted data.")
+
+pair_rows = []
+keys = list(available_anomalies)
+for i, k1 in enumerate(keys):
+    for k2 in keys[i + 1:]:
+        rho = correlations.loc[k1, k2]
+        if pd.notna(rho):
+            pair_rows.append({
+                "Signal A": f"{VAR_CONFIG[k1]['emoji']} {VAR_CONFIG[k1]['label']}",
+                "Signal B": f"{VAR_CONFIG[k2]['emoji']} {VAR_CONFIG[k2]['label']}",
+                "Co-movement score": float(rho),
+                "_abs": abs(float(rho)),
+            })
+
+pair_df = pd.DataFrame(pair_rows).sort_values("_abs", ascending=False).drop(columns="_abs").reset_index(drop=True)
+
+def _score_color(val):
+    if val >= 0.7:
+        return "color:#63E0B0;font-weight:700"
+    if val >= 0.4:
+        return "color:#F4B860;font-weight:600"
+    if val <= -0.4:
+        return "color:#EF6461;font-weight:600"
+    return "color:#AAB8CC"
+
+pair_styler = (
+    pair_df.style
+    .hide(axis="index")
+    .map(_score_color, subset=["Co-movement score"])
+    .format({"Co-movement score": "{:+.2f}"})
+    .set_properties(**{
+        "font-family": "Urbanist, sans-serif",
+        "font-size": "13px",
+        "color": "#D8E2F0",
+        "background-color": "#0F1A2E",
+        "padding": "10px 14px",
+        "border-bottom": "1px solid rgba(42,63,95,0.5)",
+    })
+    .set_properties(subset=["Signal A", "Signal B"], **{"color": "#F1F5FC", "font-weight": "600"})
+    .set_table_styles([
+        {"selector": "thead th", "props": [
+            ("background-color", "#172640"), ("color", "#B9C9DE"),
+            ("font-size", "12px"), ("font-weight", "700"),
+            ("padding", "12px 14px"), ("border-bottom", "1px solid #2A3F5F"),
+            ("text-align", "left"),
+        ]},
+        {"selector": "tbody tr:nth-child(even) td", "props": [("background-color", "#111E33")]},
+        {"selector": "tbody tr:hover td", "props": [("background-color", "#182B45")]},
+    ])
+)
+st.dataframe(
+    pair_styler,
+    width="stretch",
+    height=min(480, 54 + 40 * len(pair_df)),
+    hide_index=True,
+    alt="Spearman co-movement scores between environmental signal pairs",
+    column_config={"Co-movement score": st.column_config.NumberColumn(format="%.2f")},
+)
+st.caption("Score = Spearman rank correlation over all paired months. This is exploratory association only — not evidence of cause and effect.")
 
 section_header("How to read the evidence", "🧭")
 with st.container(border=True):
