@@ -326,9 +326,85 @@
     $('td-map-title').textContent=`${meta.label} · Where is it changing?`;
     $('td-chart-title').textContent=`${district==='all'?'Uttarakhand':district} · ${meta.label} through time`;$('td-chart-caption').textContent=`The faint line shows monthly readings; the brighter line smooths short-term ups and downs. The dashed lines show two trend estimates. District evidence uses seasonally adjusted readings.`;
     $('td-kpis').innerHTML=[['Trend signal',direction,`Adjusted trend test · lag-1 autocorrelation ${fmt(result.test.rho,2)}`,'What this means',direction==='Increasing'?'The signal shows a consistent pattern of increasing over time.':'The data does not show a reliable pattern of increase or decrease.'],['Estimated change per decade',fmt(change,3)+' '+meta.unit,'District estimates account for the usual seasonal cycle','In plain English',`This estimates how much the signal changed over 10 years, after accounting for its usual seasonal ups and downs. It is an estimate based on past data, not a prediction.`],['Multiple-test adjusted result',`q = ${result.q.toPrecision(3)}`,'q < 0.05 indicates evidence of a trend after adjustment','How to read this',result.q<0.05?'The trend remains well supported even after checking multiple signals and districts.':'After checking multiple signals and districts, the evidence for a trend is not strong enough to be reliable.'],['Data coverage',`${valid.length} / ${months.length} months`,`Average ${fmt(mean,3)} ${meta.unit}`,'Data used',`${valid.length} of ${months.length} months had usable readings.`]].map(([a,b,c,d,e],i)=>`<div class="td-kpi${i===0?' td-kpi-primary':''}"><small>${a}</small><strong>${b}</strong><p>${c}</p><h4 class="td-kpi-plain-heading">${d}</h4><p class="td-kpi-plain">${e}</p></div>`).join('');
-    drawSeries(key,values,stats);drawMultiVar(q,district);drawMap(key,q);drawSeason(key,q,district);renderDistrictTable(key,q);$('td-season-title').textContent=`${areaName} · Usual seasonal cycle`;$('td-season-caption').textContent=`${areaName}: bars show the average for each calendar month across available years; this is the recurring seasonal pattern, not the long-term trend.`;
+    drawSeries(key,values,stats);drawMultiVar(q,district);drawMap(key,q);drawSeason(key,q,district);renderDistrictTable(key,q);renderNDVISupport(q,district);renderSeasonalGreening(q,district);renderLSTSupport(q,district);$('td-season-title').textContent=`${areaName} · Usual seasonal cycle`;$('td-season-caption').textContent=`${areaName}: bars show the average for each calendar month across available years; this is the recurring seasonal pattern, not the long-term trend.`;
   }
   function renderDistrictTable(key,q){const rep=trendReports(q),rows=districtFeatures.map(f=>{const name=f.properties.district_name||f.properties.shapeName,d=rep.districts.find(x=>x.key===key&&x.name===name),slope=d?.stats?.sen,sen=Number.isFinite(slope)?slope*120:null,significant=Number.isFinite(sen)&&d.q<.05,direction=sen===null?'No slope estimate':significant?(sen>0?'Reliable increase':sen<0?'Reliable decrease':'No clear direction'):sen>0?'Estimated increase · not reliable':sen<0?'Estimated decrease · not reliable':'No clear direction';return {name,n:d.n,sen,q:d.q,significant,direction};}).sort((a,b)=>(b.sen||0)-(a.sen||0));$('td-district-title').textContent=`Uttarakhand · District comparison · ${names[key]} · seasonally adjusted`;$('td-district-table').innerHTML=`<table class="td-table"><thead><tr><th>District</th><th>Direction</th><th>Sen / decade (${esc(units[key])})</th><th>Adjusted q</th><th>Valid months</th></tr></thead><tbody>${rows.map(r=>`<tr data-district="${esc(r.name)}"><td>${esc(r.name)}</td><td class="${r.significant?(r.sen>0?'td-up':'td-down'):'td-flat'}">${esc(r.direction)}</td><td>${fmt(r.sen,3)}</td><td>${r.q.toPrecision(3)}</td><td>${r.n}</td></tr>`).join('')}</tbody></table>`;$('td-district-table').querySelectorAll('tr[data-district]').forEach(tr=>tr.addEventListener('click',()=>{$('td-district').value=tr.dataset.district;selectedDistrict=tr.dataset.district;render();}));}
+  function renderNDVISupport(q,district){
+    const report=trendReports(q),series={};
+    for(const key of ['ndvi','smap_am','smap_pm','gpm','lst']){
+      const d=district==='all'?report.regional.find(x=>x.key===key):report.districts.find(x=>x.key===key&&x.name===district);
+      series[key]=d?{n:d.stats?.valid??d.n,q:d.q,tau:d.test?.tau??0}:null;
+    }
+    const $score=$('ndvi-support-score'),$band=$('ndvi-support-band'),$fill=$('ndvi-score-fill'),$parts=$('ndvi-support-components');
+    $('ndvi-score-area').textContent=district==='all'?'Uttarakhand':district;
+    if(Object.values(series).some(d=>!d||d.n<48||!Number.isFinite(d.q))){$score.textContent='—';$band.textContent='Insufficient valid trend coverage';$fill.style.width='0%';$parts.innerHTML='<div class="ndvi-component"><strong>Score unavailable</strong><span>Each input needs at least 48 valid monthly observations for this screening diagnostic.</span></div>';return;}
+    const state=d=>d.q<.05?(d.tau>0?'up':'down'):(Math.abs(d.tau)<.02?'flat':d.tau>0?'up_uncertain':'down_uncertain');
+    const points=(d,weights)=>weights[state(d)]??0,items=[];
+    const ndvi=points(series.ndvi,{up:40,up_uncertain:24,flat:12,down_uncertain:6,down:0});
+    items.push({name:'NDVI · greenness trend',score:ndvi,max:40,desc:'Reliable increase earns full points; uncertain increase earns partial points.'});
+    const smapAM=points(series.smap_am,{up:10,up_uncertain:7,flat:5,down_uncertain:2,down:0}),smapPM=points(series.smap_pm,{up:10,up_uncertain:7,flat:5,down_uncertain:2,down:0});
+    items.push({name:'SMAP · soil moisture',score:smapAM+smapPM,max:20,desc:`AM ${smapAM}/10 · PM ${smapPM}/10; upward trends support, downward trends reduce support.`});
+    const gpm=points(series.gpm,{up:20,up_uncertain:14,flat:10,down_uncertain:4,down:0});
+    items.push({name:'GPM · precipitation',score:gpm,max:20,desc:'A detected decline reduces support; no detected trend earns partial points, not a “stable” claim.'});
+    const lst=points(series.lst,{down:20,down_uncertain:14,flat:10,up_uncertain:4,up:0});
+    items.push({name:'LST · surface temperature',score:lst,max:20,desc:'Cooling supports greening; a detected warming trend reduces support.'});
+    const total=items.reduce((s,x)=>s+x.score,0),band=total>=70?'More aligned signals':total>=40?'Mixed signal support':'Limited signal support';
+    $score.textContent=String(total);$band.textContent=band;$fill.style.width=`${total}%`;
+    $parts.innerHTML=items.map(x=>`<div class="ndvi-component"><strong>${esc(x.name)} <b>${x.score}/${x.max}</b></strong><span>${esc(x.desc)}</span></div>`).join('');
+  }
+  function renderSeasonalGreening(q,district){
+    const windows=[
+      {key:'pre',name:'Pre-monsoon · Apr–May',months:[4,5]},
+      {key:'monsoon',name:'Monsoon · Jul–Sep',months:[7,8,9]},
+      {key:'post',name:'Post-monsoon · Oct–Nov',months:[10,11]}
+    ],raw=monthlySeries('ndvi',q,district),byYear=new Map();
+    months.forEach((month,i)=>{const year=Number(month.slice(0,4)),m=Number(month.slice(5,7));if(!byYear.has(year))byYear.set(year,{});byYear.get(year)[m]=raw[i];});
+    const years=[...byYear.keys()].sort((a,b)=>a-b).filter(y=>[...Array(12)].every((_,i)=>byYear.get(y)[i+1]!==undefined));
+    const $verdict=$('ndvi-season-verdict'),$period=$('ndvi-season-period'),$parts=$('ndvi-season-components');
+    $('ndvi-season-area').textContent=district==='all'?'Uttarakhand':district;
+    if(years.length<6){$verdict.textContent='Insufficient complete-year coverage';$period.textContent='At least six comparable complete calendar years are needed.';$parts.innerHTML='';return;}
+    const reports=windows.map(w=>{
+      const points=years.map(year=>({year,value:avg(w.months.map(m=>byYear.get(year)[m]).filter(Number.isFinite))})).filter(p=>Number.isFinite(p.value));
+      const test=mmk(points.map(p=>p.value)),slopes=[];
+      for(let i=0;i<points.length-1;i++)for(let j=i+1;j<points.length;j++)slopes.push((points[j].value-points[i].value)/(points[j].year-points[i].year));
+      slopes.sort((a,b)=>a-b);const mid=slopes.length>>1,sen=slopes.length?(slopes.length%2?slopes[mid]:(slopes[mid-1]+slopes[mid])/2):null;
+      return {...w,points,test,n:points.length,senPerDecade:Number.isFinite(sen)?sen*10:null};
+    });
+    const qs=fdr(reports.map(r=>r.test));reports.forEach((r,i)=>r.q=qs[i]);
+    const pre=reports[0],mon=reports[1],post=reports[2];
+    if(reports.some(r=>r.n<6||!Number.isFinite(r.senPerDecade))){$verdict.textContent='Insufficient seasonal observations';$period.textContent=`Complete years available: ${years[0]}–${years.at(-1)}.`;$parts.innerHTML='';return;}
+    const reliableRise=r=>r.q<.05&&r.senPerDecade>0;
+    let verdict='Mixed or uncertain seasonal pattern';
+    if(reliableRise(mon)&&!reliableRise(pre)&&!reliableRise(post))verdict='Monsoon increase detected; persistence outside monsoon is not confirmed';
+    else if(reliableRise(pre)&&reliableRise(post))verdict='Greening trend detected before and after monsoon';
+    else if([pre,mon,post].filter(reliableRise).length>=2)verdict='Greening trend detected across multiple seasons';
+    else if(mon.senPerDecade>0&&mon.senPerDecade>Math.max(pre.senPerDecade,post.senPerDecade))verdict='Possible monsoon-weighted greening; trend evidence is not conclusive';
+    $verdict.textContent=verdict;$period.textContent=`Comparable complete years: ${years[0]}–${years.at(-1)} · q < 0.05 marks a trend after correction across these three seasons.`;
+    $parts.innerHTML=reports.map(r=>`<div class="ndvi-component"><strong>${esc(r.name)} <b>${fmt(r.senPerDecade,4)} NDVI / decade</b></strong><span>FDR q = ${r.q.toPrecision(3)} · ${r.n} annual seasonal means${r.q<.05?' · trend detected':' · trend not detected'}</span></div>`).join('');
+  }
+  function renderLSTSupport(q,district){
+    const report=trendReports(q),series={};
+    for(const key of ['lst','ndvi','smap_am','smap_pm','gpm']){
+      const d=district==='all'?report.regional.find(x=>x.key===key):report.districts.find(x=>x.key===key&&x.name===district);
+      series[key]=d?{n:d.stats?.valid??d.n,q:d.q,tau:d.test?.tau??0}:null;
+    }
+    const $score=$('lst-support-score'),$band=$('lst-support-band'),$fill=$('lst-score-fill'),$parts=$('lst-support-components');
+    $('lst-score-area').textContent=district==='all'?'Uttarakhand':district;
+    if(Object.values(series).some(d=>!d||d.n<48||!Number.isFinite(d.q))){$score.textContent='—';$band.textContent='Insufficient valid trend coverage';$fill.style.width='0%';$parts.innerHTML='<div class="ndvi-component"><strong>Score unavailable</strong><span>Each input needs at least 48 valid monthly observations for this screening diagnostic.</span></div>';return;}
+    const state=d=>d.q<.05?(d.tau>0?'up':'down'):(Math.abs(d.tau)<.02?'flat':d.tau>0?'up_uncertain':'down_uncertain');
+    const points=(d,weights)=>weights[state(d)]??0,items=[];
+    const lst=points(series.lst,{up:40,up_uncertain:24,flat:12,down_uncertain:6,down:0});
+    items.push({name:'LST · surface warming',score:lst,max:40,desc:'Reliable warming earns full stress points; uncertain warming earns partial points.'});
+    const ndvi=points(series.ndvi,{down:25,down_uncertain:18,flat:12,up_uncertain:6,up:0});
+    items.push({name:'NDVI · vegetation greenness',score:ndvi,max:25,desc:'Falling greenness adds stress alignment; rising greenness reduces it.'});
+    const smapAM=points(series.smap_am,{down:10,down_uncertain:7,flat:5,up_uncertain:2,up:0}),smapPM=points(series.smap_pm,{down:10,down_uncertain:7,flat:5,up_uncertain:2,up:0});
+    items.push({name:'SMAP · soil moisture',score:smapAM+smapPM,max:20,desc:`AM ${smapAM}/10 · PM ${smapPM}/10; declining moisture adds stress alignment.`});
+    const gpm=points(series.gpm,{down:15,down_uncertain:10,flat:8,up_uncertain:3,up:0});
+    items.push({name:'GPM · precipitation',score:gpm,max:15,desc:'Declining rainfall adds context; no detected trend is not proof of stability.'});
+    const total=items.reduce((s,x)=>s+x.score,0),band=total>=70?'Strong thermal-stress alignment':total>=40?'Mixed thermal-stress signals':'Limited thermal-stress alignment';
+    $score.textContent=String(total);$band.textContent=band;$fill.style.width=`${total}%`;
+    $parts.innerHTML=items.map(x=>`<div class="ndvi-component"><strong>${esc(x.name)} <b>${x.score}/${x.max}</b></strong><span>${esc(x.desc)}</span></div>`).join('');
+  }
   function download(){const key=$('td-variable').value,meta=vars[key],rows=['month,value,unit,selected_region',...lastRows.map(r=>`${r.month},${r.value===null?'':r.value},${meta.unit},${selectedDistrict}`)];const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download=`earthpulse-trend-${key}-${selectedDistrict==='all'?'uttarakhand':selectedDistrict}.csv`;a.click();URL.revokeObjectURL(a.href);}
   for(const f of districtFeatures){const o=document.createElement('option');o.value=f.properties.district_name||f.properties.shapeName;o.textContent=o.value;$('td-district').appendChild(o);}
   $('td-variable').addEventListener('change',render);$('td-quality').addEventListener('change',render);$('td-district').addEventListener('change',e=>{selectedDistrict=e.target.value;render();});$('td-download').addEventListener('click',download);window.addEventListener('resize',()=>{clearTimeout(window.__tdResize);window.__tdResize=setTimeout(render,120);});window.addEventListener('trend-page-open',()=>requestAnimationFrame(()=>requestAnimationFrame(render)));render();

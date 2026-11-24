@@ -142,6 +142,38 @@ EARTHPULSE-X introduces **UG-ESI — Uncertainty-Guided Earth System Intelligenc
 
 > All data harmonized to monthly NetCDF grids (EPSG:6933 equal-area projection), then area-averaged to district scale via spatial join with Uttarakhand boundary polygons.
 
+### Attributing Positive NDVI Trends to Tree Cover, Grass, and Shrub/Scrub in Uttarakhand
+
+Rising NDVI indicates increasing vegetation greenness, but does not identify the vegetation type. To investigate whether greening pixels are labelled as tree cover, grass, or shrub/scrub, EARTHPULSE-X includes an exploratory 10 m Google Earth Engine workflow: [`tools/forest_grass_attribution_gee.js`](tools/forest_grass_attribution_gee.js).
+
+#### Data and method
+
+- **Sentinel-2 Surface Reflectance Harmonized:** seasonal NDVI composites for 2016–2024. The script calculates a linear trend from annual composites for pre-monsoon (April–May), monsoon (July–September), and post-monsoon (October–November).
+- **Google Dynamic World V1:** per-pixel probabilities and labels for nine land-cover classes at 10 m. The analysis groups labels into **trees**, **grass**, and **shrub/scrub**, and retains pixels whose top-class probability is at least **0.60**. [Dynamic World dataset documentation](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_DYNAMICWORLD_V1)
+- **District boundaries:** FAO GAUL 2025 level-2 administrative units. [GAUL dataset documentation](https://developers.google.com/earth-engine/datasets/catalog/FAO_GAUL_2025_level2)
+
+For each district, year, season, and cover class, the export reports mean NDVI, estimated class area, area with a positive 2016–2024 seasonal NDVI trend, and the positive-trend area as a share of the class and district. These summaries help answer which mapped cover classes overlap with long-term greening; they do not by themselves establish what caused the greening.
+
+#### Analysis procedure: how the attribution is calculated
+
+1. **Build seasonal NDVI composites:** for every year from 2016 through 2024, the script filters Sentinel-2 imagery to Uttarakhand and the selected season. It masks cloud, cloud-shadow, cirrus, and snow pixels using the Sentinel-2 scene-classification layer, calculates NDVI from the near-infrared and red bands, then takes a per-pixel seasonal median.
+2. **Measure the NDVI trend:** for each pixel and season, it fits an ordinary least-squares line to the nine annual NDVI composites. The fitted slope is NDVI change per year; pixels with slope greater than zero are marked as greening pixels.
+3. **Map the cover class:** for each year and season, it takes the median Dynamic World probability for each class, selects the class with the highest probability, and keeps only pixels where that top probability is at least 0.60. The retained labels are trees, grass, and shrub/scrub.
+4. **Attribute greening pixels:** it intersects each year's class map with the positive-trend mask. For every district and class, it sums the mapped class area and the area where NDVI slope is positive, then calculates the positive-trend area as a percentage of the class area and district area.
+5. **Compare seasons and years:** separate rows for pre-monsoon, monsoon, and post-monsoon show whether the class associated with positive NDVI trends changes across seasons or years. Here, “trees” means the Dynamic World land-cover label; it is not a direct measurement of tree height or forest structure.
+
+#### Run the analysis
+
+1. Open [`tools/forest_grass_attribution_gee.js`](tools/forest_grass_attribution_gee.js) in the [Google Earth Engine Code Editor](https://code.earthengine.google.com/) while signed into an Earth Engine account.
+2. Click **Run** and check the Console for district names and sample output rows.
+3. In the **Tasks** tab, start the CSV export and download the resulting table from Google Drive.
+
+#### Interpretation and limitations
+
+This is a **screening estimate**, not a validated forest-type map. Dynamic World's **trees** class is not an official forest boundary and does not prove forest recovery, plantation success, or woody biomass increase. Mixed pixels, cloud gaps, seasonal snow, steep slopes, and confusion between grass and shrubs can affect class labels. The 0.60 probability cutoff is a transparent analysis choice, not a locally calibrated accuracy threshold. Validate important locations against higher-resolution imagery, authoritative forest data, or field observations before making management claims.
+
+The script is included as a reproducible workflow but has **not yet been run in Earth Engine**; district statistics will only be available after the export completes.
+
 ---
 
 ## 🗺️ Application — 10 Pages
