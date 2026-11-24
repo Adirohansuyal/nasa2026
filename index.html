@@ -1429,6 +1429,14 @@ img, canvas, svg, table { max-width: 100%; }
 <style>
 .ndvi-support{margin-top:24px}.ndvi-support-intro{max-width:900px;margin:0 0 16px;color:#aab9c7;font-size:.82rem}.ndvi-score-layout{display:grid;grid-template-columns:minmax(210px,.65fr) minmax(0,1.6fr);gap:14px}.ndvi-score-card,.ndvi-component{border:1px solid rgba(137,160,183,.17);border-radius:12px;background:rgba(10,19,30,.62)}.ndvi-score-card{display:flex;flex-direction:column;justify-content:center;min-height:190px;padding:20px;background:linear-gradient(145deg,rgba(31,60,67,.48),rgba(10,19,30,.72))}.ndvi-score-card small{color:#a7c5bf;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase}.ndvi-score-card strong{margin:8px 0 1px;color:#edf5f2;font-size:2.4rem;line-height:1}.ndvi-score-card>span{color:#b9c8d1;font-size:.77rem}.ndvi-score-track{height:6px;margin-top:18px;overflow:hidden;border-radius:8px;background:#273747}.ndvi-score-track i{display:block;width:0;height:100%;border-radius:8px;background:linear-gradient(90deg,#c87979,#c6a16d,#78a88c);transition:width .35s}.ndvi-components{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.ndvi-component{padding:13px 14px}.ndvi-component strong{display:block;color:#e4edf2;font-size:.78rem}.ndvi-component span{display:block;margin-top:5px;color:#9eacba;font-size:.73rem;line-height:1.45}.ndvi-component b{color:#9bd5c9;font-weight:700}.ndvi-support-note{margin:13px 0 0;padding:12px 14px;border-left:3px solid #c6a16d;background:rgba(194,154,91,.06);color:#aebcc6;font-size:.75rem;line-height:1.55}.ndvi-support-note b{color:#e0c896}.ndvi-references{margin-top:12px;padding:12px 14px;border:1px solid rgba(137,160,183,.14);border-radius:10px;background:rgba(8,16,27,.35)}.ndvi-references summary{color:#cad7df;font-size:.78rem;cursor:pointer}.ndvi-references>div{padding-top:10px}.ndvi-references p,.ndvi-references li{color:#9eacba;font-size:.73rem;line-height:1.55}.ndvi-references ul{padding-left:20px;margin:8px 0}.ndvi-references li+li{margin-top:5px}.ndvi-references a{color:#9bd5c9;text-decoration:underline;text-underline-offset:2px}.ndvi-season-summary{display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin-bottom:12px;padding:15px 18px;border:1px solid rgba(121,170,164,.2);border-radius:11px;background:linear-gradient(145deg,rgba(31,60,67,.36),rgba(10,19,30,.62))}.ndvi-season-summary small{color:#a7c5bf;font-size:.65rem;letter-spacing:.09em;text-transform:uppercase}.ndvi-season-summary strong{color:#edf5f2;font-size:1rem}.ndvi-season-summary span{color:#9eacba;font-size:.73rem}.ndvi-season-summary [hidden]{display:none}@media(max-width:700px){.ndvi-score-layout{grid-template-columns:1fr}.ndvi-score-card{min-height:150px}.ndvi-components{grid-template-columns:1fr}}
 </style>
+<style>
+.ndvi-attribution-figure{margin:14px 0 0;padding:8px;border:1px solid rgba(137,160,183,.17);border-radius:12px;background:rgba(7,14,23,.55)}
+.ndvi-attribution-figure img{display:block;width:100%;height:auto;border-radius:8px}
+.ndvi-attribution-figure figcaption{padding:9px 5px 2px;color:#9eacba;font-size:.72rem;line-height:1.5}
+.ndvi-attribution-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.ndvi-attribution-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border:1px solid rgba(121,170,164,.35);border-radius:9px;color:#dcebe8;background:rgba(121,170,164,.08);font-size:.75rem;font-weight:700;text-decoration:none}
+.ndvi-attribution-actions a:hover{border-color:#79aaa4;background:rgba(121,170,164,.16)}
+</style>
 </head>
 <body>
 <div class="shell overview-stars-visible">
@@ -2650,6 +2658,25 @@ img, canvas, svg, table { max-width: 100%; }
       <p>For comparable full calendar years, this summarizes pre-monsoon (April–May), monsoon (July–September), and post-monsoon (October–November) NDVI separately. It estimates Sen slope and applies the Mann–Kendall test with Benjamini–Hochberg correction across the three seasonal tests. Partial years are excluded; the current record supports 2016–2024. Seasonal NDVI is a phenology signal, not a land-cover classifier.</p>
       <p><a href="https://doi.org/10.1016/j.rse.2013.01.010" target="_blank" rel="noopener">Soudani et al. (2013), evaluation of MODIS NDVI phenology across vegetation types and the effects of data gaps.</a> The study supports interpreting seasonal NDVI carefully and in vegetation-type context.</p>
     </div></details>
+  </section>
+  <section class="td-panel ndvi-support" aria-labelledby="ndvi-attribution-title">
+    <div class="section-hdr"><span class="s-icon">🌲</span><h2 id="ndvi-attribution-title">Vegetation-type attribution: trees, grass &amp; shrub/scrub</h2><span class="s-sub">10 m exploratory workflow · Uttarakhand</span></div>
+    <p class="ndvi-support-intro">NDVI shows how green a pixel is, but it cannot identify whether that greenness comes from forest trees, grass, or shrubs. This sub-analysis compares seasonal NDVI trends with separate land-cover labels to see which classes overlap with long-term greening.</p>
+    <figure class="ndvi-attribution-figure">
+      <img src="assets/shrub:scrub.png" alt="Five-step workflow: make seasonal NDVI composites, estimate pixel trends, classify tree cover, grass and shrub/scrub, attribute positive-trend pixels, and compare seasons and years" loading="lazy" />
+      <figcaption>Analysis workflow for attributing positive seasonal NDVI trends to mapped tree, grass, and shrub/scrub classes.</figcaption>
+    </figure>
+    <details class="ndvi-references"><summary>How this sub-analysis works</summary><div>
+      <ol>
+        <li>Build cloud-, shadow-, cirrus-, and snow-masked Sentinel-2 NDVI median composites for pre-monsoon, monsoon, and post-monsoon seasons in each year from 2016–2024.</li>
+        <li>Fit a per-pixel ordinary least-squares trend to each season's nine annual composites; a slope above zero marks a greening pixel.</li>
+        <li>Use Google Dynamic World V1 probabilities to map tree, grass, and shrub/scrub labels for each year and season. Keep pixels only when the top class probability is at least 0.60.</li>
+        <li>Overlay each year's land-cover labels with the positive-trend mask, then summarize class area and greening area by Uttarakhand district.</li>
+      </ol>
+      <p>The resulting CSV reports mean NDVI, class area, positive-trend area, and greening area as a share of each class and district. The workflow uses Sentinel-2 and Dynamic World at 10 m, with FAO GAUL 2025 level-2 district boundaries.</p>
+      <p><b>Research limitation:</b> “trees” is a Dynamic World land-cover label, not an official forest boundary or direct canopy-height measurement. The classification is an exploratory screening estimate; steep slopes, seasonal snow, mixed pixels, and shrub/grass confusion can affect results. The analysis has not yet been run in Earth Engine, so no district attribution values are shown here.</p>
+    </div></details>
+    <div class="ndvi-attribution-actions"><a href="tools/forest_grass_attribution_gee.js" target="_blank" rel="noopener">Open Earth Engine script</a><a href="https://code.earthengine.google.com/" target="_blank" rel="noopener">Open Earth Engine Code Editor ↗</a></div>
   </section>
   <section class="td-panel ndvi-support lst-support" aria-labelledby="lst-support-title">
     <div class="section-hdr"><span class="s-icon">🌡️</span><h2 id="lst-support-title">LST thermal-stress coherence diagnostic</h2><span class="s-sub">District Land-Surface Thermal Trend Coherence Index · experimental 0–100</span></div>

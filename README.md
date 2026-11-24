@@ -142,6 +142,10 @@ EARTHPULSE-X introduces **UG-ESI — Uncertainty-Guided Earth System Intelligenc
 
 > All data harmonized to monthly NetCDF grids (EPSG:6933 equal-area projection), then area-averaged to district scale via spatial join with Uttarakhand boundary polygons.
 
+<p align="center">
+  <img src="assets/shrub:scrub.png" alt="Workflow for attributing positive NDVI trends to tree cover, grass, and shrub/scrub in Uttarakhand" width="100%" />
+</p>
+
 ### Attributing Positive NDVI Trends to Tree Cover, Grass, and Shrub/Scrub in Uttarakhand
 
 Rising NDVI indicates increasing vegetation greenness, but does not identify the vegetation type. To investigate whether greening pixels are labelled as tree cover, grass, or shrub/scrub, EARTHPULSE-X includes an exploratory 10 m Google Earth Engine workflow: [`tools/forest_grass_attribution_gee.js`](tools/forest_grass_attribution_gee.js).
