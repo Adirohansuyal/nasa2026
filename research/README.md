@@ -12,7 +12,15 @@ research/.venv/bin/streamlit run research/app.py
 
 The **Land-cover distribution** page has a year selector for the annual Dynamic World distribution and vertical class bars labeled with hectares and the share of total district area. The **District trends** page compares all classes per district and statewide, shows annual class series, and ranks each district's largest estimated increase and decrease. Its map timeline renders the selected year's Dynamic World class mode inside the selected district; change the year and class to compare, for example, built-up pixels in Udham Singh Nagar.
 
-The map timeline queries Earth Engine when a new district/class is selected and provides a play/pause control across 2015–2025. Each year compares the annual modal class mask with the prior year: persistent class pixels keep the class color, new pixels are green, and pixels that left the class are blue. Frames cross-fade after the incoming map tiles load. The ha figure and net annual difference use the 500 m CSV estimates. It needs the same locally authenticated Earth Engine account and network access as the annual data script. The map itself renders native Dynamic World map tiles clipped to the selected GAUL district boundary over an attributed OpenStreetMap basemap. 2015 is partial.
+The map timeline reads local annual label rasters from `data/dynamic_world_maps/`; changing district, class, or year does not query Earth Engine. Each year compares the annual modal class mask with the prior year: persistent class pixels keep the class color, new pixels are green, and pixels that left the class are blue. The map is displayed at 100 m, while the charts and hectare figures continue to use the existing 500 m estimates. The background map uses OpenStreetMap tiles; annual land-cover map data is local. 2015 is partial.
+
+Download the map files once with the authenticated Earth Engine account:
+
+```bash
+research/.venv/bin/python research/download_dynamic_world_maps.py
+```
+
+This saves 11 compact annual GeoTIFFs and the district boundaries under `data/dynamic_world_maps/`. They are excluded from git. After download, the map timeline runs without Earth Engine access; only the OpenStreetMap background and Leaflet library load over the network.
 
 ## Generate annual land-cover data and trends
 
