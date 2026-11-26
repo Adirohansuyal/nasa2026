@@ -41,7 +41,7 @@ if not all(path.exists() for path in (ANNUAL_PATH, TREND_PATH, HIGHLIGHT_PATH)):
     st.warning("Annual Dynamic World land-cover outputs are not ready yet.", title="Annual data is not ready")
     st.code("research/.venv/bin/python research/dynamic_world_analysis.py", language="bash")
     st.info(
-        "Earth Engine export har district ke liye 9 class-area estimates banata hai. 2015 mein source sirf 27 June se hai; "
+        "Satellite data processing har district ke liye 9 class-area estimates banata hai. 2015 mein source sirf 27 June se hai; "
         "trend test 10 complete years, 2016–2025, use karta hai."
     )
     st.stop()
