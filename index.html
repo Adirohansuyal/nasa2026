@@ -3355,7 +3355,7 @@ img, canvas, svg, table { max-width: 100%; }
 
 
 <script>
-window.EARTHPULSE_API_BASE=window.EARTHPULSE_API_BASE||(['localhost','127.0.0.1'].includes(location.hostname)?'http://127.0.0.1:8001':'');
+window.EARTHPULSE_API_BASE='https://nasa2026-mgg6.onrender.com';
 window.earthpulseExplain=async(prompt,signal)=>{
   if(!window.EARTHPULSE_API_BASE)throw new Error('Explanation service is not configured.');
   const response=await fetch(`${window.EARTHPULSE_API_BASE.replace(/\/$/,'')}/api/explain`,{method:'POST',headers:{'Content-Type':'application/json'},signal,body:JSON.stringify({prompt})});

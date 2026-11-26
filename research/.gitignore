@@ -1,3 +1,7 @@
-data/
+data/*
+!data/dynamic_world_maps/
+data/dynamic_world_maps/*
+!data/dynamic_world_maps/districts.geojson
+!data/dynamic_world_maps/dynamic_world_label_*.tif
 __pycache__/
 .streamlit/secrets.toml
