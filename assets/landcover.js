@@ -163,7 +163,7 @@
     const focusSelectedDistrict=featureCollection=>{
       if(request!==mapRequest||state.focusDistrict===district)return;
       state.group.clearLayers();
-      const focus=L.geoJSON(featureCollection,{interactive:false,style:{color:'transparent',weight:0,fillColor:'#10241b',fillOpacity:.28}}).addTo(state.group);
+      const focus=L.geoJSON(featureCollection,{interactive:false,style:{color:'transparent',weight:0,fillColor:'#10241b',fillOpacity:1}}).addTo(state.group);
       L.geoJSON(featureCollection,{interactive:false,style:{color:'#101713',weight:7,opacity:.9,fill:false}}).addTo(state.group);
       const outline=L.geoJSON(featureCollection,{interactive:false,style:{color:'#ffe08a',weight:3,opacity:1,fill:false,dashArray:'8 5'}}).addTo(state.group);
       state.focusDistrict=district;
@@ -217,7 +217,7 @@
         state.request++;
         const districtAlreadyFocused=state.focusDistrict===district;
         state.group.clearLayers();state.currentLayer=null;state.currentIndex=null;
-        const districtFocus=L.geoJSON(data.outline,{interactive:false,style:{color:'transparent',weight:0,fillColor:'#10241b',fillOpacity:.28}}).addTo(state.group);
+        const districtFocus=L.geoJSON(data.outline,{interactive:false,style:{color:'transparent',weight:0,fillColor:'#10241b',fillOpacity:1}}).addTo(state.group);
         const casing=L.geoJSON(data.outline,{interactive:false,style:{color:'#101713',weight:7,opacity:.9,fill:false}}).addTo(state.group);
         const outline=L.geoJSON(data.outline,{interactive:false,style:{color:'#ffe08a',weight:3,opacity:1,fill:false,dashArray:'8 5'}}).addTo(state.group);
         const bounds=outline.getBounds();
