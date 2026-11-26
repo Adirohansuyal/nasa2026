@@ -95,8 +95,10 @@ EARTHPULSE-X is a **physics-aware, uncertainty-guided Earth system intelligence 
 </tr>
 <tr>
 <td colspan="2" align="center">
-  <img src="assets/Screenshot 2026-11-12 at 12.48.44 PM.png" alt="EARTHPULSE-X Live Dashboard" width="780"/><br/>
-  <sub><b>EARTHPULSE-X</b> live dashboard</sub>
+  <a href="https://thunderous-otter-920a93.netlify.app/">
+    <img src="https://img.shields.io/badge/🚀_OPEN_EARTHPULSE--X_LIVE_DASHBOARD-Visit_the_deployed_app-0f766e?style=for-the-badge&labelColor=102a36" alt="Open the EARTHPULSE-X live dashboard"/>
+  </a><br/><br/>
+  <sub>Explore the deployed Earth system intelligence dashboard</sub>
 </td>
 </tr>
 </table>
