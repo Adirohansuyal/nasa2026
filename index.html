@@ -3372,7 +3372,16 @@ window.earthpulseExplain=async(prompt,signal)=>{
 <script src="assets/vegetation_attribution.js?v=20261124-csv1"></script>
 <script src="assets/anomaly_data.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="assets/landcover.js?v=20261126-33"></script>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css">
+<script type="importmap">
+{"imports":{"leaflet":"https://esm.sh/leaflet@1.9.4","maplibre-gl":"https://esm.sh/maplibre-gl@5.6.2"}}
+</script>
+<script type="module">
+import {maplibreGL} from 'https://esm.sh/@maplibre/maplibre-gl-leaflet@0.1.4?external=leaflet,maplibre-gl';
+window.EARTHPULSE_MAPLIBRE_GL_LEAFLET=maplibreGL;
+window.dispatchEvent(new Event('earthpulse-maplibre-ready'));
+</script>
+<script src="assets/landcover.js?v=20261126-34"></script>
 <script src="assets/anomaly.js?v=20261115-server-proxy"></script>
 <script src="assets/interaction_data.js"></script>
 <script src="assets/interaction.js?v=20261115-static-guide"></script>

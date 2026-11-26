@@ -50,9 +50,24 @@
     return parseCSV(await response.text());
   };
   let DATA=null, resizeTimer=null, playback=null, distributionPlayback=null, mapState=null, mapRequest=0, districtBoundariesPromise=null,districtMiniMapPromise=null,districtMiniMapMarkup='';
+  let unlabeledBasemapPromise=null;
 
   function districtSlug(value){return String(value).toLowerCase().trim().replace(/\s+/g,'-');}
   function loadImage(url){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error(`Could not load ${url}`));image.src=url;});}
+  function loadUnlabeledBasemap(){
+    if(!unlabeledBasemapPromise)unlabeledBasemapPromise=new Promise((resolve,reject)=>{
+      const ready=()=>window.EARTHPULSE_MAPLIBRE_GL_LEAFLET?resolve(window.EARTHPULSE_MAPLIBRE_GL_LEAFLET):reject(new Error('MapLibre did not load.'));
+      if(window.EARTHPULSE_MAPLIBRE_GL_LEAFLET)ready();
+      else window.addEventListener('earthpulse-maplibre-ready',ready,{once:true});
+    }).then(async maplibreGL=>{
+      const response=await fetch('https://tiles.openfreemap.org/styles/liberty');
+      if(!response.ok)throw new Error('Unlabeled map style failed to load.');
+      const style=await response.json();
+      style.layers=(style.layers||[]).filter(layer=>layer.type!=='symbol');
+      return {maplibreGL,style};
+    });
+    return unlabeledBasemapPromise;
+  }
 
   function setOptions(node, values, selected){
     node.innerHTML=values.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
@@ -151,8 +166,12 @@
     if(!window.L){$('lt-map-status').textContent='Leaflet did not load. Check the network connection and refresh.';return;}
     if(!mapState){
       const map=L.map('lt-map',{zoomControl:true,scrollWheelZoom:true});
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,className:'basemap-tiles',attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'}).addTo(map);
-      mapState={map,group:L.layerGroup().addTo(map),currentLayer:null,currentIndex:null,request:0,frameRequest:0,fadeFrame:null,fadePrevious:null,focusDistrict:null};
+      const basemapFallback=()=>L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,className:'basemap-tiles',attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'}).addTo(map);
+      mapState={map,group:L.layerGroup().addTo(map),currentLayer:null,currentIndex:null,request:0,frameRequest:0,fadeFrame:null,fadePrevious:null,focusDistrict:null,basemapFallback};
+      loadUnlabeledBasemap().then(({maplibreGL,style})=>{
+        if(mapState?.map!==map||mapState.basemap)return;
+        mapState.basemap=maplibreGL({style,interactive:false}).addTo(map);
+      }).catch(()=>{if(mapState?.map===map&&!mapState.basemap)basemapFallback();});
     }
     const state=mapState;
     state.request++;
@@ -163,7 +182,7 @@
     const focusSelectedDistrict=featureCollection=>{
       if(request!==mapRequest||state.focusDistrict===district)return;
       state.group.clearLayers();
-      const focus=L.geoJSON(featureCollection,{interactive:false,style:{color:'transparent',weight:0,fillColor:'#10241b',fillOpacity:1}}).addTo(state.group);
+      const focus=L.geoJSON(featureCollection,{interactive:false,style:{color:'transparent',weight:0,fillColor:'#10241b',fillOpacity:.28}}).addTo(state.group);
       L.geoJSON(featureCollection,{interactive:false,style:{color:'#101713',weight:7,opacity:.9,fill:false}}).addTo(state.group);
       const outline=L.geoJSON(featureCollection,{interactive:false,style:{color:'#ffe08a',weight:3,opacity:1,fill:false,dashArray:'8 5'}}).addTo(state.group);
       state.focusDistrict=district;
@@ -217,7 +236,7 @@
         state.request++;
         const districtAlreadyFocused=state.focusDistrict===district;
         state.group.clearLayers();state.currentLayer=null;state.currentIndex=null;
-        const districtFocus=L.geoJSON(data.outline,{interactive:false,style:{color:'transparent',weight:0,fillColor:'#10241b',fillOpacity:1}}).addTo(state.group);
+        const districtFocus=L.geoJSON(data.outline,{interactive:false,style:{color:'transparent',weight:0,fillColor:'#10241b',fillOpacity:.28}}).addTo(state.group);
         const casing=L.geoJSON(data.outline,{interactive:false,style:{color:'#101713',weight:7,opacity:.9,fill:false}}).addTo(state.group);
         const outline=L.geoJSON(data.outline,{interactive:false,style:{color:'#ffe08a',weight:3,opacity:1,fill:false,dashArray:'8 5'}}).addTo(state.group);
         const bounds=outline.getBounds();
