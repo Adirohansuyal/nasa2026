@@ -181,10 +181,13 @@
     if(!mapState){
       const map=L.map('lt-map',{zoomControl:true,scrollWheelZoom:true});
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,className:'basemap-tiles',attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'}).addTo(map);
-      mapState={map,group:L.layerGroup().addTo(map),currentLayer:null,currentIndex:null,request:0,focusDistrict:null};
+      mapState={map,group:L.layerGroup().addTo(map),currentLayer:null,currentIndex:null,request:0,frameRequest:0,fadeFrame:null,fadePrevious:null,focusDistrict:null};
     }
     const state=mapState;
     state.request++;
+    if(state.fadeFrame)cancelAnimationFrame(state.fadeFrame);
+    if(state.fadePrevious)state.group.removeLayer(state.fadePrevious);
+    state.fadeFrame=null;state.fadePrevious=null;
     state.group.clearLayers();state.currentLayer=null;state.currentIndex=null;state.focusDistrict=null;
     const focusSelectedDistrict=featureCollection=>{
       if(request!==mapRequest||state.focusDistrict===district)return;
@@ -246,21 +249,37 @@
         if(!districtAlreadyFocused){requestAnimationFrame(()=>requestAnimationFrame(fit));setTimeout(fit,250);}
         const mapAreas=years.map(year=>areas.get(Number(year))??null);
         const showYear=index=>new Promise(resolve=>{
+          if(index===state.currentIndex&&state.currentLayer){resolve(true);return;}
+          const frameRequest=++state.frameRequest;
+          if(state.fadeFrame)cancelAnimationFrame(state.fadeFrame);
+          if(state.fadePrevious&&state.fadePrevious!==state.currentLayer)state.group.removeLayer(state.fadePrevious);
+          state.fadeFrame=null;state.fadePrevious=null;
+          if(state.currentLayer)state.currentLayer.setOpacity(.98);
           const prior=state.currentIndex;
           const previousLayer=state.currentLayer;
           const incoming=L.imageOverlay(data.maps[String(years[index])],data.bounds[String(years[index])],{opacity:0});
           let settled=false;
           const finish=ready=>{if(settled)return;settled=true;resolve(ready);};
           incoming.once('load',()=>{
-            if(request!==mapRequest)return finish(false);
-            state.group.addLayer(incoming);incoming.setOpacity(.98);
+            if(request!==mapRequest||frameRequest!==state.frameRequest){state.group.removeLayer(incoming);return finish(false);}
+            state.group.addLayer(incoming);incoming.setOpacity(0);
             state.currentLayer=incoming;state.currentIndex=index;slider.value=String(index);
-            if(previousLayer&&previousLayer!==incoming)state.group.removeLayer(previousLayer);
+            state.fadePrevious=previousLayer&&previousLayer!==incoming?previousLayer:null;
             const year=Number(years[index]);yearLabel.textContent=year===2015?'2015 · partial':String(year);
             const label=$('lt-map-stable-label');if(label)label.textContent=year===2015?'Class in baseline year':'Present in both years';
             const area=mapAreas[index],previous=index>0?mapAreas[index-1]:null;
             areaLabel.textContent=area===null?'area estimate unavailable':previous===null?`${fmt(area)} ha · baseline`:`${fmt(area)} ha · ${area-previous>0?'+':''}${fmt(area-previous)} ha vs prev year`;
-            casing.bringToFront();outline.bringToFront();finish(true);
+            casing.bringToFront();outline.bringToFront();
+            const fadeStarted=performance.now(),fadeDuration=240;
+            const crossfade=now=>{
+              if(request!==mapRequest||frameRequest!==state.frameRequest){state.group.removeLayer(incoming);return finish(false);}
+              const progress=Math.min(1,(now-fadeStarted)/fadeDuration);
+              incoming.setOpacity(.98*progress);
+              if(previousLayer&&previousLayer!==incoming)previousLayer.setOpacity(.98*(1-progress));
+              if(progress<1)state.fadeFrame=requestAnimationFrame(crossfade);
+              else{state.fadeFrame=null;if(previousLayer&&previousLayer!==incoming)state.group.removeLayer(previousLayer);state.fadePrevious=null;finish(true);}
+            };
+            state.fadeFrame=requestAnimationFrame(crossfade);
           });
           incoming.once('error',()=>{
             state.group.removeLayer(incoming);
