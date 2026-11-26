@@ -54,7 +54,7 @@
 
   function districtSlug(value){return String(value).toLowerCase().trim().replace(/\s+/g,'-');}
   function loadImage(url){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error(`Could not load ${url}`));image.src=url;});}
-  function loadUnlabeledBasemap(){
+  function loadUnlabeledBasemap(featureCollection){
     if(!unlabeledBasemapPromise)unlabeledBasemapPromise=new Promise((resolve,reject)=>{
       const ready=()=>window.EARTHPULSE_MAPLIBRE_GL_LEAFLET?resolve(window.EARTHPULSE_MAPLIBRE_GL_LEAFLET):reject(new Error('MapLibre did not load.'));
       if(window.EARTHPULSE_MAPLIBRE_GL_LEAFLET)ready();
@@ -63,10 +63,24 @@
       const response=await fetch('https://tiles.openfreemap.org/styles/liberty');
       if(!response.ok)throw new Error('Unlabeled map style failed to load.');
       const style=await response.json();
-      style.layers=(style.layers||[]).filter(layer=>layer.type!=='symbol');
+      return {maplibreGL,baseStyle:style};
+    });
+    return unlabeledBasemapPromise.then(({maplibreGL,baseStyle})=>{
+      const coordinates=[];
+      (featureCollection.features||[]).forEach(feature=>{
+        if(feature.geometry?.type==='Polygon')coordinates.push(feature.geometry.coordinates);
+        else if(feature.geometry?.type==='MultiPolygon')coordinates.push(...feature.geometry.coordinates);
+      });
+      const boundary={type:'MultiPolygon',coordinates};
+      const style=JSON.parse(JSON.stringify(baseStyle));
+      style.layers=(style.layers||[]).map(layer=>{
+        if(layer.type!=='symbol')return layer;
+        const outside=['!', ['within',boundary]];
+        layer.filter=layer.filter?['all',layer.filter,outside]:outside;
+        return layer;
+      });
       return {maplibreGL,style};
     });
-    return unlabeledBasemapPromise;
   }
 
   function setOptions(node, values, selected){
@@ -168,10 +182,6 @@
       const map=L.map('lt-map',{zoomControl:true,scrollWheelZoom:true});
       const basemapFallback=()=>L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,className:'basemap-tiles',attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'}).addTo(map);
       mapState={map,group:L.layerGroup().addTo(map),currentLayer:null,currentIndex:null,request:0,frameRequest:0,fadeFrame:null,fadePrevious:null,focusDistrict:null,basemapFallback};
-      loadUnlabeledBasemap().then(({maplibreGL,style})=>{
-        if(mapState?.map!==map||mapState.basemap)return;
-        mapState.basemap=maplibreGL({style,interactive:false}).addTo(map);
-      }).catch(()=>{if(mapState?.map===map&&!mapState.basemap)basemapFallback();});
     }
     const state=mapState;
     state.request++;
@@ -186,6 +196,11 @@
       L.geoJSON(featureCollection,{interactive:false,style:{color:'#101713',weight:7,opacity:.9,fill:false}}).addTo(state.group);
       const outline=L.geoJSON(featureCollection,{interactive:false,style:{color:'#ffe08a',weight:3,opacity:1,fill:false,dashArray:'8 5'}}).addTo(state.group);
       state.focusDistrict=district;
+      loadUnlabeledBasemap(featureCollection).then(({maplibreGL,style})=>{
+        if(request!==mapRequest||state.map!==mapState?.map)return;
+        if(state.basemap)state.basemap.getMaplibreMap().setStyle(style);
+        else state.basemap=maplibreGL({style,interactive:false}).addTo(state.map);
+      }).catch(()=>{if(request===mapRequest&&!state.basemap)state.basemapFallback();});
       state.map.invalidateSize(false);
       state.map.fitBounds(outline.getBounds(),{padding:[24,24],maxZoom:12});
     };
