@@ -49,7 +49,7 @@
     if(!response.ok) throw new Error(`Could not load ${FILES[name]} (${response.status})`);
     return parseCSV(await response.text());
   };
-  let DATA=null, resizeTimer=null, playback=null, mapState=null, mapRequest=0, districtBoundariesPromise=null,districtMiniMapPromise=null,districtMiniMapMarkup='';
+  let DATA=null, resizeTimer=null, playback=null, distributionPlayback=null, mapState=null, mapRequest=0, districtBoundariesPromise=null,districtMiniMapPromise=null,districtMiniMapMarkup='';
 
   function setOptions(node, values, selected){
     node.innerHTML=values.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
@@ -63,9 +63,6 @@
     $('lc-year').value=String(annual?2025:2021);
     const rows=annual?DATA.annual:DATA.worldcover;
     setOptions($('lc-district'),['Uttarakhand (statewide)',...new Set(rows.map(r=>r.district).filter(d=>d!=='Uttarakhand').sort())],'Uttarakhand (statewide)');
-    const classRows=annual?rows.filter(r=>r.district==='Uttarakhand'):rows;
-    const labels=[...new Set(classRows.map(r=>r.class_label||r.cover_class))].sort();
-    setOptions($('lc-class'),labels,labels.includes('Tree cover')?'Tree cover':labels[0]);
   }
   function activeRows(){
     const source=$('lc-source').value, year=Number($('lc-year').value), district=$('lc-district').value;
@@ -74,7 +71,6 @@
     const isState=district==='Uttarakhand (statewide)';
     const chosen=annual&&isState?base.filter(r=>r.district==='Uttarakhand'):isState?base:base.filter(r=>r.district===district);
     const districts=base.filter(r=>r.district!=='Uttarakhand');
-    const focus=districts.filter(r=>(r.class_label||r.cover_class)===$('lc-class').value);
     let composition=chosen;
     if(!annual&&isState){
       const groups=new Map();
@@ -83,21 +79,29 @@
       const sum=composition.reduce((a,r)=>a+r.area_ha,0), pixels=composition.reduce((a,r)=>a+r.pixel_count,0);
       composition.forEach(r=>{r.pct_of_district=sum?100*r.area_ha/sum:0;r.pct_of_valid_area=pixels?100*r.pixel_count/pixels:0;delete r.data_coverage_pct;});
     }
-    return {source,annual,year,district,isState,base,chosen,districts,focus,composition};
+    return {source,annual,year,district,isState,base,chosen,districts,composition};
   }
   function svgBars(target, rows, xField, title, pctField='pct_of_district'){
     if(!rows.length){target.innerHTML='<p class="lc-empty">No rows are available for this selection.</p>';return;}
     const width=680,rowH=34,left=180,right=140,top=12,height=top+rows.length*rowH+28;
     const max=Math.max(1,...rows.map(r=>Number(r[xField])||0)), plotW=width-left-right;
     const bars=rows.map((r,i)=>{
-      const y=top+i*rowH, val=Number(r[xField])||0, w=Math.max(val?2:0,plotW*val/max), label=`${fmt(r.area_ha)} ha · ${fmt(r[pctField],1)}%`;
+      const y=top+i*rowH, val=Number(r[xField])||0, w=Math.max(val?2:0,plotW*val/max), label=xField==='area_ha'?`${fmt(r.area_ha)} ha · ${fmt(r[pctField],1)}% district`:`${fmt(val,1)}% mapped · ${fmt(r.area_ha)} ha`;
       return `<g><text x="${left-10}" y="${y+17}" text-anchor="end" class="lc-axis-label">${esc(r.district||r.class_label||r.cover_class)}</text><rect x="${left}" y="${y+3}" width="${w.toFixed(2)}" height="20" rx="4" fill="${COLORS[r.class_label||r.cover_class]||'#79aaa4'}"><title>${esc(r.district||r.class_label)}: ${label}</title></rect><text x="${left+w+7}" y="${y+17}" class="lc-value-label">${esc(label)}</text></g>`;
     }).join('');
     target.innerHTML=`<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(title)}"><text x="${left}" y="${height-6}" class="lc-axis-title">${esc(title)}</text>${bars}</svg>`;
   }
+  function renderDistrictClassCharts(d,xField,area){
+    const rows=d.districts.map(r=>({...r,class_label:r.class_label||r.cover_class})),present=[...new Set(rows.map(r=>r.class_label))],classes=[...DYNAMIC_WORLD_CLASSES.filter(c=>present.includes(c)),...present.filter(c=>!DYNAMIC_WORLD_CLASSES.includes(c)).sort()];
+    $('lc-district-classes-title').textContent=`Every land-cover class by district · ${d.year}`;$('lc-district-classes-year').textContent=String(d.year);
+    $('lc-class-district-grid').innerHTML=classes.map(cls=>{
+      const data=rows.filter(r=>r.class_label===cls).sort((a,b)=>Number(b[xField])-Number(a[xField])),width=680,rowH=24,left=168,right=105,top=7,height=top+data.length*rowH+17,max=Math.max(1,...data.map(r=>Number(r[xField])||0)),plot=width-left-right,color=COLORS[cls]||'#79aaa4';
+      const bars=data.map((r,i)=>{const value=Number(r[xField])||0,y=top+i*rowH,w=Math.max(value?1.5:0,plot*value/max),label=area?`${fmt(value,0)} ha`:`${fmt(value,1)}%`;return `<g><text x="${left-9}" y="${y+16}" text-anchor="end" class="lc-axis-label">${esc(r.district)}</text><rect x="${left}" y="${y+4}" width="${plot}" height="15" rx="4" fill="rgba(151,173,189,.075)"/><rect x="${left}" y="${y+4}" width="${w.toFixed(1)}" height="15" rx="4" fill="${color}" opacity=".94"><title>${esc(r.district)} · ${esc(cls)} · ${label}</title></rect><text x="${width-5}" y="${y+16}" text-anchor="end" class="lc-value-label">${label}</text></g>`;}).join('');
+      return `<article class="lc-class-district-card" style="--class-accent:${color}"><h4><i></i>${esc(cls)}<span>${data.length} districts</span></h4><div class="lc-svg-chart"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(cls)} area by district in ${d.year}">${bars}</svg></div></article>`;
+    }).join('')||'<p class="lc-empty">No district class records are available for this year.</p>';
+  }
   function renderDistribution(){
     const d=activeRows(), annual=d.annual, key=$('lc-metric').value, area=key==='area';
-    const districtRows=d.districts.map(r=>({...r,class_label:r.class_label||r.cover_class})).filter(r=>r.class_label===$('lc-class').value).sort((a,b)=>Number(b[area?'area_ha':'pct_of_valid_area'])-Number(a[area?'area_ha':'pct_of_valid_area']));
     const composition=d.composition.map(r=>({...r,class_label:r.class_label||r.cover_class})).sort((a,b)=>Number(b[area?'area_ha':'pct_of_valid_area'])-Number(a[area?'area_ha':'pct_of_valid_area']));
     const metrics=annual?d.chosen[0]||{}:d.chosen[0]||{};
     let reference=0, coverage=0;
@@ -107,16 +111,23 @@
     const classes=[...new Set((annual?d.base:d.base).map(r=>r.class_label||r.cover_class))];
     $('lc-kpis').innerHTML=[['Districts',13],['Land-cover classes',classes.length],['Reference area',`${fmt(reference/100)} km²`],['Mapped coverage',`${fmt(coverage,1)}%`]].map(([a,b])=>`<div class="lc-kpi"><small>${esc(a)}</small><strong>${esc(b)}</strong></div>`).join('');
     $('lc-snapshot-note').textContent=annual?(d.year===2015?'2015 is a partial year: Dynamic World observations begin on 27 June.':'Annual Dynamic World · 500 m grid-sample estimates.'):'Baseline snapshot · ESA WorldCover v200 · 2021 · 10 m';
-    $('lc-focus-title').textContent=`${$('lc-class').value} across districts`;
-    $('lc-composition-title').textContent=`Class composition · ${d.district}`;
+    $('lc-dist-year-slider').value=String(d.year);$('lc-dist-year-slider').disabled=!annual;$('lc-dist-play').disabled=!annual;$('lc-dist-year-label').textContent=annual?String(d.year):'2021';$('lc-dist-timeline-subtitle').textContent=`${d.district} · ${area?'area (ha)':'valid mapped area (%)'}`;
+    if(!annual)stopDistributionPlayback();
     const validMetric=area?'area_ha':'pct_of_valid_area';
-    svgBars($('lc-focus-chart'),districtRows,validMetric,area?'Area (ha)':'Valid mapped area (%)');
-    svgBars($('lc-composition-chart'),composition.map(r=>({...r,district:r.class_label})),validMetric,area?'Area (ha)':'Valid mapped area (%)');
+    svgBars($('lc-annual-class-chart'),composition.map(r=>({...r,district:r.class_label})),validMetric,area?'Class area (ha)':'Share of valid mapped area (%)');
+    renderDistrictClassCharts(d,validMetric,area);
     const tableRows=d.composition.map(r=>({...r,class_label:r.class_label||r.cover_class}));
     $('lc-distribution-table').innerHTML=`<table class="lc-table"><thead><tr><th>District</th><th>Class</th><th>Area (ha)</th><th>Area (km²)</th><th>Valid mapped area (%)</th><th>District area (%)</th><th>Coverage (%)</th></tr></thead><tbody>${tableRows.map(r=>`<tr><td>${esc(d.district)}</td><td><i class="lc-swatch" style="--swatch:${COLORS[r.class_label]||'#79aaa4'}"></i>${esc(r.class_label)}</td><td>${fmt(r.area_ha,1)}</td><td>${fmt(Number(r.area_ha)/100,2)}</td><td>${fmt(r.pct_of_valid_area,2)}</td><td>${fmt(r.pct_of_district,2)}</td><td>${fmt(r.data_coverage_pct,1)}</td></tr>`).join('')}</tbody></table>`;
     const downloadRows=d.annual?d.base.filter(r=>r.district!=='Uttarakhand'):d.base;
     $('lc-download-selected').onclick=()=>downloadCSV(downloadRows,`uttarakhand_${d.annual?'dynamic_world_'+d.year:'worldcover_2021'}_district_classes.csv`);
     $('lc-download-current').onclick=()=>downloadCSV(d.annual?DATA.annual:DATA.worldcover,d.annual?'uttarakhand_dynamic_world_annual_district_classes_2015_2025.csv':'uttarakhand_worldcover_2021_districtwise.csv');
+  }
+  function stopDistributionPlayback(){if(distributionPlayback){clearInterval(distributionPlayback);distributionPlayback=null;}const button=$('lc-dist-play');if(button){button.textContent='▶ Play';button.setAttribute('aria-label','Play annual timeline');}}
+  function startDistributionPlayback(){
+    if(distributionPlayback||$('lc-source').value!=='annual'||$('lc-view-distribution').hidden)return;
+    if(Number($('lc-year').value)>=2025){$('lc-year').value='2015';$('lc-dist-year-slider').value='2015';renderDistribution();}
+    const button=$('lc-dist-play');button.textContent='Ⅱ Pause';button.setAttribute('aria-label','Pause annual timeline');
+    distributionPlayback=setInterval(()=>{const current=Number($('lc-year').value),next=current>=2025?2015:current+1;$('lc-year').value=String(next);$('lc-dist-year-slider').value=String(next);renderDistribution();},900);
   }
   function downloadCSV(rows,name){
     if(!rows?.length)return;
@@ -298,14 +309,18 @@
       const trendClasses=[...new Set(trends.map(r=>r.class_label))].sort();
       setOptions($('lt-class'),trendClasses,trendClasses.includes(getPref('class'))?getPref('class'):'Tree cover');
       if(['area','share'].includes(getPref('measure'))) $('lt-measure').value=getPref('measure');
-      $('lc-source').addEventListener('change',()=>{setControlOptions();renderAll();});
-      ['lc-year','lc-district','lc-class','lc-metric'].forEach(id=>$(id).addEventListener('change',renderAll));
+      $('lc-source').addEventListener('change',()=>{stopDistributionPlayback();setControlOptions();renderAll();if($('lc-source').value==='annual')startDistributionPlayback();});
+      ['lc-year','lc-district','lc-metric'].forEach(id=>$(id).addEventListener('change',renderAll));
+      $('lc-dist-year-slider').addEventListener('input',()=>{stopDistributionPlayback();$('lc-year').value=$('lc-dist-year-slider').value;renderDistribution();});
+      $('lc-dist-play').addEventListener('click',()=>{if(distributionPlayback)stopDistributionPlayback();else startDistributionPlayback();});
       [['lt-district','district'],['lt-class','class'],['lt-measure','measure']].forEach(([id,key])=>$(id).addEventListener('change',()=>{savePref(key,$(id).value);renderTrends();}));
       document.querySelectorAll('[data-lc-view]').forEach(btn=>btn.addEventListener('click',()=>{
+        if(btn.dataset.lcView!=='distribution')stopDistributionPlayback();
         document.querySelectorAll('[data-lc-view]').forEach(b=>{b.classList.toggle('active',b===btn);b.setAttribute('aria-selected',String(b===btn));});
         savePref('view',btn.dataset.lcView);
         $('lc-view-distribution').hidden=btn.dataset.lcView!=='distribution';$('lc-view-trends').hidden=btn.dataset.lcView!=='trends';$('lc-view-all-districts').hidden=btn.dataset.lcView!=='all-districts';
         if(btn.dataset.lcView==='trends')renderTrends();else if(btn.dataset.lcView==='all-districts')renderDistrictRanking();else renderDistribution();
+        if(btn.dataset.lcView==='distribution')startDistributionPlayback();
       }));
       setControlOptions();
       const initialView=['trends','all-districts'].includes(getPref('view'))?getPref('view'):'distribution';
@@ -313,7 +328,8 @@
       $('lc-view-distribution').hidden=initialView!=='distribution';$('lc-view-trends').hidden=initialView!=='trends';$('lc-view-all-districts').hidden=initialView!=='all-districts';
       renderAll();
       if(initialView==='all-districts')renderDistrictRanking();
-      window.renderLandcoverPage=()=>requestAnimationFrame(()=>{renderAll();if(!$('lc-view-trends').hidden)renderTrends();});
+      if(initialView==='distribution')startDistributionPlayback();
+      window.renderLandcoverPage=()=>requestAnimationFrame(()=>{renderAll();if(!$('lc-view-trends').hidden)renderTrends();if(!$('lc-view-distribution').hidden)startDistributionPlayback();});
       window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{renderDistribution();drawLineChart(DATA.annual.filter(r=>r.district===$('lt-district').value&&r.class_label===$('lt-class').value),rowsForDistrict($('lt-district').value).find(r=>r.class_label===$('lt-class').value)?.sen_slope_ha_per_year);},120);});
     }catch(error){$('lc-load-error').hidden=false;$('lc-load-error').textContent=`Land-cover data could not be loaded: ${error.message}. Open this page through the project web server so the CSV files can be fetched.`;}
   }
