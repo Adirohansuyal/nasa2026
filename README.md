@@ -429,8 +429,8 @@ uvicorn api_server:app --host 127.0.0.1 --port 8001
 python -m http.server 5500
 ```
 
-Open `http://localhost:5500`. The Land Cover → District trends map reads annual 100 m GeoTIFFs from `research/data/dynamic_world_maps/` and serves local PNG overlays through this API; map selections no longer query Earth Engine. To refresh the rasters, run `research/.venv/bin/python research/download_dynamic_world_maps.py` with Earth Engine access. OpenStreetMap background tiles and the Leaflet library still load over the network.
-For deployment: host the API over HTTPS, set `EARTHPULSE_ALLOWED_ORIGINS` to the site origin, and point `window.EARTHPULSE_API_BASE` in `index.html` to the API's public base URL.
+Open `http://localhost:5500`. Land Cover → District trends uses pre-generated annual label frames in `assets/landcover_frames/`; Netlify serves these static PNGs from its CDN, so map playback does not wait for the Python API to crop rasters. To refresh the source rasters, run `research/.venv/bin/python research/download_dynamic_world_maps.py` with Earth Engine access, then rebuild the static frames with `research/.venv/bin/python tools/build_static_landcover_frames.py`. OpenStreetMap background tiles and the Leaflet library still load over the network.
+The API remains necessary for AI explanations. For deployment, host it over HTTPS, set `EARTHPULSE_ALLOWED_ORIGINS` to the site origin, and point `window.EARTHPULSE_API_BASE` in `index.html` to the API's public base URL.
 
 ---
 
