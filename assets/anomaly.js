@@ -20,7 +20,7 @@
     $('anomaly-kpi-districts').textContent=D.districtCount;
     $('anomaly-hazard-catalogue').innerHTML=HAZARD_ORDER.map(key=>{const h=D.hazards[key];return`<button class="anomaly-catalogue-card" data-hazard="${key}" style="--hazard-color:${h.color}"><span class="anomaly-card-emoji">${h.emoji}</span><span class="anomaly-card-count">${h.monthsTriggered} mo</span><strong>${esc(h.label)}</strong><span>${esc(h.description)}</span><small>Select to view district analysis <b>↘</b></small></button>`;}).join('');
     $('anomaly-hazard-catalogue').querySelectorAll('[data-hazard]').forEach(el=>el.addEventListener('click',()=>selectHazard(el.dataset.hazard,true)));
-    renderFrequency();renderRuleCards();
+    renderFrequency();
   }
   function renderFrequency(){
     const chart=$('anomaly-frequency-chart');if(!chart)return;const rows=HAZARD_ORDER.map(key=>({key,meta:D.hazards[key],value:Number(D.hazards[key].monthsTriggered)})),max=Math.max(1,...rows.map(x=>x.value));
@@ -40,8 +40,8 @@
       <div class="anomaly-reasons">${buildReasons(active,freq,key)}</div>
       <details class="anomaly-details" open><summary>📅 Month-by-month record · ${esc(meta.label)}</summary><div class="anomaly-table-wrap">${monthTable(rows,key)}</div></details>
       <details class="anomaly-details" open><summary>📋 Full district table · ${esc(meta.label)}</summary><div class="anomaly-table-wrap">${districtTable(rows)}</div></details>
-      <section class="pred-ai-card anomaly-ai-card"><div class="pred-ai-heading"><span class="pred-ai-icon">✦</span><div><h3>AI hazard briefing</h3><p>RANKING EXPLANATION · GEOGRAPHIC CONTEXT · SOURCED EVENTS</p></div><span class="pred-ai-live"><i></i> READY</span></div><p class="pred-muted">Explains why the leading district ranks first using the displayed score components, then checks for documented events in the flagged months. Past events do not affect the score.</p><button class="pred-ai-refresh" id="anomaly-ai-button">Explain the leading district</button><div class="pred-ai-answer" id="anomaly-ai-output" aria-live="polite"></div></section>`}`;
-    if(freq){drawDistrictMap($('anomaly-hazard-map'),rows,key);bindMapTooltip($('anomaly-hazard-map'),rows,key);const b=$('anomaly-ai-button');b?.addEventListener('click',()=>explainHazard(key,rows,meta));}
+`}`;
+    if(freq){drawDistrictMap($('anomaly-hazard-map'),rows,key);bindMapTooltip($('anomaly-hazard-map'),rows,key);}
   }
   function miniMap(name,key,meta,exposed){const f=D.districtGeo.features.find(x=>x.properties.district_name===name);if(!f)return'';const rings=geometryPolygons(f.geometry).flatMap(poly=>poly),pts=rings.flat(),xs=pts.map(p=>p[0]),ys=pts.map(p=>-p[1]),minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys),w=Math.max(.01,maxX-minX),h=Math.max(.01,maxY-minY),paths=rings.map(r=>r.map((p,i)=>`${i?'L':'M'}${p[0]-minX},${-p[1]-minY}`).join(' ')+' Z').join(' ');return`<svg class="anomaly-mini-map" viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="${paths}" fill="${exposed?meta.color:'#26333e'}" fill-opacity="${exposed?'.72':'.3'}" stroke="${exposed?meta.color:'#61707b'}" stroke-width=".012" vector-effect="non-scaling-stroke"/></svg>`;}
   function rankRow(row,index,key,meta){const exposed=Number(row.months_triggered)>0,score=Number(row.risk_score)||0,medal={0:'①',1:'②',2:'③'}[index]||String(index+1).padStart(2,'0'),width=exposed?Math.max(2,score):0;return`<div class="anomaly-rank-row${exposed?'':' unexposed'}"><span class="anomaly-rank-num">${medal}</span><div class="anomaly-rank-main"><div><strong>${esc(row.district_name)}</strong><small>${exposed?`${row.months_triggered} months · ${num(row.mean_intensity_z,2)}σ mean`:'No active pixel months'}</small></div><div class="anomaly-rank-track"><i style="width:${width}%;--rank-color:${meta.color}"></i></div></div><b class="anomaly-rank-score" style="color:${exposed?meta.color:'#7b8993'}">${exposed?num(score,0):'—'}</b></div>`;}
