@@ -49,38 +49,10 @@
     if(!response.ok) throw new Error(`Could not load ${FILES[name]} (${response.status})`);
     return parseCSV(await response.text());
   };
-  let DATA=null, resizeTimer=null, playback=null, distributionPlayback=null, mapState=null, mapRequest=0, districtBoundariesPromise=null,districtMiniMapPromise=null,districtMiniMapMarkup='',labelCacheDistrict=null,labelCacheFrames=null,labelCacheWidth=0,labelCacheHeight=0;
+  let DATA=null, resizeTimer=null, playback=null, distributionPlayback=null, mapState=null, mapRequest=0, districtBoundariesPromise=null,districtMiniMapPromise=null,districtMiniMapMarkup='';
 
   function districtSlug(value){return String(value).toLowerCase().trim().replace(/\s+/g,'-');}
   function loadImage(url){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error(`Could not load ${url}`));image.src=url;});}
-  async function loadStaticLabels(district,years,frames){
-    if(labelCacheDistrict===district&&labelCacheFrames?.length===years.length)return {labels:labelCacheFrames,width:labelCacheWidth,height:labelCacheHeight};
-    const images=await Promise.all(years.map(year=>loadImage(`assets/landcover_frames/${district}/${frames[String(year)].file}`)));
-    const width=images[0].naturalWidth,height=images[0].naturalHeight;
-    if(images.some(image=>image.naturalWidth!==width||image.naturalHeight!==height))throw new Error('Annual map frames have inconsistent dimensions.');
-    const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
-    const context=canvas.getContext('2d',{willReadFrequently:true});
-    const labels=images.map(image=>{context.clearRect(0,0,width,height);context.drawImage(image,0,0);const pixels=context.getImageData(0,0,width,height).data;const values=new Uint8Array(width*height);for(let i=0;i<values.length;i++)values[i]=pixels[i*4];return values;});
-    labelCacheDistrict=district;labelCacheFrames=labels;labelCacheWidth=width;labelCacheHeight=height;
-    return {labels,width,height};
-  }
-  function colorStaticFrames(labels,width,height,classIndex,classColors){
-    const years=Array.from({length:labels.length},(_,i)=>2015+i),canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
-    const context=canvas.getContext('2d'),image=context.createImageData(width,height),maps={};
-    const palette=[...classColors.map(hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16))),[236,0,140],[0,214,107],[0,207,255]];
-    for(let frame=0;frame<labels.length;frame++){
-      const current=labels[frame],previous=frame?labels[frame-1]:null,pixels=image.data;
-      for(let i=0;i<current.length;i++){
-        const value=current[i];let colorIndex=value;
-        if(value>=9){pixels[i*4]=0;pixels[i*4+1]=0;pixels[i*4+2]=0;pixels[i*4+3]=0;continue;}
-        if(frame===0){if(value===classIndex)colorIndex=9;}
-        else if(previous[i]<9){if(value===classIndex&&previous[i]===classIndex)colorIndex=9;else if(value===classIndex)colorIndex=10;else if(previous[i]===classIndex)colorIndex=11;}
-        const color=palette[colorIndex];pixels[i*4]=color[0];pixels[i*4+1]=color[1];pixels[i*4+2]=color[2];pixels[i*4+3]=255;
-      }
-      context.putImageData(image,0,0);maps[String(years[frame])]=canvas.toDataURL('image/png');
-    }
-    return maps;
-  }
 
   function setOptions(node, values, selected){
     node.innerHTML=values.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
@@ -176,7 +148,6 @@
     $('lt-map-status').textContent='Loading pre-generated annual maps from Netlify…';
     $('lt-map-area').textContent='Loading static map frames…';
     const district=districtName==='Uttarakhand (statewide)'?'Uttarakhand':districtName;
-    const classColors=['#005A9C','#006B3C','#A6BF00','#8C4FA3','#D88700','#88532D','#C13728','#777777','#A4CFE3'];
     if(!window.L){$('lt-map-status').textContent='Leaflet did not load. Check the network connection and refresh.';return;}
     if(!mapState){
       const map=L.map('lt-map',{zoomControl:true,scrollWheelZoom:true});
@@ -217,8 +188,14 @@
       .then(async response=>{if(!response.ok)throw new Error(`Could not load static map manifest (${response.status}).`);return response.json();})
       .then(async manifest=>{
         const years=manifest.years||Array.from({length:11},(_,i)=>2015+i);
-        const raster=await loadStaticLabels(staticDistrict,years,manifest.frames);
-        return {years,maps:colorStaticFrames(raster.labels,raster.width,raster.height,classIndex,classColors),bounds:Object.fromEntries(years.map(year=>[String(year),manifest.frames[String(year)].bounds])),outline:null,stableColor:'#EC008C'};
+        const classFrames=manifest.classes?.[String(classIndex)];
+        if(!classFrames)throw new Error(`Pre-rendered maps are missing for ${classLabel}.`);
+        const loaded=await Promise.all(years.map(async year=>{
+          const frame=classFrames[String(year)],url=`assets/landcover_frames/${staticDistrict}/${frame.file}`;
+          const image=await loadImage(url);
+          return [String(year),{url,bounds:frame.bounds,image}];
+        }));
+        return {years,frames:Object.fromEntries(loaded),outline:null,stableColor:'#EC008C'};
       })
       .then(async data=>{
         if(!data.outline){
@@ -257,7 +234,8 @@
           if(state.currentLayer)state.currentLayer.setOpacity(.98);
           const prior=state.currentIndex;
           const previousLayer=state.currentLayer;
-          const incoming=L.imageOverlay(data.maps[String(years[index])],data.bounds[String(years[index])],{opacity:0});
+          const frame=data.frames[String(years[index])];
+          const incoming=L.imageOverlay(frame.url,frame.bounds,{opacity:0});
           let settled=false;
           const finish=ready=>{if(settled)return;settled=true;resolve(ready);};
           incoming.once('load',()=>{
@@ -270,7 +248,7 @@
             const area=mapAreas[index],previous=index>0?mapAreas[index-1]:null;
             areaLabel.textContent=area===null?'area estimate unavailable':previous===null?`${fmt(area)} ha · baseline`:`${fmt(area)} ha · ${area-previous>0?'+':''}${fmt(area-previous)} ha vs prev year`;
             casing.bringToFront();outline.bringToFront();
-            const fadeStarted=performance.now(),fadeDuration=240;
+            const fadeStarted=performance.now(),fadeDuration=150;
             const crossfade=now=>{
               if(request!==mapRequest||frameRequest!==state.frameRequest){state.group.removeLayer(incoming);return finish(false);}
               const progress=Math.min(1,(now-fadeStarted)/fadeDuration);
