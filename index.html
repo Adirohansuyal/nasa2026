@@ -3413,7 +3413,11 @@ function satUseUttarakhand(){
 }
 
 document.querySelectorAll('.nav-item').forEach(item=>{
-  item.addEventListener('click',()=>{navigate(item.dataset.page);item.scrollIntoView({behavior:'smooth',block:'nearest',inline:'nearest'});});
+  item.addEventListener('click',()=>{
+    if(!item.dataset.page)return;
+    navigate(item.dataset.page);
+    item.scrollIntoView({behavior:'smooth',block:'nearest',inline:'nearest'});
+  });
 });
 document.addEventListener('DOMContentLoaded',()=>{
   try{
