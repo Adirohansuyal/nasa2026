@@ -92,7 +92,7 @@ A small label next to the row names the source: "monthly series" or "trend map".
   variable's changes across the world."
 
 ### 2.4 Interpretation rules (what they say together)
-A **fixed rule table** in `content.ts`, TR/EN, with no causal claims ("seen together", not
+A **fixed rule table** in `content.ts`, English, with no causal claims ("seen together", not
 "causes"). A rule only fires if all the variables involved have **at least "possible"**
 evidence. The experimental variable (RUNOFF) can never be the **only** basis of a rule.
 
@@ -133,7 +133,7 @@ The rule order is fixed; at most 2 sentences are shown. Automated checks use syn
 ### 2.7 Done when
 - For a place with and a place without a series, the 9 rows arrive with the right source; clicking a
   row changes the variable; interpretation sentences only appear when a rule matches; similar places
-  are clickable; TR/EN; single column on phones.
+  are clickable; English; single column on phones.
 
 ---
 
@@ -286,11 +286,11 @@ The browser's **print → save as PDF**, with a separate report layout.
 - Button: "Report (PDF)" in the right panel and the chart drawer.
 - Flow: collect the report data → convert the chart to SVG → wait for fonts to load
   (`document.fonts.ready`) → `window.print()` → clean up on `afterprint`.
-- Language follows the interface language (TR/EN).
+- Language follows the interface language (English).
 
 ### 6.4 Tests
 - A unit test for the function that collects the report data (all fields filled).
-- By hand: PDF output in Chrome, Edge, Firefox; Turkish characters; no page overflow.
+- By hand: PDF output in Chrome, Edge, Firefox; international characters; no page overflow.
 
 ---
 
@@ -342,7 +342,7 @@ Rule: additions only (1.x), written to the CHANGELOG, `data.ts` stays the single
 ---
 
 ## 10. "Done" definition for every feature
-- TR and EN texts complete.
+- English text complete.
 - No animation when the reduced-motion setting is on.
 - Unit tests written and all passing; typecheck, lint, build clean.
 - Tried in the browser on one place with and one without a series; checked on a phone.

@@ -1,6 +1,6 @@
 # Evidence
 
-How we know the numbers on Data May Cry are right. Every value below is copied by `worker/report.py` from the result files in [`docs/evidence/`](evidence/); nothing is typed by hand. Pass criteria were written into the scripts before they were run and were not tuned afterwards.
+How we know the numbers on Blue Marble are right. Every value below is copied by `worker/report.py` from the result files in [`docs/evidence/`](evidence/); nothing is typed by hand. Pass criteria were written into the scripts before they were run and were not tuned afterwards.
 
 | Group | Result | Script |
 |---|---|---|

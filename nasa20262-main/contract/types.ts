@@ -1,5 +1,5 @@
 /**
- * Data May Cry — file format contract (single source of truth).
+ * Blue Marble — file format contract (single source of truth).
  *
  * Every file the worker (Python) produces and the web app (TypeScript) reads
  * is described here. The same structure exists as JSON Schema in

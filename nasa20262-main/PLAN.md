@@ -1,4 +1,4 @@
-# PLAN: Data May Cry 🌍🔍
+# PLAN: Blue Marble 🌍🔍
 
 > **NASA Space Apps Challenge 2026: _Be An Earth System Trend Detective!_**
 > This file is the record of **approved decisions**. If anything conflicts with the details in the README, **this file wins**.
@@ -46,7 +46,7 @@ The challenge's 4 requirements → how we meet them:
 | 12 | **Borders** | **Natural Earth** admin-0 + admin-1 | Public domain, includes Türkiye's 81 provinces |
 | 13 | **Domain** | None for now: `*.vercel.app` + `r2.dev` | Enough for a hackathon demo |
 | 15 | **Programming languages** | **Python** (worker, `uv` + `uv.lock`) + **TypeScript** (frontend: **Vite + React**, charts: **Plotly.js**). Approved 2026-11-14 | Python has the NASA/climate ecosystem ready. TS types the file contract. Two separate MK implementations = L2 parity |
-| 16 | **Interface language** | **English (main) + Turkish** option. Descriptions and card templates written in both languages from the start | The jury is international |
+| 16 | **Interface language** | **English only**. Interface copy and card templates are English | The jury is international |
 | 14 | **Priority** | Data + test + chart + result card first, **then** the 3D flair | That's where the points are |
 
 ### Rejected ❌
@@ -591,7 +591,7 @@ Data_May_Cry/
 | 1 | Vite + MapLibre globe setup, rotate/zoom, Natural Earth borders |
 | 2 | Click a country → `flyTo` → provinces → click a province; 🗺️ Region / 📍 Point toggle |
 | 3 | Right panel: chart (Plotly.js / Chart.js), trend line, **result card**, period slider UI |
-| 4 | Variable picker + **plain Turkish/English descriptions of the 10 variables** |
+| 4 | Variable picker + **plain English descriptions of the 10 variables** |
 | 5 | "What are you curious about?" question flow, demo scenario buttons |
 | 6 | Flair: animations, trend map colors, light mode, **testing on the demo device** |
 | 7 | **Space Apps project page, demo video, presentation** |

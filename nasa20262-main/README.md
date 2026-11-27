@@ -1,10 +1,10 @@
-# Aeolus 🌍🔍
+# EarthPulse-X 🌍🔍
 
-*A project by team Data May Cry*
+*A project by team Blue Marble*
 
 **NASA Space Apps Challenge 2026: _Be An Earth System Trend Detective!_**
 
-🌐 **Live site:** <https://aeolusclimate.vercel.app> · **API:** <https://aeolusclimate.vercel.app/#api>
+🌐 **Live site:** See the deployment URL configured for this project.
 
 A web tool where the user picks a region of the world and a variable, sees how that variable has changed from 1980 to today, and learns whether the change is **statistically significant**.
 

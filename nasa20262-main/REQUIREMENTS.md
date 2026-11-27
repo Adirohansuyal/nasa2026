@@ -1,6 +1,6 @@
 # Requirements
 
-Everything needed to develop and run Data May Cry: accounts, tools, packages, secrets and limits.
+Everything needed to develop and run Blue Marble: accounts, tools, packages, secrets and limits.
 Versions were installed and verified on 2026-11-14. Exact versions are in the lock files: `web/package-lock.json` and `worker/uv.lock`.
 
 | Part | Who | Language | Where it runs |

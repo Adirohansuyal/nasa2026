@@ -1,7 +1,7 @@
 [project]
 name = "data-may-cry-worker"
 version = "0.1.0"
-description = "Data May Cry worker: MERRA-2 download, trend tests, packaging"
+description = "Blue Marble worker: MERRA-2 download, trend tests, packaging"
 requires-python = ">=3.12"
 dependencies = [
     "numpy>=2",

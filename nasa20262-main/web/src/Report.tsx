@@ -45,7 +45,7 @@ const T = {
   data: { tr: "Veri", en: "Data" },
   sources: { tr: "Kaynakça", en: "References" },
   link: { tr: "Bu görünümü açan bağlantı", en: "Link to this view" },
-  made: { tr: "EarthPulse-X ile oluşturuldu · Data May Cry", en: "Made with EarthPulse-X · Data May Cry" },
+  made: { tr: "EarthPulse-X ile oluşturuldu · Blue Marble", en: "Made with EarthPulse-X · Blue Marble" },
   levels: { strong: { tr: "güçlü", en: "strong" }, possible: { tr: "olası", en: "possible" }, none: { tr: "gösterilemedi", en: "not shown" } },
 } as const;
 

@@ -1,5 +1,5 @@
-/** UI strings, English (main) + Turkish (PLAN.md decision #16). */
-export type Lang = "en" | "tr";
+/** UI language. */
+export type Lang = "en";
 
 const S = {
   title: { en: "EarthPulse-X", tr: "EarthPulse-X" },

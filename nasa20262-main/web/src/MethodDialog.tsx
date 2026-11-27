@@ -60,7 +60,7 @@ export function MethodDialog({ lang, open, onClose, initialTab = "basics" }: { l
   const reduce = useReducedMotion();
   const [tab, setTab] = useState<MethodTab>(initialTab);
   const [copied, setCopied] = useState<string | null>(null);
-  const base = `${typeof location !== "undefined" ? location.origin : "https://aeolusclimate.vercel.app"}/api/v1`;
+  const base = `${typeof location !== "undefined" ? location.origin : "http://localhost:5173"}/api/v1`;
 
   useEffect(() => {
     const d = ref.current;
@@ -110,8 +110,8 @@ export function MethodDialog({ lang, open, onClose, initialTab = "basics" }: { l
             <h3>{lang === "tr" ? "Neden EarthPulse-X?" : "Why EarthPulse-X?"}</h3>
             <p className="fine">
               {lang === "tr"
-                ? "EarthPulse-X, 46 yılın havasını izleyip iklimin ne yöne değiştiğini söyler. Data May Cry ekibinin (Enes Tekdemir, Rumet Argeş Şaşmaz) NASA Space Apps Challenge 2026 projesidir."
-                : "EarthPulse-X watches 46 years of weather and tells you which way the climate is changing. A NASA Space Apps Challenge 2026 project by team Data May Cry (Enes Tekdemir, Rumet Argeş Şaşmaz)."}
+                ? "EarthPulse-X, 46 yılın havasını izleyip iklimin ne yöne değiştiğini söyler. Blue Marble ekibinin (Enes Tekdemir, Rumet Argeş Şaşmaz) NASA Space Apps Challenge 2026 projesidir."
+                : "EarthPulse-X watches 46 years of weather and tells you which way the climate is changing. A NASA Space Apps Challenge 2026 project by team Blue Marble (Enes Tekdemir, Rumet Argeş Şaşmaz)."}
             </p>
           </>
         );

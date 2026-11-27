@@ -19,8 +19,8 @@ export const API_TEXT: { intro: Tx; badges: Tx[]; note: Tx } = {
     { tr: "Türkçe + İngilizce metin", en: "Turkish + English text" },
   ],
   note: {
-    tr: "\"Belirgin değişim yok\" çıkan sonuçlarda yön ve sayı verilmez (null): anlamlı olmayan bir eğimin işareti güvenilir değildir. Cevaplar bir gün önbellekte tutulur. Kullanırken kaynak olarak \"NASA MERRA-2 · EarthPulse-X (Data May Cry)\" yazman yeterli.",
-    en: "Results with \"no clear change\" give no direction and no numbers (null): the sign of a non-significant slope is not reliable. Answers are cached for a day. Please credit \"NASA MERRA-2 · EarthPulse-X (Data May Cry)\".",
+    tr: "\"Belirgin değişim yok\" çıkan sonuçlarda yön ve sayı verilmez (null): anlamlı olmayan bir eğimin işareti güvenilir değildir. Cevaplar bir gün önbellekte tutulur. Kullanırken kaynak olarak \"NASA MERRA-2 · EarthPulse-X (Blue Marble)\" yazman yeterli.",
+    en: "Results with \"no clear change\" give no direction and no numbers (null): the sign of a non-significant slope is not reliable. Answers are cached for a day. Please credit \"NASA MERRA-2 · EarthPulse-X (Blue Marble)\".",
   },
 };
 
@@ -30,7 +30,7 @@ export const API_ENDPOINTS: { path: string; example: string; what: Tx }[] = [
     example: "/trend?place=TR-21&var=T2M",
     what: {
       tr: "Bir yerin kartı: kanıt düzeyi, 10 yıllık ve toplam değişim, %95 aralık, p, Türkçe/İngilizce açıklama ve yıllık değerler.",
-      en: "A place's card: evidence level, change per decade and in total, 95 % range, p, Turkish/English text and the yearly values.",
+      en: "A place's card: evidence level, change per decade and in total, 95 % range, p, English text and the yearly values.",
     },
   },
   {

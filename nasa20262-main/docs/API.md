@@ -1,13 +1,13 @@
-# Aeolus API
+# EarthPulse-X API
 
 Free, no key, JSON, CORS open. The same calculation as the card on the site
 (`web/src/apiCore.ts`, running as Vercel functions in `web/api/v1/`).
 
-Base URL: `https://aeolusclimate.vercel.app/api/v1` (also opens from the site: ⓘ → API, or `/#api`).
+Base URL: `<your-deployment-origin>/api/v1` (also opens from the site: ⓘ → API, or `/#api`).
 
 | Endpoint | What |
 |---|---|
-| `GET /trend?place=TR-21&var=T2M&from=1980&to=2025&season=all` | a place's card: evidence, change per decade and total, 95 % range, p, Turkish/English text, yearly values |
+| `GET /trend?place=TR-21&var=T2M&from=1980&to=2025&season=all` | a place's card: evidence, change per decade and total, 95 % range, p, English text, yearly values |
 | `GET /trend?lat=37.9&lon=40.2&var=PRECTOT` | the same for the nearest 0.5° × 0.625° grid cell |
 | `GET /places?q=erzurum&limit=10` | find place ids (continents `EU`, countries `TUR`, provinces `TR-25`) |
 | `GET /variables` | the nine variables, units, data period |
@@ -24,4 +24,4 @@ When the evidence is "none" (no clear change), `change_per_decade`, `change_tota
 Local development: `cd web && npm run dev` serves the same endpoints at `http://localhost:5173/api/v1/…`
 using the published data package configured by `VITE_DATA_URL`.
 
-Please credit "NASA MERRA-2 · Aeolus (Data May Cry)".
+Please credit "NASA MERRA-2 · EarthPulse-X".

@@ -1,4 +1,4 @@
-# web — Data May Cry frontend
+# web — Blue Marble frontend
 
 Vite + React + TypeScript. The globe, panels, chart and result card live here.
 
