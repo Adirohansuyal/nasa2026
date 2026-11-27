@@ -11,9 +11,9 @@
     --font-ui:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;
   }
   html,body{margin:0;height:100%;background:#02030a;color:var(--ink);font-family:var(--font-ui);overflow:hidden}
-  #globe{position:fixed;inset:0}
+  #globe{position:fixed;inset:0 50% 0 0}
   .cesium-viewer-bottom{z-index:1}
-  .top{position:fixed;top:12px;left:12px;right:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;pointer-events:none;z-index:5}
+  .top{position:fixed;top:12px;left:12px;right:calc(50% + 12px);display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;pointer-events:none;z-index:5}
   .panel{pointer-events:auto;background:var(--glass);border:1px solid var(--line);border-radius:12px;
          backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
   form.search{display:flex;gap:6px;padding:6px;flex:1 1 280px;max-width:460px}
@@ -29,7 +29,22 @@
   button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .info{padding:8px 12px;font-size:12px;line-height:1.5;color:var(--ink-dim);font-variant-numeric:tabular-nums}
   .info b{color:var(--ink);font-weight:500}
-  .bar{position:fixed;left:50%;transform:translateX(-50%);bottom:40px;width:min(640px,calc(100% - 24px));box-sizing:border-box;
+  .events{position:fixed;right:0;top:0;bottom:0;width:50%;max-height:none;overflow:hidden;z-index:5;display:flex;flex-direction:column;border-radius:0;border-top:0;border-right:0;border-bottom:0;background:rgba(6,10,18,.96)}
+  .events-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:12px}
+  .events-head strong{font-size:13px;color:var(--ink)}.events-head button{margin-left:auto;padding:5px 8px;min-height:30px;font-size:11px}
+  #eventList{overflow:auto;padding:4px 8px 8px;flex:1;min-height:0;max-height:none}.event-item{display:block;width:100%;text-align:left;margin-top:5px;padding:8px 9px;border-radius:8px}
+  .event-item strong{display:block;font-size:12px;line-height:1.35}.event-item small{display:block;color:var(--ink-dim);font-size:10px;margin-top:3px}
+  .gdacs-legend{display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding:0 4px 6px;color:var(--ink-dim);font-size:9px}.alert-pill{display:inline-block;vertical-align:1px;padding:2px 5px;border-radius:999px;margin-right:5px;font-size:8px;font-weight:750;letter-spacing:.04em}.alert-red{color:#ffd8d8;background:rgba(255,76,84,.2);border:1px solid rgba(255,92,99,.5)}.alert-orange{color:#ffe3ba;background:rgba(255,164,58,.18);border:1px solid rgba(255,174,77,.45)}.alert-green{color:#c8f7dc;background:rgba(75,205,132,.16);border:1px solid rgba(92,220,150,.4)}.alert-unknown{color:#cbd5df;background:rgba(160,174,190,.14);border:1px solid rgba(160,174,190,.3)}
+  .live-radar{padding:9px 12px 8px;border-bottom:1px solid var(--line);flex:0 0 auto}.radar-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.radar-head strong{font-size:14px;letter-spacing:.03em}.radar-live{display:flex;align-items:center;gap:5px;padding:3px 7px;border-radius:999px;background:rgba(92,220,150,.13);color:#7ce0a6;font-size:8px;font-weight:750;letter-spacing:.07em}.radar-dot{width:6px;height:6px;border-radius:50%;background:#68dfa0;box-shadow:0 0 8px #68dfa0}.radar-summary{margin:4px 0 7px;color:var(--ink-dim);font-size:9px;line-height:1.35}.radar-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.radar-card{position:relative;min-width:0;min-height:51px;padding:6px 8px;text-align:left;border-radius:8px;background:rgba(255,255,255,.035);border-color:rgba(149,174,197,.13)}.radar-card:hover{background:rgba(255,255,255,.075);border-color:rgba(99,214,196,.4)}.radar-card-title{display:block;font-size:9px;font-weight:700;line-height:1.25}.radar-card-detail{display:block;margin-top:3px;color:var(--ink-dim);font-size:8px;line-height:1.3}.radar-card-status{position:absolute;right:7px;top:6px;max-width:47%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:2px 4px;border-radius:999px;background:rgba(160,174,190,.13);color:#c5d2dc;font-size:7px;font-weight:750;letter-spacing:.03em}.radar-card-status.is-active{background:rgba(255,92,99,.16);color:#ff9296}.radar-card-status.is-ready{background:rgba(92,220,150,.13);color:#81e6a9}.radar-note{margin-top:6px;color:#8497a8;font-size:8px;line-height:1.3}
+  #eventStatus{padding:0 12px 9px;color:var(--ink-dim);font-size:10px;line-height:1.4}
+  .monitor-controls{display:flex;gap:6px;padding:8px 10px 2px}.monitor-controls button{font-size:10px;padding:5px 8px;min-height:28px}
+  .mode-nav{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:12px 14px 8px;border-bottom:1px solid var(--line)}.mode-nav button{font-weight:650}.category-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px 12px}.category-card{min-height:68px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;background:rgba(255,255,255,.055);border-color:rgba(190,198,215,.16)}.category-card span:first-child{font-weight:650}.category-card small{font-size:10px;color:var(--ink-dim)}.category-card[aria-pressed="true"]{border-color:var(--accent);background:rgba(255,179,107,.16);color:var(--ink)}
+  .wx{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:7px 10px}.wx div{background:rgba(255,255,255,.06);border-radius:7px;padding:6px;font-size:10px;color:var(--ink-dim)}.wx b{display:block;color:var(--ink);font-size:12px;margin-top:3px}
+  .fire-form{display:flex;gap:5px;padding:4px 10px 8px}.fire-form input,.fire-form select{min-width:0;flex:1;padding:6px;font-size:10px}.fire-form button{font-size:10px;padding:5px 8px;min-height:30px}
+  .global-feeds{border-top:1px solid var(--line);padding:7px 10px 2px}.global-feeds[hidden]{display:none!important}.feed-toggles{display:flex;gap:5px;flex-wrap:wrap}.feed-toggles label{font-size:10px;color:var(--ink-dim);display:flex;gap:4px;align-items:center}.feed-toggles input{accent-color:#64d7ba}
+  .hazard-filter{display:flex;align-items:center;gap:7px;padding:6px 0 2px;font-size:10px;color:var(--ink-dim)}.hazard-filter select{flex:1;min-width:0;padding:5px 7px;font-size:10px}
+  #globalList{flex:1;min-height:0;max-height:none;overflow:auto;padding:2px 8px 7px}#firesList{overflow:auto;flex:1;min-height:0;padding:4px 8px}.feed-label{font-size:10px;font-weight:600;color:#83dfc0;padding:7px 4px 2px}
+  .bar{position:fixed;left:0;transform:none;bottom:12px;width:calc(50% - 24px);box-sizing:border-box;
        padding:10px 12px;display:flex;flex-direction:column;gap:8px;z-index:5}
   .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .row.nowrap{flex-wrap:nowrap}
@@ -40,10 +55,86 @@
          background:rgba(2,3,10,.94);font-size:15px;line-height:1.6}
   #fatal div{max-width:460px}
   .cesium-viewer-toolbar{top:auto;bottom:90px}
+  .map-zoom{position:fixed;z-index:6;left:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:5px}.map-zoom button{width:40px;height:40px;padding:0;font-size:24px;line-height:1;background:rgba(12,14,20,.84)}
+  @media(max-width:850px){#globe{inset:0 0 48% 0}.events{top:52%;bottom:0;width:100%;height:48%;}.top{left:8px;right:8px;top:8px}.bar{width:calc(100% - 20px);left:10px;bottom:calc(48% + 8px);padding:7px}.category-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:6px}.category-card{min-height:52px;padding:5px;font-size:10px}.mode-nav{padding:6px}.events-head{padding:6px 10px}.wx{padding:4px}.feed-toggles{font-size:9px}}
+  /* Refined EARTHPULSE-X dashboard skin */
+  :root{--ink:#edf4f7;--ink-dim:#9aa9b8;--glass:rgba(9,17,29,.84);--line:rgba(149,174,197,.18);--accent:#63d6c4}
+  body{background:#050b14}
+  #globe{background:radial-gradient(ellipse at 45% 44%,#101e30 0,#080f1b 54%,#03070d 100%)}
+  .brand{position:fixed;z-index:6;top:14px;left:18px;display:flex;align-items:center;gap:10px;color:var(--ink);pointer-events:none}
+  .brand-mark{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#63d6c4,#2991a7);color:#04131a;font-size:11px;font-weight:850;letter-spacing:-.05em;box-shadow:0 6px 20px rgba(53,194,183,.18)}
+  .brand-copy{display:flex;flex-direction:column;gap:2px}.brand-copy strong{font-size:11px;letter-spacing:.13em;font-weight:750}.brand-copy span{font-size:9px;color:#8fa1b2;letter-spacing:.025em}
+  .top{top:58px;left:16px;gap:8px;right:calc(50% + 16px)}
+  .panel{background:var(--glass);border-color:var(--line);border-radius:13px;box-shadow:0 12px 36px rgba(0,0,0,.2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+  form.search{padding:5px;gap:5px;max-width:520px;border-radius:12px}
+  input[type=search],input[type=password]{background:rgba(255,255,255,.045);border-color:rgba(160,183,203,.18);border-radius:9px;font-size:12px;padding:10px 12px}
+  input::placeholder{color:#8394a5}
+  button{background:rgba(255,255,255,.045);border-color:rgba(160,183,203,.2);border-radius:9px;transition:background .16s,border-color .16s,transform .16s,color .16s}
+  button:hover{background:rgba(255,255,255,.09);border-color:rgba(160,183,203,.34)}
+  button[aria-pressed="true"]{background:rgba(99,214,196,.16);color:#baf5eb;border-color:rgba(99,214,196,.58)}
+  button:focus-visible,input:focus-visible{outline-color:var(--accent)}
+  .info{padding:8px 11px;border-radius:11px;background:rgba(9,17,29,.78);font-size:10px;line-height:1.45}
+  .info b{font-size:11px;letter-spacing:.02em}
+  .events{background:linear-gradient(180deg,rgba(10,18,30,.985),rgba(7,13,22,.985));border-left:1px solid rgba(142,171,197,.23);box-shadow:-16px 0 42px rgba(0,0,0,.16)}
+  .events-head{min-height:42px;padding:12px 18px;border-color:rgba(149,174,197,.14);gap:10px;font-size:11px}
+  .events-head strong{font-size:13px;letter-spacing:.01em}.events-head #eventCount{font-size:10px;color:#94a7b8!important;font-variant-numeric:tabular-nums}
+  .events-head button{font-size:10px;min-height:29px;padding:5px 10px;background:rgba(255,255,255,.055)}
+  .mode-nav{gap:8px;padding:12px 16px 10px;border-color:rgba(149,174,197,.13)}
+  .mode-nav button{min-height:38px;font-size:11px;font-weight:650;letter-spacing:.015em}
+  .category-grid{gap:8px;padding:12px 16px 10px}
+  .category-card{position:relative;min-height:66px;padding:10px 11px;border-radius:10px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border-color:rgba(149,174,197,.14)}
+  .category-card:hover{transform:translateY(-1px);border-color:rgba(99,214,196,.36);background:rgba(99,214,196,.07)}
+  .category-card span:first-child{font-size:11px;font-weight:650;line-height:1.25}
+  .category-card small{font-size:9px;line-height:1.25;color:#91a2b2}
+  .category-card[aria-pressed="true"]{background:linear-gradient(120deg,rgba(99,214,196,.16),rgba(99,214,196,.07));border-color:rgba(99,214,196,.62);box-shadow:inset 0 0 0 1px rgba(99,214,196,.08)}
+  #eventStatus{padding:5px 17px 9px;color:#92a4b4;font-size:9px;line-height:1.45}
+  #airQualityPanel{padding:5px 12px 8px;color:var(--ink-dim);font-size:9px;line-height:1.45}#airQualityPanel[hidden]{display:none!important}#airQualityList{display:grid;gap:5px;max-height:190px;overflow:auto;margin-top:6px}.air-row{padding:7px 9px;text-align:left;font-size:9px;color:var(--ink-dim)}.air-row strong{display:block;color:var(--ink);font-size:10px;margin-bottom:2px}
+  #landslidePanel{padding:7px 12px 10px;color:var(--ink-dim);font-size:9px;line-height:1.45}#landslidePanel[hidden]{display:none!important}.lhasa-overview{display:flex;justify-content:space-between;align-items:center;padding:9px 10px;border:1px solid rgba(99,214,196,.24);border-radius:9px;background:linear-gradient(120deg,rgba(99,214,196,.09),rgba(255,255,255,.025))}.lhasa-overview span{font-size:9px;color:var(--ink-dim)}.lhasa-overview strong{font-size:13px;color:#baf5eb}.lhasa-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:6px 0}.lhasa-metrics div{padding:7px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.025)}.lhasa-metrics small,.lhasa-metrics b{display:block}.lhasa-metrics small{color:var(--ink-dim);font-size:8px}.lhasa-metrics b{margin-top:3px;color:var(--ink);font-size:8px;font-weight:600}
+  .global-feeds{padding:8px 16px 5px;border-color:rgba(149,174,197,.14);background:rgba(255,255,255,.012)}
+  .feed-toggles{gap:12px}.feed-toggles label{font-size:9px;color:#a3b1bf;gap:6px}.feed-toggles input{accent-color:var(--accent)}
+  #globalStatus{padding:6px 1px 4px!important;color:#91a2b2!important;font-size:9px!important;line-height:1.35;font-variant-numeric:tabular-nums}
+  #globalList,#firesList{padding:4px 15px 12px;scrollbar-color:rgba(149,174,197,.28) transparent;scrollbar-width:thin}
+  .hazard-group{padding:1px 0 7px}.feed-label{padding:7px 3px 3px;color:#73d9c8;font-size:9px;letter-spacing:.045em;text-transform:uppercase}
+  .event-item{margin-top:5px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,.035);border-color:rgba(149,174,197,.12)}
+  .event-item:hover{background:rgba(255,255,255,.075);border-color:rgba(99,214,196,.32);transform:translateY(-1px)}
+  .event-item strong{font-size:10px;font-weight:650;line-height:1.35}.event-item small{font-size:9px;line-height:1.35;color:#91a2b2}
+  .wx{gap:8px;padding:9px 16px}.wx div{padding:9px 10px;border:1px solid rgba(149,174,197,.12);background:rgba(255,255,255,.035);font-size:9px}.wx b{font-size:13px;font-weight:650}
+  .fire-form{gap:7px;padding:5px 16px 9px}.fire-form select,.fire-form button{border-radius:8px}
+  .satellite-catalog{padding:5px 16px 8px;max-height:210px;overflow:auto;flex:0 0 auto;scrollbar-width:thin;scrollbar-color:rgba(149,174,197,.28) transparent}
+  .satellite-catalog-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+  .satellite-catalog-head strong{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:#c9d5df}
+  .satellite-catalog-head span{font-size:8px;color:#8497a8;text-align:right}
+  .satellite-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .satellite-card{min-width:0;padding:8px 9px;border:1px solid rgba(149,174,197,.14);border-radius:9px;background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.018))}
+  .satellite-card-top{display:flex;align-items:center;justify-content:space-between;gap:5px}
+  .satellite-card h3{margin:0;font-size:10px;line-height:1.3;color:#edf4f7}
+  .satellite-sensor{font-size:8px;color:#78d9cb;white-space:nowrap}
+  .satellite-card p{margin:5px 0 7px;font-size:8px;line-height:1.45;color:#9aa9b8}
+  .satellite-card button{width:100%;min-height:25px;padding:4px 6px;font-size:8px;color:#baf5eb;border-color:rgba(99,214,196,.25)}
+  .satellite-note{padding-top:5px;font-size:8px;line-height:1.4;color:#8497a8}
+  .bar{bottom:14px;left:14px;width:calc(50% - 28px);padding:11px 13px;gap:7px;border-radius:13px;background:rgba(8,15,25,.86);box-shadow:0 14px 36px rgba(0,0,0,.32)}
+  .bar .row{gap:6px}.bar button{font-size:10px;min-height:32px;padding:6px 9px}.bar label{font-size:10px!important;color:#91a2b2!important}.bar .time{font-size:10px;color:#c5d2dc}
+  input[type=range]{accent-color:var(--accent);height:22px}
+  .map-zoom button{border-radius:10px;background:rgba(9,17,29,.88);border-color:rgba(160,183,203,.2);box-shadow:0 8px 20px rgba(0,0,0,.22);font-weight:400}
+  .map-zoom button:hover{background:rgba(23,40,56,.94);border-color:rgba(99,214,196,.45)}
+  @media(max-width:850px){.brand{top:7px;left:10px}.brand-mark{width:27px;height:27px}.brand-copy span{display:none}.top{top:42px;left:8px;right:8px}.events{box-shadow:0 -12px 36px rgba(0,0,0,.22)}.events-head{min-height:33px;padding:7px 10px}.mode-nav{padding:7px 9px}.category-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:6px 9px}.category-card{min-height:48px;padding:6px}.category-card span:first-child{font-size:9px}.category-card small{font-size:8px}.bar{width:calc(100% - 16px);left:8px;bottom:calc(48% + 8px);padding:7px 9px}.bar button{font-size:9px;padding:5px 6px;min-height:28px}.global-feeds{padding:5px 9px 3px}#globalList,#firesList{padding:3px 8px 8px}}
+  @media(max-width:520px){.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.category-card{min-height:43px}.brand-copy strong{font-size:9px}}
+  @media(max-width:520px){.satellite-catalog{padding:4px 9px 6px;max-height:164px}.satellite-grid{gap:4px}.satellite-card{padding:6px}.satellite-card p{font-size:7px;margin:3px 0 5px}.satellite-card h3{font-size:9px}}
+  /* Keep the full monitor panel as one scroll area so expanded hazard cards remain reachable. */
+  .events{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(149,174,197,.28) transparent}
+  .events>*{flex:0 0 auto}
+  #eventList,#globalList,#firesList{flex:none;min-height:0;max-height:none;overflow:visible}
+  #airQualityList{max-height:none;overflow:visible}
+  .satellite-catalog{max-height:none;overflow:visible}
+  .section-nav{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:12px 16px 10px;border-bottom:1px solid rgba(149,174,197,.13);background:rgba(255,255,255,.018)}.section-nav button{min-height:38px;font-size:11px;font-weight:700}.section-nav button[aria-selected="true"]{background:linear-gradient(120deg,rgba(99,214,196,.21),rgba(99,214,196,.08));border-color:rgba(99,214,196,.62);color:#baf5eb}
+  .forecast-section{padding:14px 16px 20px}.forecast-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px;border:1px solid rgba(99,214,196,.24);border-radius:12px;background:radial-gradient(ellipse at 90% 0,rgba(57,154,174,.14),transparent 45%),linear-gradient(135deg,rgba(99,214,196,.08),rgba(255,255,255,.025))}.forecast-hero h2{font-size:15px;margin:0 0 5px;letter-spacing:.01em}.forecast-hero p{font-size:10px;color:var(--ink-dim);line-height:1.5;margin:0}.forecast-place{font-size:9px;color:#baf5eb;white-space:nowrap;padding:5px 8px;border-radius:999px;background:rgba(99,214,196,.11)}.forecast-group{margin-top:14px}.forecast-group h3{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:#8fa6b8;margin:0 0 7px}.forecast-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.forecast-card{min-width:0;padding:10px;border:1px solid rgba(149,174,197,.14);border-radius:10px;background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.018))}.forecast-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}.forecast-card h4{font-size:10px;line-height:1.35;margin:0;color:#edf4f7}.forecast-chip{font-size:7px;line-height:1.3;font-weight:750;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;color:#9fe9dd;background:rgba(99,214,196,.1);border-radius:999px;padding:3px 5px}.forecast-card p{font-size:9px;line-height:1.45;color:#9aa9b8;margin:6px 0}.forecast-value{font-size:11px;font-weight:650;color:#dce9ef;min-height:14px}.forecast-meta{font-size:8px;line-height:1.45;color:#8295a6;margin-top:5px}.forecast-card a{color:#8ce3d4;font-size:8px;text-decoration:none}.forecast-card a:hover{text-decoration:underline}.forecast-callout{margin-top:10px;padding:9px 10px;border-left:2px solid #e7a66b;background:rgba(231,166,107,.07);border-radius:0 8px 8px 0;color:#b5c0ca;font-size:9px;line-height:1.5}.forecast-footer{margin-top:10px;color:#778b9c;font-size:8px;line-height:1.5}.global-outlook{margin:11px 0 4px;padding:12px;border:1px solid rgba(99,214,196,.22);border-radius:11px;background:linear-gradient(145deg,rgba(15,35,48,.72),rgba(255,255,255,.018))}.global-outlook-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.global-outlook-head strong{font-size:11px}.global-outlook-head span{font-size:8px;color:#9baebe}.global-outlook p{margin:5px 0 8px;color:#a5b4c0;font-size:9px;line-height:1.45}.rain-legend{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:8px;color:#9aabba}.rain-legend span{display:flex;align-items:center;gap:4px}.rain-dot{width:8px;height:8px;border-radius:50%;display:inline-block}.global-outlook small{display:block;color:#748a9b;font-size:8px;margin-top:7px}
+  @media(max-width:850px){.section-nav{padding:7px 9px}.forecast-section{padding:9px}.forecast-grid{gap:5px}.forecast-card{padding:8px}}
 </style>
 </head>
 <body>
 <div id="globe"></div>
+<div class="brand" aria-label="Earthpulse X Earth System Intelligence"><div class="brand-mark">EPX</div><div class="brand-copy"><strong>EARTHPULSE-X</strong><span>EARTH SYSTEM INTELLIGENCE</span></div></div>
+<div class="map-zoom" aria-label="Globe zoom controls"><button id="zoomIn" type="button" aria-label="Zoom in">+</button><button id="zoomOut" type="button" aria-label="Zoom out">−</button></div>
 
 <div class="top">
   <form class="panel search" id="searchForm" autocomplete="off">
@@ -52,6 +143,61 @@
   </form>
   <div class="panel info" id="info"><b>Earth</b><br><span id="status">Starting…</span><br><span id="altitude"></span></div>
 </div>
+
+<section class="panel events" aria-label="Global and Uttarakhand hazard monitor">
+  <div class="events-head"><span style="color:#7ce0bb">●</span><strong id="eventsTitle">World Monitor</strong><span id="eventCount" style="color:var(--ink-dim)">Choose a hazard</span><button id="refreshEvents" type="button">Refresh</button></div>
+  <nav class="section-nav" aria-label="Monitor section"><button id="liveSectionTab" aria-selected="true" type="button">Live monitoring</button><button id="forecastSectionTab" aria-selected="false" type="button">Forecast &amp; outlook</button></nav>
+  <div id="liveSection">
+  <nav class="mode-nav" aria-label="Monitoring region"><button id="globalView" aria-pressed="true" type="button">World Monitor</button><button id="regionView" aria-pressed="false" type="button">Uttarakhand Monitor</button></nav>
+  <section id="liveRadar" class="live-radar" aria-label="Live event radar">
+    <div class="radar-head"><strong>EARTHPULSE · LIVE EVENT RADAR</strong><span class="radar-live"><i class="radar-dot"></i>LIVE FEEDS</span></div>
+    <p id="radarSummary" class="radar-summary">Connecting to GDACS, NASA EONET, USGS, NASA FIRMS and satellite products…</p>
+    <div id="radarGrid" class="radar-grid"></div>
+    <div class="radar-note">Source reports and satellite observations are shown as reported. A quiet feed is not a guarantee of no hazard; satellite water and NO₂ layers are observations, not warnings.</div>
+  </section>
+  <div id="categoryGrid" class="category-grid"></div>
+  <section id="satelliteCatalog" class="satellite-catalog" aria-label="Fire and thermal monitoring satellites" hidden>
+    <div class="satellite-catalog-head"><strong>Fire, heat &amp; land observation</strong><span>Satellite capability guide</span></div>
+    <div class="satellite-grid">
+      <article class="satellite-card"><div class="satellite-card-top"><h3>Suomi NPP</h3><span class="satellite-sensor">VIIRS</span></div><p>Active fires &amp; hotspots · thermal anomalies · smoke signals · nighttime lights · floods &amp; vegetation</p></article>
+      <article class="satellite-card"><div class="satellite-card-top"><h3>NOAA-20 (JPSS-1)</h3><span class="satellite-sensor">VIIRS</span></div><p>Wildfires · thermal anomalies · smoke &amp; haze · snow and ice</p></article>
+      <article class="satellite-card"><div class="satellite-card-top"><h3>NOAA-21</h3><span class="satellite-sensor">VIIRS</span></div><p>Fire hotspots · heat anomalies · cloud and environmental observations</p></article>
+      <article class="satellite-card"><div class="satellite-card-top"><h3>Terra + Aqua</h3><span class="satellite-sensor">MODIS</span></div><p>Fire detection · dust · vegetation · snow · aerosols</p></article>
+    </div>
+    <div class="satellite-note">All four NASA FIRMS feeds load together: Suomi NPP, NOAA-20, NOAA-21 and Terra/Aqua MODIS. Detections from every satellite appear in this Wildfires layer.</div>
+  </section>
+  <div id="weather" class="wx" hidden><div>Rain (recent)<b id="wxRain">Loading…</b></div><div>Humidity<b id="wxHumidity">—</b></div><div>Temperature<b id="wxTemp">—</b></div></div>
+  <div id="weatherStatus" hidden style="padding:0 12px 5px;color:var(--ink-dim);font-size:9px">NASA POWER daily point · Dehradun</div>
+  <form id="fireForm" class="fire-form" hidden><button type="submit">Refresh all satellite fire detections</button></form>
+  <div id="fireStatus" hidden style="padding:0 12px 5px;color:var(--ink-dim);font-size:9px">NASA FIRMS</div>
+  <div id="volcanoStatus" hidden style="padding:4px 12px 6px;color:var(--ink-dim);font-size:9px">Combining observatory reports, GDACS alerts, and nearby satellite thermal detections.</div>
+  <div id="airQualityPanel" hidden><div id="airQualityStatus">OpenAQ measurements</div><div id="airQualityList"></div></div>
+  <div id="landslidePanel" hidden><div class="lhasa-overview"><span>NASA LHASA · selected 1 km cell</span><strong id="lhasaValue">Loading…</strong></div><div class="lhasa-metrics"><div><small>Rainfall trigger</small><b>GPM IMERG · model input</b></div><div><small>Soil wetness</small><b>SMAP · model input</b></div><div><small>Terrain susceptibility</small><b>Integrated by LHASA</b></div></div><div id="landslideStatus">Querying the NASA near-real-time model…</div><div style="padding-top:5px">NASA LHASA updates on a best-effort schedule, typically twice daily. Individual input scores are not supplied by this cell query. This model output is not an official local warning.</div><div style="display:flex;gap:10px;padding-top:5px"><a href="https://landslides.nasa.gov/viewer/" target="_blank" rel="noopener" style="color:#78d9cb">NASA LHASA Live Map ↗</a><a href="https://portal.nccs.nasa.gov/datashare/landslides/" target="_blank" rel="noopener" style="color:#78d9cb">Data download ↗</a></div></div>
+  <div id="firesList" hidden></div>
+  <div id="eventList" aria-live="polite" hidden></div>
+  <div id="eventStatus">Choose a hazard category to see events from the last 7 days.</div>
+  <div id="globalFeeds" class="global-feeds">
+    <div class="feed-toggles"><label><input id="gdacsToggle" type="checkbox" checked>GDACS</label><label><input id="usgsToggle" type="checkbox" checked>USGS</label></div>
+    <div class="gdacs-legend" aria-label="GDACS impact alert levels"><span><b class="alert-pill alert-red">RED</b>High impact</span><span><b class="alert-pill alert-orange">ORANGE</b>Significant</span><span><b class="alert-pill alert-green">GREEN</b>Lower alert</span></div>
+  <div id="globalStatus" style="padding:4px;color:var(--ink-dim);font-size:9px">Global hazard feeds show events from the past 7 days.</div>
+  </div>
+  <div id="globalList" aria-live="polite" hidden></div>
+  </div>
+  <section id="forecastSection" class="forecast-section" aria-label="Forecast and outlook" hidden>
+    <div class="forecast-hero"><div><h2>NASA global forecast layers</h2><p>Choose a NASA model layer to color the globe. Click the globe to inspect the nearest model point. Values are forecast-model output, not disaster warnings.</p></div><span id="forecastPlace" class="forecast-place">Selected point: Dehradun</span></div>
+    <div class="global-outlook"><div class="global-outlook-head"><strong id="globalMapTitle">NASA GEOS-FP · precipitation rate · next 3 hours</strong><select id="globalMapMetric" aria-label="NASA global forecast layer" style="font-size:8px;padding:4px 7px"><option value="rain">GEOS-FP · Rainfall</option><option value="pm25">GEOS-CF · PM₂.₅</option></select></div><div id="globalGridStatus" style="font-size:8px;color:#9baebe;margin-top:5px">Loading NASA global model grid…</div><p id="globalMapDescription">NASA GEOS-FP global forecast. Click a colored point or globe location to inspect it. This is a meteorological variable, not flood probability.</p><div id="globalRainLegend" class="rain-legend"><span><i class="rain-dot" style="background:#6d8797"></i>0–0.1 mm</span><span><i class="rain-dot" style="background:#61cbbf"></i>0.1–1 mm</span><span><i class="rain-dot" style="background:#56a9f5"></i>1–5 mm</span><span><i class="rain-dot" style="background:#b294ff"></i>5+ mm</span></div><small>NASA GEOS-FP · 3-hour forecast | NASA GEOS-CF · 6-hour pollutant forecast · global model grid sampled at 10° latitude / 15° longitude</small></div>
+    <div class="forecast-group"><h3>Location forecast · model guidance</h3><div class="forecast-grid">
+      <article class="forecast-card"><div class="forecast-card-top"><h4>NASA GEOS-FP · rainfall</h4><span class="forecast-chip">Global · 3-hour steps</span></div><p>Global precipitation-rate forecast from NASA’s GEOS-FP numerical weather prediction model.</p><div id="fcRain" class="forecast-value">Select a location to load</div><div class="forecast-meta">NASA GEOS-FP · global coverage · precipitation is a weather driver, not a flood warning.</div><a href="https://www.nccs.nasa.gov/geos5-forecast/" target="_blank" rel="noopener">NASA GEOS-FP forecast data ↗</a></article>
+      <article class="forecast-card"><div class="forecast-card-top"><h4>NASA GEOS-CF · air quality</h4><span class="forecast-chip">Global · 5 days</span></div><p>NASA atmospheric composition forecast. The globe layer currently displays PM₂.₅; the model includes additional pollutants.</p><div id="fcAir" class="forecast-value">Select a location to load</div><div class="forecast-meta">NASA GEOS-CF research forecast · global model output; not a regulatory air-quality advisory.</div><a href="https://gmao.gsfc.nasa.gov/gmao-products/geos-cf/" target="_blank" rel="noopener">NASA GEOS-CF details ↗</a></article>
+    </div></div>
+    <div class="forecast-group"><h3>NASA hazard forecast product</h3><div class="forecast-grid">
+      <article class="forecast-card"><div class="forecast-card-top"><h4>NASA LHASA · landslide hazard</h4><span class="forecast-chip">Global · daily</span></div><p>NASA’s landslide model combines rainfall, soil moisture and terrain susceptibility. Select the layer to see NASA’s hazard raster over the globe.</p><div id="fcLhasa" class="forecast-value">Select a location to query NASA LHASA</div><div class="forecast-meta">Best-effort model updates; coverage is between 60°S and 60°N. Not an official local warning.</div><div style="display:flex;gap:8px;align-items:center;margin-top:7px"><button id="fcLhasaLayer" type="button" style="min-height:27px;padding:4px 7px;font-size:8px">Toggle NASA LHASA layer</button><a href="https://landslides.nasa.gov/viewer/" target="_blank" rel="noopener">NASA LHASA live map ↗</a></div></article>
+      <article class="forecast-card"><div class="forecast-card-top"><h4>Other hazards</h4><span class="forecast-chip">NASA forecast coverage varies</span></div><p>NASA provides global weather and Earth-observation model data, but no universal NASA global forecast API for cyclone tracks, earthquakes, volcano eruptions, tsunamis, wildfire probability or drought alerts.</p><div class="forecast-meta">Those hazards remain in live monitoring when NASA event/observation products are available. This dashboard will not relabel observations as forecasts.</div><a href="https://www.earthdata.nasa.gov/topics/disasters" target="_blank" rel="noopener">NASA Earthdata · Disasters ↗</a></article>
+    </div></div>
+    <div class="forecast-callout">NASA model guidance is not an evacuation instruction. For immediate danger, follow official local warnings and emergency services.</div>
+    <div id="forecastStatus" class="forecast-footer">Forecast data is requested for the selected map location.</div>
+  </section>
+</section>
 
 <div class="panel bar">
   <div class="row nowrap">
@@ -65,6 +211,9 @@
     <button id="bNight" aria-pressed="false">Night 22:00</button>
     <button id="bDrone" aria-pressed="false">Drone 3D</button>
     <button id="bPhoto" aria-pressed="false">Photoreal</button>
+    <button id="bNo2" aria-pressed="false" title="Daily global Sentinel-5P/TROPOMI tropospheric nitrogen dioxide">Global NO₂</button>
+    <button id="bFlood" aria-pressed="false" title="NASA MODIS global 3-day observed floodwater layer">Floodwater</button>
+    <button id="bLhasa" aria-pressed="false" title="NASA LHASA global landslide nowcast layer">LHASA</button>
     <span class="spacer"></span>
     <button id="bHome" aria-pressed="false">Whole Earth</button>
   </div>
@@ -90,6 +239,10 @@
     showRenderLoopErrors:false  // we show our own message below instead of Cesium's raw error box
   });
   var scene=viewer.scene, globe=scene.globe, camera=viewer.camera;
+  scene.screenSpaceCameraController.enableZoom=true;
+  document.getElementById('zoomIn').addEventListener('click',function(){camera.zoomIn(Math.max(500,camera.positionCartographic.height*0.35));});
+  document.getElementById('zoomOut').addEventListener('click',function(){camera.zoomOut(Math.max(500,camera.positionCartographic.height*0.35));});
+  window.addEventListener('error',function(e){var status=document.getElementById('status');if(status)status.textContent='Script startup error: '+e.message;});
   scene.renderError.addEventListener(function(s,error){
     var msg=String((error&&error.message)||error);
     var box=document.getElementById('fatal'), txt=document.getElementById('fatalMsg');
@@ -109,7 +262,7 @@
   scene.highDynamicRange = false;
   scene.screenSpaceCameraController.minimumZoomDistance = 3;      // metres above the ground
   scene.screenSpaceCameraController.maximumZoomDistance = 4.0e7;
-  // The mouse wheel is handled by our own zoom-to-cursor code below; right-drag and pinch keep Cesium's zoom.
+  // Scroll-wheel zoom is handled on the canvas below; keep right-drag and pinch native.
   scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.RIGHT_DRAG, Cesium.CameraEventType.PINCH];
   globe.maximumScreenSpaceError = 1.5;   // sharper tiles (default is 2)
   globe.tileCacheSize = 300;
@@ -142,7 +295,402 @@
   }));
   nightLayer.dayAlpha=0; nightLayer.nightAlpha=1; nightLayer.brightness=1.6;
 
+  // Daily global atmospheric NO2 column from Sentinel-5P/TROPOMI, served by NASA GIBS.
+  var no2Layer=null, no2Date=new Date(Date.now()-2*86400000).toISOString().slice(0,10), floodLayer=null, floodDate=new Date(Date.now()-86400000).toISOString().slice(0,10), lhasaLayer=null, lhasaDate='', lhasaRequestId=0;
+  var no2Button=document.getElementById('bNo2');
+  no2Button.addEventListener('click',function(){
+    if(no2Layer){no2Layer.show=!no2Layer.show;no2Button.setAttribute('aria-pressed',String(no2Layer.show));radarData.no2=no2Layer.show;renderRadar();return;}
+    no2Button.disabled=true;no2Button.textContent='Loading NO₂…';
+    var provider=new Cesium.UrlTemplateImageryProvider({
+      url:'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/TROPOMI_L2_Nitrogen_Dioxide_Tropospheric_Column/default/'+no2Date+'/GoogleMapsCompatible_Level6/{z}/{y}/{x}.png',
+      maximumLevel:6,credit:new Cesium.Credit('NO₂ column: Sentinel-5P/TROPOMI · NASA GIBS · '+no2Date)
+    });
+    no2Layer=viewer.imageryLayers.addImageryProvider(provider);
+    no2Layer.alpha=0.82;no2Layer.show=true;
+    no2Layer.dayAlpha=0.82;no2Layer.nightAlpha=0.82;
+    no2Button.disabled=false;no2Button.textContent='Global NO₂';no2Button.setAttribute('aria-pressed','true');
+    radarData.no2=true;renderRadar();
+    statusEl.textContent='Global tropospheric NO₂ column · Sentinel-5P/TROPOMI · '+no2Date+' · column data, not ground-level AQI';
+  });
+  var floodButton=document.getElementById('bFlood');
+  floodButton.addEventListener('click',function(){
+    if(floodLayer){floodLayer.show=!floodLayer.show;floodButton.setAttribute('aria-pressed',String(floodLayer.show));radarData.floodLayer=floodLayer.show;renderRadar();return;}
+    floodButton.disabled=true;floodButton.textContent='Loading flood map…';
+    var provider=new Cesium.UrlTemplateImageryProvider({
+      url:'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Combined_Flood_3-Day/default/'+floodDate+'/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png',
+      maximumLevel:8,credit:new Cesium.Credit('Observed floodwater: NASA MODIS Global Flood Product · 3-day composite · '+floodDate)
+    });
+    floodLayer=viewer.imageryLayers.addImageryProvider(provider);floodLayer.alpha=0.85;floodLayer.show=true;
+    floodButton.disabled=false;floodButton.textContent='Floodwater';floodButton.setAttribute('aria-pressed','true');radarData.floodLayer=true;renderRadar();
+    statusEl.textContent='NASA MODIS observed global floodwater · 3-day composite · '+floodDate+' · optical data may have cloud gaps';
+  });
+
   var statusEl=document.getElementById('status'), altEl=document.getElementById('altitude');
+
+  // NASA EONET reports curated ongoing natural events; these are observations/events, not forecasts.
+  var eventSource = new Cesium.CustomDataSource('NASA EONET events');
+  viewer.dataSources.add(eventSource);
+  eventSource.clustering.enabled=true;
+  eventSource.clustering.pixelRange=20;
+  eventSource.clustering.minimumClusterSize=3;
+  function styleMarkerCluster(entities,cluster){
+    var size=entities.length,hex=size>=100?'#ef5d62':size>=25?'#f39b4a':size>=8?'#f2cf62':'#57d3c2';
+    cluster.label.show=false;cluster.billboard.show=false;cluster.point.show=true;
+    cluster.point.pixelSize=Math.min(15,7+Math.log2(size)*1.6);
+    cluster.point.color=Cesium.Color.fromCssColorString(hex).withAlpha(.94);
+    cluster.point.outlineColor=Cesium.Color.WHITE.withAlpha(.9);cluster.point.outlineWidth=2;
+    cluster.point.disableDepthTestDistance=Number.POSITIVE_INFINITY;
+  }
+  eventSource.clustering.clusterEvent.addEventListener(styleMarkerCluster);
+  var eventList=document.getElementById('eventList'), eventStatus=document.getElementById('eventStatus');
+  var eventCount=document.getElementById('eventCount'), eventBusy=false, eventRequestId=0;
+  var regionalEvents=false, selectedCategory=null, firesSource=new Cesium.CustomDataSource('NASA FIRMS fire detections'); viewer.dataSources.add(firesSource);
+  var gdacsSource=new Cesium.CustomDataSource('GDACS disaster alerts'), quakeSource=new Cesium.CustomDataSource('USGS earthquakes'), volcanoSource=new Cesium.CustomDataSource('Smithsonian USGS volcano activity');
+  viewer.dataSources.add(gdacsSource); viewer.dataSources.add(quakeSource); viewer.dataSources.add(volcanoSource);
+  function enableClusters(ds){ds.clustering.enabled=true;ds.clustering.pixelRange=20;ds.clustering.minimumClusterSize=4;ds.clustering.clusterEvent.addEventListener(styleMarkerCluster);}
+  enableClusters(gdacsSource); enableClusters(quakeSource); enableClusters(firesSource);
+  var globalList=document.getElementById('globalList'), globalStatus=document.getElementById('globalStatus'), globalFeedRequestId=0;
+  function eventDate(value){ if(!value) return 'Date unavailable'; var d=new Date(value); return isNaN(d)?'Date unavailable':d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}); }
+  function loadEvents(){
+    var requestId=++eventRequestId;eventBusy=true; eventStatus.textContent='Updating open events from NASA EONET…';
+    var apiBase=window.EARTHPULSE_API_BASE||'http://127.0.0.1:8001';
+    fetch(apiBase.replace(/\/$/,'')+'/api/monitor/eonet'+(regionalEvents?'?bbox=uttarakhand':''),{cache:'no-store'})
+      .then(function(r){if(!r.ok) return r.json().then(function(x){throw new Error(x.error||('HTTP '+r.status));}); return r.json();})
+      .then(function(data){
+        if(requestId!==eventRequestId)return;
+        var features=data.features||[], byEvent=Object.create(null), rows=[],eonetRadarCounts={}; eventSource.entities.removeAll();
+        features.forEach(function(f){
+          var p=f.properties||{}, geom=f.geometry, coords=geom&&geom.coordinates;
+          if(!coords) return;
+          var points=geom.type==='Point'?[coords]:geom.type==='MultiPoint'?coords:geom.type==='Polygon'&&coords[0]?[coords[0].reduce(function(a,c){return [a[0]+c[0]/coords[0].length,a[1]+c[1]/coords[0].length];},[0,0])]:geom.type==='MultiPolygon'&&coords[0]&&coords[0][0]?[coords[0][0].reduce(function(a,c){return [a[0]+c[0]/coords[0][0].length,a[1]+c[1]/coords[0][0].length];},[0,0])]:[];
+          if(!points.length) return;
+          var key=p.id||f.id||p.title||('event-'+rows.length), date=p.date||'';
+          // EONET GeoJSON can contain one feature per dated observation for a single event.
+          // Keep the newest location so tracks do not create piles of duplicate markers/list rows.
+          if(!byEvent[key]||new Date(date)>new Date(byEvent[key].date)) byEvent[key]={properties:p,point:points[points.length-1],date:date,feature:f};
+        });
+        Object.keys(byEvent).forEach(function(key){
+          var item=byEvent[key], p=item.properties, pt=item.point, cat=(p.categories||[])[0]||{};
+          if(!Array.isArray(pt)||pt.length<2) return;
+          var eventCategory=gdacsCategory(cat.title||'Other events');eonetRadarCounts[eventCategory]=(eonetRadarCounts[eventCategory]||0)+1;
+          var color=hazardColor(eventCategory);
+          var place=p.location||p.title||'Location unavailable',title=p.title||'Natural event';
+          var entity=eventSource.entities.add({name:title,properties:{hazardCategory:eventCategory},description:title+'<br>'+eventCategory+'<br>Location: '+place+'<br>Updated: '+eventDate(item.date)+'<br><a href="'+(p.link||'https://eonet.gsfc.nasa.gov/')+'" target="_blank" rel="noopener">NASA EONET event details</a>',position:Cesium.Cartesian3.fromDegrees(pt[0],pt[1],12000),point:{pixelSize:9,color:color,outlineColor:Cesium.Color.WHITE,outlineWidth:1,disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{text:title+'\n'+place,font:'12px sans-serif',show:false,showBackground:true,backgroundColor:Cesium.Color.fromCssColorString('#08111d').withAlpha(.92),pixelOffset:new Cesium.Cartesian2(0,-18),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
+          rows.push({title:title,place:place,category:eventCategory,date:item.date,link:p.link,position:pt,feature:item.feature,entity:entity});
+        });
+        rows.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+        rows.forEach(function(item){addFeedRow(item.category,item.title,eventDate(item.date),'NASA EONET',item.link,item.position,item.feature,item.place);});radarData.eonet=eonetRadarCounts;radarData.lastRefresh=new Date().toLocaleTimeString();renderRadar();
+        renderGlobalRows();
+        applyHazardFilter();
+        document.getElementById('eventsTitle').textContent=regionalEvents?'Uttarakhand Monitor':'World Monitor';
+        eventStatus.textContent='NASA EONET · refreshed '+new Date().toLocaleTimeString()+' · Near-real-time event reports, not forecasts.';
+      }).catch(function(err){if(requestId===eventRequestId)eventStatus.textContent='NASA EONET unavailable: '+err.message+' · confirm the local API server is running on port 8001.';})
+      .finally(function(){if(requestId===eventRequestId)eventBusy=false;});
+  }
+  function setMonitorMode(region){
+    regionalEvents=region;selectedCategory=null;
+    eventRequestId++;eventBusy=false;
+    document.getElementById('eventsTitle').textContent=region?'Uttarakhand Monitor':'World Monitor';
+    document.getElementById('regionView').setAttribute('aria-pressed',String(region));document.getElementById('globalView').setAttribute('aria-pressed',String(!region));
+    document.getElementById('weather').hidden=!region;document.getElementById('weatherStatus').hidden=!region;
+    document.getElementById('fireForm').hidden=!region;document.getElementById('fireStatus').hidden=!region;
+    document.getElementById('volcanoStatus').hidden=true;
+    document.getElementById('satelliteCatalog').hidden=true;
+    document.getElementById('airQualityPanel').hidden=true;
+    document.getElementById('landslidePanel').hidden=true;
+    document.getElementById('globalFeeds').hidden=region;globalList.hidden=false;
+    eventList.hidden=true;document.getElementById('firesList').hidden=true;boundarySource.entities.removeAll();
+    globalFeedRequestId++;gdacsSource.entities.removeAll();quakeSource.entities.removeAll();volcanoSource.entities.removeAll();eventSource.entities.removeAll();firesSource.entities.removeAll();
+    eventList.innerHTML='';globalList.innerHTML='';globalFeedRows=[];document.getElementById('firesList').innerHTML='';
+    document.getElementById('eventCount').textContent='Choose a hazard';
+    document.getElementById('eventStatus').textContent='Choose a hazard category to load events from the last 7 days.';
+    buildCategoryCards(region);applyHazardFilter();
+    loadEvents();loadGlobalFeeds();
+    if(region){camera.flyTo({destination:Cesium.Cartesian3.fromDegrees(79.2,30.2,480000),duration:1.5});loadPower();loadFires(null,'uttarakhand');}
+    else {wholeEarth();loadFires(null,'world');}
+  }
+  document.getElementById('regionView').addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();setMonitorMode(true);},true);
+  document.getElementById('globalView').addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();setMonitorMode(false);},true);
+
+  var globalFeedRows=[];
+  var radarHazardKeys=['Floods','Cyclones & severe storms','Volcanoes','Wildfires','Earthquakes'];
+  var radarData={gdacs:null,eonet:null,gdacsLevels:{},usgs:null,volcanoReports:null,thermalClusters:null,firms:null,air:null,lhasa:null,lhasaLayer:false,no2:false,floodLayer:false,lastRefresh:null};
+  var radarCards=[
+    {key:'flood',title:'Flood risk · reported events',detail:'GDACS alerts + NASA EONET reports',hazard:'Floods'},
+    {key:'volcano',title:'Volcanic activity',detail:'GDACS + Smithsonian/USGS + FIRMS',hazard:'Volcanoes'},
+    {key:'storm',title:'Severe storm',detail:'GDACS alerts + NASA EONET reports',hazard:'Cyclones & severe storms'},
+    {key:'fire',title:'New fire hotspots',detail:'NASA FIRMS · four feeds · past 24h',hazard:'Wildfires'},
+    {key:'air',title:'Pollution spike · OpenAQ',detail:'PM₂.₅ · PM₁₀ · NO₂ · SO₂ · CO · O₃',hazard:'Air pollution'},
+    {key:'lhasa',title:'Possible landslide hazard',detail:'NASA LHASA · ~1 km model cell',hazard:'Landslides'},
+    {key:'no2',title:'Global NO₂ satellite layer',detail:'Sentinel-5P/TROPOMI · daily column data',hazard:null},
+    {key:'earthquake',title:'Earthquakes',detail:'USGS + GDACS · past 7 days',hazard:'Earthquakes'},
+    {key:'water',title:'Water expansion',detail:'NASA MODIS · observed 3-day floodwater',hazard:null}
+  ];
+  function radarSourceCount(source,key){var sourceData=radarData[source];return sourceData&&Number(sourceData[key])||0;}
+  function radarLevel(key){var levels=radarData.gdacsLevels[key]||{};return levels.red?'RED':levels.orange?'ORANGE':levels.green?'GREEN':'';}
+  function renderRadar(){
+    var grid=document.getElementById('radarGrid');if(!grid)return;grid.innerHTML='';
+    radarCards.forEach(function(card){
+      var button=document.createElement('button');button.type='button';button.className='radar-card';
+      var title=document.createElement('span');title.className='radar-card-title';title.textContent=card.title;
+      var detail=document.createElement('span');detail.className='radar-card-detail';
+      var status=document.createElement('span');status.className='radar-card-status';
+      if(card.key==='lhasa'){
+        var lhasa=radarData.lhasa||{};detail.textContent=lhasa.status==='available'?(lhasa.place+' · model cell '+Number(lhasa.cellValue).toPrecision(4)+' · fetched '+lhasaDate):lhasa.status==='outside_coverage'?'Outside NASA model coverage':lhasa.status==='unavailable'?lhasa.message||'NASA LHASA unavailable':'NASA near-real-time landslide nowcast';
+        status.textContent=lhasa.status==='loading'?'UPDATING':lhasa.status==='available'?'MODEL CELL AVAILABLE':lhasa.status==='outside_coverage'?'OUTSIDE COVERAGE':lhasa.status==='unavailable'?'UNAVAILABLE':lhasa.status==='no_cell_data'?'NO CELL DATA':'CONNECTING';
+        status.classList.add(lhasa.status==='available'?'is-active':'is-ready');
+        button.addEventListener('click',function(){var target=document.querySelector('.category-card[data-category="Landslides"]');if(target)target.click();});
+      }else if(card.key==='air'){
+        var air=radarData.air||{},spike=air.spike||{};detail.textContent=air.status==='ready'?(air.place+' · '+(air.siteCount||0)+' monitoring stations · '+(air.measurementCount||0)+' current measurements'):air.status==='key_required'?'Set OPENAQ_API_KEY in the backend .env':air.status==='unavailable'?air.message||'OpenAQ feed unavailable':card.detail;
+        status.textContent=air.status==='loading'?'CONNECTING':air.status==='key_required'?'API KEY REQUIRED':air.status==='unavailable'?'UNAVAILABLE':air.status!=='ready'?'CONNECTING':spike.status==='confirmed'?'POLLUTION SPIKE':spike.status==='possible'?'POSSIBLE SPIKE':spike.status==='none'?'NO SPIKE':'INSUFFICIENT DATA';
+        if(spike.status==='confirmed'||spike.status==='possible')status.classList.add('is-active');else status.classList.add('is-ready');
+        button.addEventListener('click',function(){var target=document.querySelector('.category-card[data-category="Air pollution"]');if(target)target.click();});
+      }else if(card.key==='no2'){
+        detail.textContent=radarData.no2?'Layer visible · column data, not AQI':card.detail;
+        status.textContent=radarData.no2?'ON · '+no2Date:'MAP READY';status.classList.add('is-ready');
+        button.addEventListener('click',function(){no2Button.click();});
+      }else if(card.key==='water'){
+        detail.textContent=radarData.floodLayer?'Layer visible · '+floodDate:card.detail;
+        status.textContent=radarData.floodLayer?'ON · 3-DAY':'MAP READY';status.classList.add('is-ready');
+        button.addEventListener('click',function(){floodButton.click();});
+      }else{
+        var count=null,level='',sub=card.detail;
+        if(card.key==='flood'){if(radarData.gdacs||radarData.eonet){count=radarSourceCount('gdacs','Floods')+radarSourceCount('eonet','Floods');level=radarLevel('Floods');}}
+        if(card.key==='storm'){if(radarData.gdacs||radarData.eonet){count=radarSourceCount('gdacs','Cyclones & severe storms')+radarSourceCount('eonet','Cyclones & severe storms');level=radarLevel('Cyclones & severe storms');}}
+        if(card.key==='volcano'){if(radarData.gdacs||radarData.eonet||radarData.volcanoReports!==null){var reports=radarSourceCount('gdacs','Volcanoes')+radarSourceCount('eonet','Volcanoes')+Number(radarData.volcanoReports||0),thermal=Number(radarData.thermalClusters||0);count=reports+thermal;level=radarLevel('Volcanoes');sub=reports+' activity reports · '+thermal+' nearby thermal clusters';}}
+        if(card.key==='fire'){if(radarData.firms===-1){count=0;sub='FIRMS feed unavailable';}else if(radarData.firms!==null){count=Number(radarData.firms);sub=count+' FIRMS detections in the past 24h';}}
+        if(card.key==='earthquake'){if(radarData.usgs!==null||radarData.gdacs){count=Number(radarData.usgs||0)+radarSourceCount('gdacs','Earthquakes');level=radarLevel('Earthquakes');}}
+        detail.textContent=count===null?'Connecting to live feeds…':(sub===card.detail?(count+' reported event'+(count===1?'':'s')+' · past 7 days'):sub);
+        status.textContent=card.key==='fire'&&radarData.firms===-1?'UNAVAILABLE':count===null?'CONNECTING':(count?(level||'ACTIVE'):'NO CURRENT REPORTS');
+        if(count>0){status.classList.add('is-active');if(level==='RED')status.style.background='rgba(255,76,84,.22)';else if(level==='ORANGE')status.style.background='rgba(255,164,58,.19)';else if(level==='GREEN')status.style.background='rgba(75,205,132,.16)';}
+        button.addEventListener('click',function(){var target=document.querySelector('.category-card[data-category="'+card.hazard+'"]');if(target)target.click();});
+      }
+      button.appendChild(title);button.appendChild(detail);button.appendChild(status);grid.appendChild(button);
+    });
+    var summary=document.getElementById('radarSummary');
+    summary.textContent=radarData.lastRefresh?'Global sources · reports: past 7 days · FIRMS: past 24 hours · refreshed '+radarData.lastRefresh:'Connecting to GDACS, NASA EONET, USGS, NASA FIRMS and NASA GIBS…';
+  }
+  renderRadar();
+  var radarLocation={lat:30.3165,lon:78.0322,place:'Dehradun'},airRequestId=0;
+  var forecastRequestId=0, globalForecastRequestId=0, globalForecastLoaded=false, activeDashboardSection='live', forecastSource=new Cesium.CustomDataSource('Forecast location'), globalForecastSource=new Cesium.CustomDataSource('Global precipitation outlook');viewer.dataSources.add(forecastSource);viewer.dataSources.add(globalForecastSource);globalForecastSource.show=false;
+  function loadOpenAQ(lat,lon,place){
+    var requestId=++airRequestId,apiBase=window.EARTHPULSE_API_BASE||'http://127.0.0.1:8001';radarData.air={status:'loading',place:place};renderRadar();
+    fetch(apiBase.replace(/\/$/,'')+'/api/monitor/openaq?lat='+encodeURIComponent(lat)+'&lon='+encodeURIComponent(lon)+'&radius=25000&place='+encodeURIComponent(place),{cache:'no-store'})
+      .then(function(r){return r.json().then(function(data){if(!r.ok)throw new Error(data.error||('OpenAQ HTTP '+r.status));return data;});})
+      .then(function(data){if(requestId!==airRequestId)return;var props=data.properties||{},spike=props.spike||{},features=data.features||[];airQualitySource.entities.removeAll();var list=document.getElementById('airQualityList');list.innerHTML='';
+        features.forEach(function(feature){var p=feature.properties||{},coords=feature.geometry&&feature.geometry.coordinates;if(!coords)return;var measurements=(p.measurements||[]).filter(function(m){return !m.flagged;});if(!measurements.length)return;
+          var pm=measurements.find(function(m){return m.parameter==='PM2.5';}),hot=pm&&pm.value>=35,isCandidate=(spike.locations||[]).some(function(x){return x.name===p.title;});
+          function escapeHtml(value){return String(value==null?'':value).replace(/[&<>"']/g,function(ch){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];});}
+          var desc=measurements.map(function(m){return escapeHtml(m.parameter)+' '+Number(m.value).toPrecision(4)+(m.unit?' '+escapeHtml(m.unit):'')+' · '+escapeHtml(new Date(m.datetime).toLocaleString());}).join('<br>');
+          airQualitySource.entities.add({name:p.title,properties:{hazardCategory:'Air pollution'},description:'<b>'+escapeHtml(p.title)+'</b><br>'+desc+'<br>OpenAQ latest station measurements · '+escapeHtml(p.distanceKm)+' km away. Sensor network coverage varies; not an official health warning.',position:Cesium.Cartesian3.fromDegrees(coords[0],coords[1],10000),point:{pixelSize:isCandidate?16:hot?12:8,color:isCandidate?Cesium.Color.ORANGERED:hot?Cesium.Color.fromCssColorString('#ffb24a'):Cesium.Color.fromCssColorString('#62d6c1'),outlineColor:Cesium.Color.WHITE,outlineWidth:1,disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{text:p.title+'\n'+(pm?'PM2.5 '+Number(pm.value).toFixed(1)+' '+pm.unit:'Air quality station'),font:'11px sans-serif',show:false,showBackground:true,backgroundColor:Cesium.Color.fromCssColorString('#08111d').withAlpha(.92),pixelOffset:new Cesium.Cartesian2(0,-18),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
+          var row=document.createElement('button');row.type='button';row.className='event-item air-row';var strong=document.createElement('strong');strong.textContent=p.title+(p.locality?' · '+p.locality:'');var small=document.createElement('small');small.textContent=measurements.map(function(m){return m.parameter+' '+Number(m.value).toPrecision(3)+(m.unit?' '+m.unit:'');}).join(' · ')+' · '+new Date(measurements[0].datetime).toLocaleString()+' · '+p.distanceKm+' km';row.appendChild(strong);row.appendChild(small);row.addEventListener('click',function(){camera.flyTo({destination:Cesium.Cartesian3.fromDegrees(coords[0],coords[1],220000),duration:1.5});});list.appendChild(row);
+        });
+        var quality=document.getElementById('airQualityStatus'),summary=spike.status==='confirmed'?'POLLUTION_SPIKE · corroborated by '+spike.locations.length+' nearby stations':spike.status==='possible'?'Possible PM₂.₅ spike · '+spike.locations[0].name:spike.status==='none'?'No PM₂.₅ spike met the 3–6 hour anomaly threshold':'Not enough valid hourly PM₂.₅ history to assess a spike';
+        quality.textContent=summary+' · '+features.length+' stations within '+props.radiusKm+' km · latest: '+(props.latestAt?new Date(props.latestAt).toLocaleString():'time unavailable')+'. Sensor flags and readings older than 12 hours are excluded.';
+        if(!list.children.length){var empty=document.createElement('div');empty.textContent='No recent, valid OpenAQ measurements found within this radius.';list.appendChild(empty);}
+        radarData.air={status:'ready',place:props.place||place,siteCount:props.siteCount||0,measurementCount:props.measurementCount||0,spike:spike};radarData.lastRefresh=new Date().toLocaleTimeString();renderRadar();applyHazardFilter();
+      }).catch(function(err){if(requestId!==airRequestId)return;var missing=/API key not configured/i.test(err.message);radarData.air={status:missing?'key_required':'unavailable',place:place,message:err.message};document.getElementById('airQualityStatus').textContent=missing?'OpenAQ v3 needs OPENAQ_API_KEY in the private .env file. Restart the API server after adding it.':'OpenAQ unavailable: '+err.message;document.getElementById('airQualityList').innerHTML='';renderRadar();});
+  }
+  function loadLhasa(lat,lon,place){
+    var requestId=++lhasaRequestId,apiBase=window.EARTHPULSE_API_BASE||'http://127.0.0.1:8001';radarData.lhasa={status:'loading',place:place};renderRadar();
+    fetch(apiBase.replace(/\/$/,'')+'/api/monitor/lhasa?lat='+encodeURIComponent(lat)+'&lon='+encodeURIComponent(lon),{cache:'no-store'})
+      .then(function(r){return r.json().then(function(data){if(!r.ok)throw new Error(data.error||('LHASA HTTP '+r.status));return data;});})
+      .then(function(data){if(requestId!==lhasaRequestId)return;data.place=place;radarData.lhasa=data;radarData.lastRefresh=new Date().toLocaleTimeString();lhasaDate=data.fetchedAt?new Date(data.fetchedAt).toLocaleTimeString():'';
+        document.getElementById('lhasaValue').textContent=data.status==='available'?Number(data.cellValue).toPrecision(5):data.status==='outside_coverage'?'Out of coverage':'No cell value';
+        var text=data.status==='available'?'Model cell value · '+place+' · ~'+data.resolutionKm+' km resolution · fetched '+new Date(data.fetchedAt).toLocaleString()+'. Check NASA’s live map for the color-coded hazard interpretation.':data.status==='outside_coverage'?data.error:'NASA LHASA has no valid cell value for this location. Coverage and model availability can vary.';
+        document.getElementById('landslideStatus').textContent=text;document.getElementById('fcLhasa').textContent=data.status==='available'?'Today '+Number(data.cellValue).toPrecision(4)+' · Tomorrow '+(data.tomorrowValue==null?'—':Number(data.tomorrowValue).toPrecision(4)):(data.status==='outside_coverage'?'Outside NASA LHASA coverage':'No model value for this cell');renderRadar();
+      }).catch(function(err){if(requestId!==lhasaRequestId)return;radarData.lhasa={status:'unavailable',place:place,message:'NASA LHASA unavailable: '+err.message};document.getElementById('lhasaValue').textContent='Unavailable';document.getElementById('landslideStatus').textContent=radarData.lhasa.message+' · Use the NASA LHASA Live Map for current coverage.';renderRadar();});
+  }
+  function renderForecastWeather(payload){
+    var rain=Number(payload&&payload.rainMm3h),pm=Number(payload&&payload.pm25);
+    document.getElementById('fcRain').textContent=Number.isFinite(rain)?'NASA next 3-hour precipitation · '+rain.toFixed(2)+' mm':'NASA GEOS-FP value unavailable';
+    document.getElementById('fcAir').textContent=Number.isFinite(pm)?'NASA +6 h PM₂.₅ · '+pm.toPrecision(3)+' µg/m³':'NASA GEOS-CF value unavailable';
+    document.getElementById('forecastStatus').textContent='Selected point '+radarLocation.lat.toFixed(2)+'°, '+radarLocation.lon.toFixed(2)+'° · NASA GEOS-FP +3 h / GEOS-CF +6 h · retrieved '+new Date(payload.fetchedAt||Date.now()).toLocaleTimeString();
+  }
+  function loadPointForecast(){
+    var id=++forecastRequestId,apiBase=(window.EARTHPULSE_API_BASE||'http://127.0.0.1:8001').replace(/\/$/,'');
+    document.getElementById('forecastPlace').textContent='Selected point: '+(radarLocation.place.split(',')[0]||'Map location')+' · '+radarLocation.lat.toFixed(2)+', '+radarLocation.lon.toFixed(2);
+    forecastSource.entities.removeAll();
+    document.getElementById('fcRain').textContent='Loading NASA GEOS-FP…';document.getElementById('fcAir').textContent='Loading NASA GEOS-CF…';
+    fetch(apiBase+'/api/forecast/point?lat='+encodeURIComponent(radarLocation.lat)+'&lon='+encodeURIComponent(radarLocation.lon),{cache:'no-store'})
+      .then(function(r){if(!r.ok)return r.json().then(function(d){throw new Error(d.error||('Forecast HTTP '+r.status));});return r.json();})
+      .then(function(data){if(id!==forecastRequestId)return;renderForecastWeather(data);})
+      .catch(function(err){if(id!==forecastRequestId)return;['fcRain','fcAir'].forEach(function(k){document.getElementById(k).textContent='NASA forecast unavailable';});document.getElementById('forecastStatus').textContent=err.message+' · NASA model endpoint unavailable; retry shortly.';});
+  }
+  function globalValue(entity,metric){var props=entity.properties||{};return Number((props[metric]||{}).getValue());}
+  function globalColor(metric,value){if(metric==='pm25')return value>=75?'#e94255':value>=35?'#f28c42':value>=12?'#d8c548':value>=5?'#69c9aa':'#558ee8';return value>=5?'#bd62ed':value>=1?'#ed645e':value>=.1?'#f1bc52':value>=.01?'#55c7b5':'#6285a0';}
+  function setGlobalMetric(metric){var map={rain:['rainMm3h','NASA GEOS-FP · global precipitation · next 3 hours','NASA GEOS-FP · precipitation amount · next 3 hours',[['<0.01 mm','#6285a0'],['0.01–0.1 mm','#55c7b5'],['0.1–1 mm','#f1bc52'],['1–5 mm','#ed645e'],['5+ mm','#bd62ed']]],pm25:['pm25','NASA GEOS-CF · global PM₂.₅ · +6 hours','NASA GEOS-CF · PM₂.₅ concentration forecast · +6 hours',[['<5 µg/m³','#558ee8'],['5–12 µg/m³','#69c9aa'],['12–35 µg/m³','#d8c548'],['35–75 µg/m³','#f28c42'],['75+ µg/m³','#e94255']]]},config=map[metric]||map.rain;document.getElementById('globalMapTitle').textContent=config[1];document.getElementById('globalMapDescription').textContent=metric==='pm25'?'NASA GEOS-CF atmospheric composition forecast. Colors represent PM₂.₅ concentration, not an official air-quality advisory.':'NASA GEOS-FP precipitation forecast. Colors represent the next 3-hour precipitation amount, not flood probability.';var legend=document.getElementById('globalRainLegend');legend.innerHTML='';config[3].forEach(function(item){var span=document.createElement('span'),dot=document.createElement('i');dot.className='rain-dot';dot.style.background=item[1];span.appendChild(dot);span.appendChild(document.createTextNode(item[0]));legend.appendChild(span);});globalForecastSource.entities.values.forEach(function(entity){var value=globalValue(entity,config[0]);if(Number.isFinite(value))entity.point.color=Cesium.Color.fromCssColorString(globalColor(metric,value)).withAlpha(.96);});}
+  function loadGlobalForecast(){
+    if(globalForecastLoaded)return;var id=++globalForecastRequestId,apiBase=(window.EARTHPULSE_API_BASE||'http://127.0.0.1:8001').replace(/\/$/,'');document.getElementById('globalGridStatus').textContent='Loading NASA global model grids…';
+    fetch(apiBase+'/api/forecast/global?refresh=1',{cache:'no-store'}).then(function(r){if(!r.ok)return r.json().then(function(d){throw new Error(d.error||('NASA forecast HTTP '+r.status));});return r.json();}).then(function(data){if(id!==globalForecastRequestId)return;globalForecastSource.entities.removeAll();(data.points||[]).forEach(function(p,i){var rain=Number(p.rainMm3h),pm=Number(p.pm25);if(!Number.isFinite(Number(p.lat))||!Number.isFinite(Number(p.lon)))return;globalForecastSource.entities.add({id:'globalForecast-'+i,position:Cesium.Cartesian3.fromDegrees(Number(p.lon),Number(p.lat)),point:{pixelSize:8,color:Cesium.Color.fromCssColorString(globalColor('rain',Number.isFinite(rain)?rain:0)).withAlpha(.96),outlineColor:Cesium.Color.fromCssColorString('#07111c'),outlineWidth:1},properties:{lat:Number(p.lat),lon:Number(p.lon),rainMm3h:rain,pm25:pm}});});globalForecastLoaded=true;globalForecastSource.show=true;document.getElementById('globalGridStatus').textContent=(data.sampleCount||0)+' NASA global grid locations · '+(data.forecastDate||'forecast valid time');document.getElementById('forecastStatus').textContent=(data.coverage||'Global NASA model coverage')+' · '+data.source+' · fetched '+new Date(data.fetchedAt||Date.now()).toLocaleTimeString();setGlobalMetric(document.getElementById('globalMapMetric').value);}).catch(function(err){if(id!==globalForecastRequestId)return;document.getElementById('globalGridStatus').textContent='NASA global forecast unavailable';document.getElementById('forecastStatus').textContent=err.message+' · Retry the NASA model request.';});
+  }
+  document.getElementById('globalMapMetric').addEventListener('change',function(){setGlobalMetric(this.value);});
+  document.getElementById('liveSectionTab').addEventListener('click',function(){activeDashboardSection='live';globalForecastSource.show=false;document.getElementById('liveSectionTab').setAttribute('aria-selected','true');document.getElementById('forecastSectionTab').setAttribute('aria-selected','false');document.getElementById('liveSection').hidden=false;document.getElementById('forecastSection').hidden=true;document.getElementById('eventsTitle').textContent=regionalEvents?'Uttarakhand Monitor':'World Monitor';document.getElementById('eventCount').textContent=selectedCategory||'Live event reports';document.getElementById('refreshEvents').textContent='Refresh';});
+  document.getElementById('forecastSectionTab').addEventListener('click',function(){activeDashboardSection='forecast';document.getElementById('liveSectionTab').setAttribute('aria-selected','false');document.getElementById('forecastSectionTab').setAttribute('aria-selected','true');document.getElementById('liveSection').hidden=true;document.getElementById('forecastSection').hidden=false;document.getElementById('eventsTitle').textContent='Forecast & outlook';document.getElementById('eventCount').textContent='Global model guidance';document.getElementById('refreshEvents').textContent='Refresh outlook';globalForecastSource.show=true;loadGlobalForecast();loadPointForecast();});
+  document.getElementById('fcLhasaLayer').addEventListener('click',function(){document.getElementById('bLhasa').click();this.textContent=lhasaLayer&&lhasaLayer.show?'Hide hazard layer on globe':'Show hazard layer on globe';});
+  document.getElementById('refreshEvents').addEventListener('click',function(){if(activeDashboardSection==='forecast'){globalForecastLoaded=false;loadGlobalForecast();loadPointForecast();return;}if(!selectedCategory){document.getElementById('eventStatus').textContent='Choose a hazard category first.';return;}loadEvents();loadGlobalFeeds();if(regionalEvents){if(selectedCategory==='Wildfires')loadFires(null,'uttarakhand');loadPower();}});
+  document.getElementById('bLhasa').addEventListener('click',function(){
+    if(lhasaLayer){lhasaLayer.show=!lhasaLayer.show;radarData.lhasaLayer=lhasaLayer.show;this.setAttribute('aria-pressed',String(lhasaLayer.show));renderRadar();return;}
+    this.disabled=true;this.textContent='Loading LHASA…';
+    var provider=new Cesium.WebMapServiceImageryProvider({url:'https://gis.earthdata.nasa.gov/portal/services/Landslides/LHASA_Hazard_Today/ImageServer/WMSServer',layers:'0',parameters:{service:'WMS',version:'1.1.1',request:'GetMap',styles:'',format:'image/png',transparent:true},credit:new Cesium.Credit('NASA LHASA Hazard Today · near-real-time · ~1 km')});
+    lhasaLayer=viewer.imageryLayers.addImageryProvider(provider);lhasaLayer.alpha=0.78;lhasaLayer.dayAlpha=0.78;lhasaLayer.nightAlpha=0.78;lhasaLayer.show=true;
+    provider.errorEvent.addEventListener(function(){document.getElementById('landslideStatus').textContent='NASA map tiles are temporarily unavailable. The cell query or NASA Live Map may still be available.';});
+    this.disabled=false;this.textContent='LHASA';this.setAttribute('aria-pressed','true');radarData.lhasaLayer=true;renderRadar();
+    if(!radarData.lhasa||radarData.lhasa.status==='unavailable'||radarData.lhasa.status==='no_cell_data')loadLhasa(radarLocation.lat,radarLocation.lon,radarLocation.place);
+  });
+  var hazardOrder=['Earthquakes','Tsunamis','Cyclones & severe storms','Floods','Volcanoes','Wildfires','Droughts','Landslides','Other hazards'];
+  function renderGlobalRows(){
+    globalList.innerHTML='';var grouped={};globalFeedRows.forEach(function(row){(grouped[row.category]||(grouped[row.category]=[])).push(row);});
+    eventCount.textContent=globalFeedRows.filter(function(row){return !selectedCategory||row.category===selectedCategory;}).length+' events · 7 days';
+    hazardOrder.concat(Object.keys(grouped).filter(function(k){return hazardOrder.indexOf(k)<0;}).sort()).forEach(function(category){if(!grouped[category])return;var section=document.createElement('section');section.className='hazard-group';var heading=document.createElement('div');heading.className='feed-label';heading.textContent=category+' · '+grouped[category].length;section.appendChild(heading);
+      if(selectedCategory&&category!==selectedCategory)return;
+      grouped[category].forEach(function(row){var b=document.createElement('button');b.type='button';b.className='event-item';var strong=document.createElement('strong');if(row.alertLevel){var badge=document.createElement('span');badge.className='alert-pill alert-'+row.alertLevel;badge.textContent=row.alertLevel.toUpperCase();strong.appendChild(badge);}strong.appendChild(document.createTextNode(row.title));var small=document.createElement('small');small.textContent=row.place+' · '+row.meta+' · '+row.source;b.appendChild(strong);b.appendChild(small);b.addEventListener('click',function(){if(row.position)zoomToEvent(row);else if(row.url)window.open(row.url,'_blank','noopener');});section.appendChild(b);});globalList.appendChild(section);});
+    if(!globalList.children.length){var empty=document.createElement('div');empty.className='feed-label';empty.textContent='No matching events were reported by the selected feeds in the past 7 days.';globalList.appendChild(empty);}
+  }
+  function addFeedRow(category,title,meta,source,url,position,feature,place,alertLevel){globalFeedRows.push({category:category,title:title,meta:meta,source:source,url:url,position:position,feature:feature,place:place||'Location unavailable',alertLevel:alertLevel||''});}
+  function gdacsAlertColor(level){return Cesium.Color.fromCssColorString(level==='red'?'#ff5b60':level==='orange'?'#ffad4d':level==='green'?'#61d995':'#a8b4c2');}
+  function gdacsCategory(code){var v=String(code||'').toUpperCase();if(v==='EQ'||v.indexOf('EARTHQUAKE')>=0)return'Earthquakes';if(v==='TS'||v.indexOf('TSUNAMI')>=0)return'Tsunamis';if(v==='TC'||v.indexOf('CYCLONE')>=0||v.indexOf('STORM')>=0)return'Cyclones & severe storms';if(v==='FL'||v.indexOf('FLOOD')>=0)return'Floods';if(v==='VO'||v.indexOf('VOLCANO')>=0)return'Volcanoes';if(v==='WF'||v.indexOf('FIRE')>=0)return'Wildfires';if(v==='DR'||v.indexOf('DROUGHT')>=0)return'Droughts';if(v.indexOf('LANDSLIDE')>=0)return'Landslides';return'Other hazards';}
+  function hazardColor(category){return Cesium.Color.fromCssColorString(category==='Earthquakes'?'#ffb24a':category==='Cyclones & severe storms'?'#62baff':category==='Floods'?'#35d4d0':category==='Volcanoes'?'#dc88ff':category==='Wildfires'?'#ff654f':category==='Droughts'?'#e6c85a':'#83dfc0');}
+  var categoryOptions=[
+    {name:'Earthquakes',icon:'〰️',desc:'USGS · magnitude and depth'},
+    {name:'Tsunamis',icon:'🌊',desc:'USGS tsunami-flagged events'},
+    {name:'Cyclones & severe storms',icon:'🌀',desc:'GDACS + NASA EONET'},
+    {name:'Floods',icon:'🌧️',desc:'GDACS + NASA EONET'},
+    {name:'Volcanoes',icon:'🌋',desc:'GDACS + Smithsonian/USGS + NASA FIRMS'},
+    {name:'Wildfires',icon:'🔥',desc:'NASA FIRMS + EONET'},
+    {name:'Air pollution',icon:'🌫️',desc:'OpenAQ city sensors · PM2.5, PM10 and gases'},
+    {name:'Droughts',icon:'🏜️',desc:'GDACS alerts'},
+    {name:'Landslides',icon:'⛰️',desc:'NASA LHASA nowcast + EONET reports'}
+  ];
+  function buildCategoryCards(region){
+    var grid=document.getElementById('categoryGrid');grid.innerHTML='';
+    categoryOptions.forEach(function(item){var b=document.createElement('button');b.type='button';b.className='category-card';b.dataset.category=item.name;b.setAttribute('aria-pressed','false');var title=document.createElement('span');title.textContent=item.icon+'  '+item.name;var desc=document.createElement('small');desc.textContent=region?(item.name==='Wildfires'?'VIIRS fire hotspots + events':item.name==='Landslides'?'NASA LHASA · selected place':'Uttarakhand · recent events'):item.desc;b.appendChild(title);b.appendChild(desc);b.addEventListener('click',function(){
+      selectedCategory=item.name;grid.querySelectorAll('.category-card').forEach(function(card){card.setAttribute('aria-pressed',String(card===b));});
+      document.getElementById('satelliteCatalog').hidden=item.name!=='Wildfires';
+      document.getElementById('volcanoStatus').hidden=item.name!=='Volcanoes';
+      document.getElementById('airQualityPanel').hidden=item.name!=='Air pollution';
+      document.getElementById('landslidePanel').hidden=item.name!=='Landslides';
+      eventList.innerHTML='';globalList.innerHTML='';globalFeedRows=[];document.getElementById('eventCount').textContent='Loading '+item.name+'…';document.getElementById('eventStatus').textContent='Loading matching events from the last 7 days.';
+      eventList.hidden=true;globalList.hidden=false;boundarySource.entities.removeAll();
+      applyHazardFilter();
+      if(item.name==='Air pollution')loadOpenAQ(radarLocation.lat,radarLocation.lon,radarLocation.place);
+      if(item.name==='Landslides'){loadLhasa(radarLocation.lat,radarLocation.lon,radarLocation.place);if(!lhasaLayer||!lhasaLayer.show)document.getElementById('bLhasa').click();}
+      document.getElementById('firesList').hidden=!(region&&item.name==='Wildfires');
+      if(region){loadEvents();loadGlobalFeeds();if(item.name==='Wildfires')loadFires(null,'uttarakhand');else firesSource.entities.removeAll();}
+      else {loadEvents();loadGlobalFeeds();if(item.name==='Wildfires')loadFires(null,'world');}
+    });grid.appendChild(b);});
+  }
+  var airQualitySource=new Cesium.CustomDataSource('OpenAQ city air quality');viewer.dataSources.add(airQualitySource);
+  function applyHazardFilter(){var selected=selectedCategory||'none';[eventSource,gdacsSource,quakeSource,volcanoSource,firesSource,airQualitySource].forEach(function(ds){ds.entities.values.forEach(function(entity){var category=entity.properties&&entity.properties.hazardCategory?entity.properties.hazardCategory.getValue():'';entity.show=selected==='all'||selected===category;});});}
+  buildCategoryCards(false);globalList.hidden=false;
+  function globalPoint(feature){
+    var g=feature.geometry,c=g&&g.coordinates;if(!g||!c)return null;
+    if(g.type==='Point')return c;
+    if(g.type==='MultiPoint')return c[c.length-1]||null;
+    var ring=g.type==='Polygon'?c[0]:g.type==='MultiPolygon'&&c[0]?c[0][0]:null;
+    return ring&&ring.length?ring.reduce(function(a,p){return[a[0]+p[0]/ring.length,a[1]+p[1]/ring.length];},[0,0]):null;
+  }
+  var boundarySource=new Cesium.CustomDataSource('Selected hazard boundary');viewer.dataSources.add(boundarySource);
+  function zoomToEvent(row){var point=row.position||globalPoint(row.feature);if(!point)return;boundarySource.entities.removeAll();var color=hazardColor(row.category||selectedCategory||'Other hazards');
+    var geometry=row.feature&&row.feature.geometry,polys=geometry&&geometry.type==='Polygon'?[geometry.coordinates]:geometry&&geometry.type==='MultiPolygon'?geometry.coordinates:[];
+    polys.forEach(function(poly){var ring=poly[0];if(!ring||ring.length<3)return;var flat=[];ring.forEach(function(p){flat.push(p[0],p[1]);});boundarySource.entities.add({name:(row.title||'Event')+' affected area',polygon:{hierarchy:Cesium.Cartesian3.fromDegreesArray(flat),material:color.withAlpha(.2),outline:true,outlineColor:color,perPositionHeight:false}});});
+    boundarySource.entities.add({name:row.title||'Selected event',position:Cesium.Cartesian3.fromDegrees(point[0],point[1],12000),point:{pixelSize:15,color:Cesium.Color.WHITE,outlineColor:color,outlineWidth:4,disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{text:(row.title||'Selected event')+'\n'+(row.place||'Location selected'),font:'13px sans-serif',show:true,showBackground:true,backgroundColor:Cesium.Color.fromCssColorString('#08111d').withAlpha(.96),pixelOffset:new Cesium.Cartesian2(0,-23),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
+    document.getElementById('eventStatus').textContent=polys.length?'Showing the event location and source-provided affected-area boundary.':'Showing the event location; this source did not provide an affected-area boundary.';
+    camera.flyTo({destination:Cesium.Cartesian3.fromDegrees(point[0],point[1],polys.length?650000:(regionalEvents?250000:1800000)),duration:2});
+  }
+  var hoverEntity=null;
+  viewer.screenSpaceEventHandler.setInputAction(function(movement){var picked=scene.pick(movement.endPosition),entity=picked&&picked.id&&picked.id.label?picked.id:null;if(hoverEntity&&hoverEntity!==entity)hoverEntity.label.show=false;if(entity)entity.label.show=true;hoverEntity=entity;},Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+  function loadGlobalFeeds(){
+    var requestId=++globalFeedRequestId;
+    var apiBase=window.EARTHPULSE_API_BASE||'http://127.0.0.1:8001';
+    globalFeedRows=[];globalList.innerHTML=''; gdacsSource.entities.removeAll(); quakeSource.entities.removeAll(); volcanoSource.entities.removeAll();
+    if(!document.getElementById('gdacsToggle').checked){radarData.gdacs={};radarData.gdacsLevels={};}
+    if(!document.getElementById('usgsToggle').checked)radarData.usgs=0;
+    renderRadar();
+    var jobs=[];
+    if(document.getElementById('gdacsToggle').checked){
+      var gdacsHazard=['Earthquakes','Cyclones & severe storms','Floods','Volcanoes','Droughts','Wildfires'].indexOf(selectedCategory)>=0?selectedCategory:'';
+      jobs.push(fetch(apiBase.replace(/\/$/,'')+'/api/monitor/gdacs?hazard='+encodeURIComponent(gdacsHazard),{cache:'no-store'}).then(function(r){if(!r.ok)return r.json().then(function(x){throw new Error(x.error||('GDACS HTTP '+r.status));});return r.json();}).then(function(data){
+        if(requestId!==globalFeedRequestId)return;
+        var fs=data.features||data.results||[], count=0, matching=0,levelCounts={red:0,orange:0,green:0,unknown:0},gdacsRadarCounts={},gdacsRadarLevels={};
+        fs.forEach(function(f){var p=f.properties||{},pt=globalPoint(f);if(!pt)return;if(regionalEvents&&(pt[0]<77.5||pt[0]>81.1||pt[1]<28.7||pt[1]>31.5))return;var level=String(p.alertlevel||p.alertLevel||'').toLowerCase();if(['red','orange','green'].indexOf(level)<0)level='unknown';levelCounts[level]++;var type=p.eventtype||p.eventType||p.eventtypecode||'',
+          title=p.name||p.title||((type||'Hazard')+' '+(p.eventid||p.eventId||'')),category=gdacsCategory(String(type)+' '+title),place=p.country||p.location||'Location unavailable';
+          gdacsRadarCounts[category]=(gdacsRadarCounts[category]||0)+1;(gdacsRadarLevels[category]||(gdacsRadarLevels[category]={red:0,orange:0,green:0}))[level]=(gdacsRadarLevels[category][level]||0)+1;
+          var entity=gdacsSource.entities.add({name:title,properties:{hazardCategory:category,alertLevel:level},description:title+'<br>GDACS '+type+' · '+level.toUpperCase()+' impact alert<br>'+place,position:Cesium.Cartesian3.fromDegrees(pt[0],pt[1],20000),point:{pixelSize:13,color:gdacsAlertColor(level),outlineColor:Cesium.Color.WHITE,outlineWidth:1,disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{text:title+'\n'+place,font:'12px sans-serif',show:false,showBackground:true,backgroundColor:Cesium.Color.fromCssColorString('#08111d').withAlpha(.92),pixelOffset:new Cesium.Cartesian2(0,-18),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
+          addFeedRow(category,title,level.toUpperCase()+' impact alert','GDACS',p.url||p.link,pt,f,place,level);if(!selectedCategory||category===selectedCategory)matching++;count++;
+        });
+        if(!radarData.gdacs||!selectedCategory){radarData.gdacs={};radarData.gdacsLevels={};radarHazardKeys.forEach(function(k){radarData.gdacs[k]=0;radarData.gdacsLevels[k]={red:0,orange:0,green:0};});}
+        var gdacsKeys=selectedCategory?[selectedCategory]:radarHazardKeys;gdacsKeys.forEach(function(k){radarData.gdacs[k]=gdacsRadarCounts[k]||0;radarData.gdacsLevels[k]=gdacsRadarLevels[k]||{red:0,orange:0,green:0};});
+        radarData.lastRefresh=new Date().toLocaleTimeString();renderRadar();renderGlobalRows();applyHazardFilter();globalStatus.textContent='GDACS: '+count+' events · RED '+levelCounts.red+' · ORANGE '+levelCounts.orange+' · GREEN '+levelCounts.green+(levelCounts.unknown?' · unclassified '+levelCounts.unknown:'')+' · '+new Date().toLocaleTimeString();
+      }).catch(function(err){if(requestId===globalFeedRequestId)globalStatus.textContent='GDACS unavailable: '+err.message;}));
+    }
+    if(document.getElementById('usgsToggle').checked){
+      jobs.push(fetch(apiBase.replace(/\/$/,'')+'/api/monitor/usgs',{cache:'no-store'}).then(function(r){if(!r.ok)return r.json().then(function(x){throw new Error(x.error||('USGS HTTP '+r.status));});return r.json();}).then(function(data){
+        if(requestId!==globalFeedRequestId)return;
+        var fs=data.features||[];
+        var included=0,usgsQuakes=0;fs.forEach(function(f){var p=f.properties||{},c=f.geometry&&f.geometry.coordinates;if(!c)return;if(regionalEvents&&(c[0]<77.5||c[0]>81.1||c[1]<28.7||c[1]>31.5))return;var mag=Number(p.mag)||0;var category=p.tsunami?'Tsunamis':'Earthquakes',place=p.place||'Location unavailable',title=p.title||'Earthquake';if(!p.tsunami)usgsQuakes++;
+          var entity=quakeSource.entities.add({name:title,properties:{hazardCategory:category},description:title+'<br>Magnitude: '+mag.toFixed(1)+' · Depth: '+Number(c[2]).toFixed(1)+' km<br>Tsunami flag: '+(p.tsunami?'yes':'no'),position:Cesium.Cartesian3.fromDegrees(c[0],c[1],Math.max(1000,Number(c[2])*1000)),point:{pixelSize:Math.min(18,7+mag*1.2),color:hazardColor(category),outlineColor:Cesium.Color.WHITE,outlineWidth:1,disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{text:title+'\n'+place,font:'12px sans-serif',show:false,showBackground:true,backgroundColor:Cesium.Color.fromCssColorString('#08111d').withAlpha(.92),pixelOffset:new Cesium.Cartesian2(0,-18),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
+          addFeedRow(category,title,'M '+mag.toFixed(1)+' · '+new Date(p.time).toLocaleString(),'USGS',p.url,[c[0],c[1],c[2]],f,place);included++;
+        });radarData.usgs=usgsQuakes;radarData.lastRefresh=new Date().toLocaleTimeString();renderRadar();renderGlobalRows();applyHazardFilter();
+        globalStatus.textContent='USGS: '+included+' earthquakes / tsunami-flagged events in the past 7 days · refreshed '+new Date().toLocaleTimeString();
+      }).catch(function(err){if(requestId===globalFeedRequestId)globalStatus.textContent='USGS unavailable: '+err.message;}));
+    }
+    if(!selectedCategory||selectedCategory==='Volcanoes'){
+      jobs.push(fetch(apiBase.replace(/\/$/,'')+'/api/monitor/volcano',{cache:'no-store'}).then(function(r){if(!r.ok)return r.json().then(function(x){throw new Error(x.error||('Volcano feed HTTP '+r.status));});return r.json();}).then(function(data){
+        if(requestId!==globalFeedRequestId)return;
+        var volcanoReports=0,thermalClusters=0;
+        (data.features||[]).forEach(function(f){var p=f.properties||{},pt=globalPoint(f);if(!p.title)return;if(regionalEvents&&pt&&(pt[0]<77.5||pt[0]>81.1||pt[1]<28.7||pt[1]>31.5))return;
+          var thermal=p.kind==='thermal',place=p.country||'Location unavailable',source=thermal?'NASA FIRMS · '+(p.sensors||[]).join(', '):'Smithsonian / USGS WVAR';
+          if(thermal)thermalClusters++;else volcanoReports++;
+          if(pt)volcanoSource.entities.add({name:p.title,properties:{hazardCategory:'Volcanoes'},description:p.title+' · '+place+'<br>'+(thermal?'NASA FIRMS thermal anomaly within '+p.distanceKm+' km of a volcano with a recent activity report.<br>Satellite thermal detections do not confirm an eruption.':source+'<br>'+(p.description||'')),position:Cesium.Cartesian3.fromDegrees(pt[0],pt[1],18000),point:{pixelSize:thermal?15:13,color:thermal?Cesium.Color.fromCssColorString('#ff7047'):hazardColor('Volcanoes'),outlineColor:Cesium.Color.WHITE,outlineWidth:1,disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{text:p.title+'\n'+place,font:'12px sans-serif',show:false,showBackground:true,backgroundColor:Cesium.Color.fromCssColorString('#08111d').withAlpha(.92),pixelOffset:new Cesium.Cartesian2(0,-18),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
+          var meta=thermal?'Thermal anomaly · '+p.detections+' detections · '+p.distanceKm+' km from reported volcano':(p.date||'Weekly activity')+' · '+place;
+          addFeedRow('Volcanoes',p.title,meta,source,p.url,pt,f,place);
+        });radarData.volcanoReports=volcanoReports;radarData.thermalClusters=thermalClusters;radarData.lastRefresh=new Date().toLocaleTimeString();renderRadar();renderGlobalRows();applyHazardFilter();
+        var thermalStatus=data.properties&&data.properties.thermalStatus||'NASA FIRMS thermal detections unavailable.';
+        document.getElementById('volcanoStatus').textContent='Smithsonian/USGS weekly activity + GDACS alerts · '+thermalStatus+'. Nearby thermal anomalies are observations, not confirmed eruptions.';
+      }).catch(function(err){if(requestId===globalFeedRequestId)document.getElementById('volcanoStatus').textContent='Volcano monitoring feed unavailable: '+err.message;}));
+    }
+    Promise.allSettled(jobs);
+  }
+  ['gdacsToggle','usgsToggle'].forEach(function(id){document.getElementById(id).addEventListener('change',loadGlobalFeeds);});
+  // POWER is daily near-real-time gridded weather, not an hourly warning or landslide forecast.
+  function loadPower(){
+    var apiBase=window.EARTHPULSE_API_BASE||'http://127.0.0.1:8001';
+    fetch(apiBase.replace(/\/$/,'')+'/api/monitor/power',{cache:'no-store'}).then(function(r){if(!r.ok)return r.json().then(function(x){throw new Error(x.error||('POWER HTTP '+r.status));});return r.json();}).then(function(data){
+      var p=data.properties&&data.properties.parameter||{};
+      function latest(obj){var keys=Object.keys(obj||{}).filter(function(k){return Number(obj[k])>-900;}).sort();return keys.length?{date:keys[keys.length-1],value:Number(obj[keys[keys.length-1]])}:null;}
+      var rain=latest(p.PRECTOTCORR), hum=latest(p.RH2M), temp=latest(p.T2M);
+      document.getElementById('wxRain').textContent=rain?rain.value.toFixed(1)+' mm/day':'No data';
+      document.getElementById('wxHumidity').textContent=hum?hum.value.toFixed(0)+'%':'No data';
+      document.getElementById('wxTemp').textContent=temp?temp.value.toFixed(1)+' °C':'No data';
+      var date=(rain||hum||temp); document.getElementById('weatherStatus').textContent='NASA POWER daily near-real-time · Dehradun · latest available '+(date?date.date:'date unavailable')+' UTC';
+    }).catch(function(err){document.getElementById('weatherStatus').textContent='NASA POWER unavailable: '+err.message;});
+  }
+  // FIRMS uses a user-provided MAP_KEY only for this request; it is not saved locally.
+  function loadFires(source,region){
+    var sources=['VIIRS_SNPP_NRT','VIIRS_NOAA20_NRT','VIIRS_NOAA21_NRT','MODIS_NRT'];
+    var fs=document.getElementById('fireStatus'); fs.textContent='Loading all four NASA FIRMS feeds…';
+    var apiBase=window.EARTHPULSE_API_BASE||'http://127.0.0.1:8001';
+    var base=apiBase.replace(/\/$/,'')+'/api/firms/events?region='+encodeURIComponent(region||'uttarakhand')+'&source=';
+    Promise.all(sources.map(function(sensor){return fetch(base+encodeURIComponent(sensor),{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(sensor+' HTTP '+r.status);return r.text();}).then(function(csv){return{sensor:sensor,csv:csv};});})).then(function(feeds){
+      firesSource.entities.removeAll();document.getElementById('firesList').innerHTML='';if(region==='world')globalFeedRows=globalFeedRows.filter(function(row){return row.source!=='NASA FIRMS';});var count=0,bins=Object.create(null);
+      feeds.forEach(function(feed){var lines=feed.csv.trim().split(/\r?\n/);if(lines.length<2)return;
+        var headers=lines.shift().split(',').map(function(x){return x.trim();}),ix={};headers.forEach(function(h,i){ix[h]=i;});if(ix.latitude==null||ix.longitude==null)return;
+        lines.forEach(function(line){var c=line.split(','),lat=Number(c[ix.latitude]),lon=Number(c[ix.longitude]);if(!isFinite(lat)||!isFinite(lon))return;
+          var confidence=c[ix.confidence]||'not reported',brightness=c[ix.bright_ti4]||c[ix.brightness]||'not reported',place=lat.toFixed(3)+'°, '+lon.toFixed(3)+'°',title='Fire hotspot · '+place,pt=[lon,lat,12000];
+          if(region==='world'){var cellLat=Math.floor(lat/2)*2,cellLon=Math.floor(lon/2)*2,key=cellLat+','+cellLon,bin=bins[key]||(bins[key]={lat:0,lon:0,count:0});bin.lat+=lat;bin.lon+=lon;bin.count++;}
+          else{firesSource.entities.add({name:title,properties:{hazardCategory:'Wildfires'},description:title+'<br>NASA FIRMS '+feed.sensor+' · Confidence: '+confidence+'<br>Brightness: '+brightness+'<br>Detection: '+(c[ix.acq_date]||'')+' '+(c[ix.acq_time]||'')+' UTC',position:Cesium.Cartesian3.fromDegrees(lon,lat,12000),point:{pixelSize:8,color:Cesium.Color.ORANGERED,outlineColor:Cesium.Color.WHITE,outlineWidth:1,disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{text:title,font:'12px sans-serif',show:false,showBackground:true,backgroundColor:Cesium.Color.fromCssColorString('#08111d').withAlpha(.92),pixelOffset:new Cesium.Cartesian2(0,-18),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
+            if(region==='uttarakhand'){var b=document.createElement('button');b.type='button';b.className='event-item';b.innerHTML='<strong></strong><small></small>';b.querySelector('strong').textContent=title;b.querySelector('small').textContent=feed.sensor+' · Confidence '+confidence+' · '+(c[ix.acq_date]||'');b.addEventListener('click',function(){zoomToEvent({title:title,category:'Wildfires',position:pt});});document.getElementById('firesList').appendChild(b);}}
+          count++;
+        });
+      });
+      if(region==='world'){Object.keys(bins).forEach(function(key){var bin=bins[key],lon=bin.lon/bin.count,lat=bin.lat/bin.count,pt=[lon,lat,12000],title=bin.count+' FIRMS hotspots · '+key.replace(',','°, ')+'°',fireColor=bin.count>=100?'#ef5d62':bin.count>=25?'#f39b4a':bin.count>=8?'#f2cf62':'#ff7047';firesSource.entities.add({name:title,properties:{hazardCategory:'Wildfires'},description:title+'<br>NASA FIRMS · all satellite feeds · aggregated in a 2° grid cell',position:Cesium.Cartesian3.fromDegrees(lon,lat,12000),point:{pixelSize:Math.min(12,5+Math.log2(bin.count+1)*1.2),color:Cesium.Color.fromCssColorString(fireColor).withAlpha(.96),outlineColor:Cesium.Color.WHITE,outlineWidth:1,disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{show:false}});addFeedRow('Wildfires',title,bin.count+' hotspots in grid cell','NASA FIRMS',null,pt,null,key);});renderGlobalRows();}
+      radarData.firms=count;radarData.lastRefresh=new Date().toLocaleTimeString();renderRadar();
+      applyHazardFilter();fs.textContent='NASA FIRMS · all 4 satellite feeds · '+count+' hotspots in last 24h · '+(region==='world'?Object.keys(bins).length+' mapped grid cells (2°) · ':'')+'detections are not confirmation of a ground fire.';
+    }).catch(function(err){radarData.firms=-1;renderRadar();fs.textContent='FIRMS unavailable: '+err.message+' · check the local API server, NASA key, and request limit.';});
+  }
+  document.getElementById('fireForm').addEventListener('submit',function(e){e.preventDefault();loadFires(null,regionalEvents?'uttarakhand':'world');});
+  loadEvents();loadGlobalFeeds();loadFires(null,'world');loadOpenAQ(radarLocation.lat,radarLocation.lon,radarLocation.place);loadLhasa(radarLocation.lat,radarLocation.lon,radarLocation.place);loadPointForecast();
 
   // ----- Time -----
   var tzFmt=new Intl.DateTimeFormat(undefined,{hour:'2-digit',minute:'2-digit',hour12:false,timeZoneName:'short'});
@@ -189,6 +737,15 @@
   var ell=Cesium.Ellipsoid.WGS84, V3=Cesium.Cartesian3, cvs=viewer.canvas;
   var MIN_H=3, MAX_H=2.8e7, MIN_DIST=6, pending=0, anchor=null;
   function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+  cvs.addEventListener('wheel',function(e){
+    e.preventDefault();e.stopImmediatePropagation();camera.cancelFlight();
+    var delta=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?120:1);
+    var height=camera.positionCartographic.height;
+    var fraction=clamp(Math.abs(delta)*0.002,0.02,0.45);
+    var amount=Math.max(20,height*fraction);
+    if(delta<0)camera.zoomIn(Math.min(amount,Math.max(0,height-MIN_H)));
+    else camera.zoomOut(Math.min(amount,Math.max(0,MAX_H-height)));
+  },{capture:true,passive:false});
   function pickGlobe(pos){
     var ray=camera.getPickRay(pos), p;
     if(photoreal && ray){ try{ var hit=scene.pickFromRay(ray); p=hit&&hit.position; }catch(err){} }   // Google 3D tiles
@@ -205,12 +762,13 @@
     var r=cvs.getBoundingClientRect();
     return new Cesium.Cartesian2(e.clientX-r.left,e.clientY-r.top);
   }
-  cvs.addEventListener('wheel',function(e){
-    e.preventDefault(); camera.cancelFlight();
-    var dy=e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1);
-    anchor=anchorFor(cursorPos(e));
-    pending=clamp(pending+clamp(dy,-250,250)*0.005,-3,3);       // negative = zoom in, positive = zoom out
-  },{passive:false});
+  cvs.addEventListener('click',function(e){
+    if(activeDashboardSection!=='forecast')return;
+    var pos=cursorPos(e),picked=scene.pick(pos),point;
+    if(picked&&picked.id&&picked.id.id&&picked.id.id.indexOf('globalForecast-')===0){var props=picked.id.properties;radarLocation={lat:Number(props.lat.getValue()),lon:Number(props.lon.getValue()),place:'Global model grid'};}
+    else {var cart=pickGlobe(pos);if(!cart)return;var geo=ell.cartesianToCartographic(cart);if(!geo)return;radarLocation={lat:Cesium.Math.toDegrees(geo.latitude),lon:Cesium.Math.toDegrees(geo.longitude),place:'Map selection'};}
+    loadPointForecast();loadLhasa(radarLocation.lat,radarLocation.lon,radarLocation.place);
+  });
   cvs.addEventListener('dblclick',function(e){
     camera.cancelFlight(); anchor=anchorFor(cursorPos(e)); pending=-1.6;
   });
@@ -264,6 +822,10 @@
         } else {
           camera.flyTo({destination:rect,duration:3.5});
         }
+        radarLocation={lat:parseFloat(p.lat),lon:parseFloat(p.lon),place:p.display_name};
+        loadOpenAQ(radarLocation.lat,radarLocation.lon,radarLocation.place);
+        loadLhasa(radarLocation.lat,radarLocation.lon,radarLocation.place);
+        loadPointForecast();
         statusEl.textContent=p.display_name.length>70 ? p.display_name.slice(0,67)+'…' : p.display_name;
       })
       .catch(function(){ statusEl.textContent='Search failed. Check your connection.'; });
