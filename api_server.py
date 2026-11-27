@@ -25,9 +25,8 @@ load_dotenv()
 _WINDOW_SECONDS = 60
 _MAX_REQUESTS_PER_WINDOW = 12
 _MAX_PROMPT_CHARS = 30_000
-# NASA FIRMS key for the local Uttarakhand globe proxy. Keep this server-side;
-# the browser calls /api/firms/uttarakhand and never receives the key.
-FIRMS_MAP_KEY = "90892aa833cf04bc64aee72e572fd93b"
+# Keep NASA credentials server-side. Configure this in Render or the private .env.
+FIRMS_MAP_KEY = os.getenv("FIRMS_MAP_KEY", "").strip()
 _request_times: dict[str, deque[float]] = defaultdict(deque)
 _global_forecast_cache: dict[str, object] = {"at": 0.0, "payload": None}
 _place_name_cache: dict[str, dict[str, object]] = {}
@@ -166,6 +165,8 @@ async def forecast_global(request: Request) -> JSONResponse:
 
 async def firms_events(request: Request):
     """Proxy FIRMS area CSV while keeping the MAP_KEY server-side."""
+    if not FIRMS_MAP_KEY:
+        return JSONResponse({"error": "NASA FIRMS is not configured. Set FIRMS_MAP_KEY on the API server."}, status_code=503)
     source = request.query_params.get("source", "VIIRS_NOAA20_NRT")
     region = request.query_params.get("region", "uttarakhand")
     if source not in {"VIIRS_NOAA20_NRT", "VIIRS_NOAA21_NRT", "VIIRS_SNPP_NRT", "MODIS_NRT"}:
@@ -460,6 +461,8 @@ async def monitor_feed(request: Request):
                     firms_sources = ["VIIRS_SNPP_NRT", "VIIRS_NOAA20_NRT", "VIIRS_NOAA21_NRT", "MODIS_NRT"]
 
                     def fetch_firms(sensor):
+                        if not FIRMS_MAP_KEY:
+                            return sensor, None, "FIRMS_MAP_KEY is not configured"
                         url = f"https://firms.modaps.eosdis.nasa.gov/api/area/csv/{FIRMS_MAP_KEY}/{sensor}/world/1"
                         try:
                             with urlopen(url, timeout=20) as response:
