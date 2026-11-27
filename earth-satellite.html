@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Earth, Day and Night (satellite zoom)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.119.0/Build/Cesium/Widgets/widgets.css">
 <style>
   :root{
@@ -129,6 +132,17 @@
   .section-nav{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:12px 16px 10px;border-bottom:1px solid rgba(149,174,197,.13);background:rgba(255,255,255,.018)}.section-nav button{min-height:38px;font-size:11px;font-weight:700}.section-nav button[aria-selected="true"]{background:linear-gradient(120deg,rgba(99,214,196,.21),rgba(99,214,196,.08));border-color:rgba(99,214,196,.62);color:#baf5eb}
   .forecast-section{padding:14px 16px 20px}.forecast-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px;border:1px solid rgba(99,214,196,.24);border-radius:12px;background:radial-gradient(ellipse at 90% 0,rgba(57,154,174,.14),transparent 45%),linear-gradient(135deg,rgba(99,214,196,.08),rgba(255,255,255,.025))}.forecast-hero h2{font-size:15px;margin:0 0 5px;letter-spacing:.01em}.forecast-hero p{font-size:10px;color:var(--ink-dim);line-height:1.5;margin:0}.forecast-place{font-size:9px;color:#baf5eb;white-space:nowrap;padding:5px 8px;border-radius:999px;background:rgba(99,214,196,.11)}.forecast-group{margin-top:14px}.forecast-group h3{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:#8fa6b8;margin:0 0 7px}.forecast-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.forecast-card{min-width:0;padding:10px;border:1px solid rgba(149,174,197,.14);border-radius:10px;background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.018))}.forecast-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}.forecast-card h4{font-size:10px;line-height:1.35;margin:0;color:#edf4f7}.forecast-chip{font-size:7px;line-height:1.3;font-weight:750;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;color:#9fe9dd;background:rgba(99,214,196,.1);border-radius:999px;padding:3px 5px}.forecast-card p{font-size:9px;line-height:1.45;color:#9aa9b8;margin:6px 0}.forecast-value{font-size:11px;font-weight:650;color:#dce9ef;min-height:14px}.forecast-meta{font-size:8px;line-height:1.45;color:#8295a6;margin-top:5px}.forecast-card a{color:#8ce3d4;font-size:8px;text-decoration:none}.forecast-card a:hover{text-decoration:underline}.forecast-callout{margin-top:10px;padding:9px 10px;border-left:2px solid #e7a66b;background:rgba(231,166,107,.07);border-radius:0 8px 8px 0;color:#b5c0ca;font-size:9px;line-height:1.5}.forecast-footer{margin-top:10px;color:#778b9c;font-size:8px;line-height:1.5}.global-outlook{margin:11px 0 4px;padding:12px;border:1px solid rgba(99,214,196,.22);border-radius:11px;background:linear-gradient(145deg,rgba(15,35,48,.72),rgba(255,255,255,.018))}.global-outlook-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.global-outlook-head strong{font-size:11px}.global-outlook-head span{font-size:8px;color:#9baebe}.global-outlook p{margin:5px 0 8px;color:#a5b4c0;font-size:9px;line-height:1.45}.rain-legend{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:8px;color:#9aabba}.rain-legend span{display:flex;align-items:center;gap:4px}.rain-dot{width:8px;height:8px;border-radius:50%;display:inline-block}.global-outlook small{display:block;color:#748a9b;font-size:8px;margin-top:7px}
   @media(max-width:850px){.section-nav{padding:7px 9px}.forecast-section{padding:9px}.forecast-grid{gap:5px}.forecast-card{padding:8px}}
+  /* Match the quieter, mineral-toned EARTHPULSE-X dashboard theme. */
+  :root{--ink:#edf1f3;--ink-dim:#b3bec6;--glass:rgba(16,25,35,.88);--line:rgba(130,151,179,.2);--accent:#79aaa4;--font-ui:'Urbanist',system-ui,-apple-system,'Segoe UI',sans-serif}
+  body{background:#0b1119}
+  #globe{background:radial-gradient(ellipse at 45% 43%,#172330 0,#101923 52%,#0b1119 100%)}
+  .brand-mark{background:linear-gradient(145deg,#91c1b8,#587f7c);box-shadow:0 6px 22px rgba(121,170,164,.2)}
+  button[aria-pressed="true"]{background:rgba(121,170,164,.16);color:#c4e0dc;border-color:rgba(121,170,164,.52)}
+  .category-card[aria-pressed="true"],.section-nav button[aria-selected="true"]{background:linear-gradient(120deg,rgba(121,170,164,.18),rgba(121,170,164,.07));border-color:rgba(121,170,164,.54);color:#d4e9e6}
+  .feed-toggles input{accent-color:#79aaa4}
+  .radar-card:hover,.satellite-card button{border-color:rgba(121,170,164,.38)}
+  .forecast-place,.forecast-chip{color:#c4e0dc}
+  .forecast-hero{border-color:rgba(121,170,164,.22);background:radial-gradient(ellipse at 90% 0,rgba(121,170,164,.11),transparent 45%),linear-gradient(135deg,rgba(121,170,164,.07),rgba(255,255,255,.02))}
 </style>
 </head>
 <body>
@@ -262,10 +276,18 @@
   scene.highDynamicRange = false;
   scene.screenSpaceCameraController.minimumZoomDistance = 3;      // metres above the ground
   scene.screenSpaceCameraController.maximumZoomDistance = 4.0e7;
-  // Scroll-wheel zoom is handled on the canvas below; keep right-drag and pinch native.
+  // Keep Cesium's native right-drag and pinch controls; wheel zoom is eased below.
   scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.RIGHT_DRAG, Cesium.CameraEventType.PINCH];
-  globe.maximumScreenSpaceError = 1.5;   // sharper tiles (default is 2)
-  globe.tileCacheSize = 300;
+  scene.screenSpaceCameraController.inertiaSpin = 0.84;
+  scene.screenSpaceCameraController.inertiaTranslate = 0.84;
+  scene.screenSpaceCameraController.inertiaZoom = 0.84;
+  // Keep the globe responsive while imagery and terrain tiles stream in.
+  globe.maximumScreenSpaceError = 1.25;
+  globe.tileCacheSize = 256;
+  scene.postProcessStages.fxaa.enabled = true;
+  globe.atmosphereSaturationShift = -0.12;
+  globe.atmosphereBrightnessShift = 0.0;
+  globe.terrainExaggeration = 1.18;
 
   // ----- Imagery -----
   // Daytime: Esri World Imagery, the true-colour satellite and aerial mosaic that goes down to rooftop level.
@@ -282,10 +304,25 @@
     });
   }
   Cesium.ArcGisMapServerImageryProvider.fromUrl(ESRI,{enablePickFeatures:false,maximumLevel:19,credit:ESRI_CREDIT})
-    .then(addDay)
+    .then(function(provider){
+      addDay(provider);
+      // A restrained grade preserves natural land colors while adding definition.
+      dayLayer.saturation=0.82;
+      dayLayer.contrast=1.12;
+      dayLayer.gamma=0.94;
+    })
     .catch(function(){
       addDay(new Cesium.UrlTemplateImageryProvider({url:ESRI+'/tile/{z}/{y}/{x}',maximumLevel:19,credit:ESRI_CREDIT}));
     });
+
+  // Drape the satellite mosaic over real elevation instead of a perfectly smooth ellipsoid.
+  // Imagery remains available if the public elevation service is slow or unreachable.
+  if(Cesium.ArcGISTiledElevationTerrainProvider){
+    Cesium.ArcGISTiledElevationTerrainProvider.fromUrl(
+      'https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer'
+    ).then(function(provider){viewer.terrainProvider=provider;})
+     .catch(function(){/* Keep the imagery globe on the WGS84 ellipsoid as a fallback. */});
+  }
 
   // Night side: NASA Black Marble city lights (shown only where the sun is down).
   var nightLayer = viewer.imageryLayers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
@@ -752,21 +789,18 @@
   camera.setView({destination:Cesium.Cartesian3.fromDegrees(tzLon,24,17.5e6)});
   document.getElementById('bHome').onclick=wholeEarth;
 
-  // ----- Zoom toward the mouse pointer, like Google Maps -----
-  // Scroll in: the camera moves along the line through the spot under the cursor, so that spot stays under the
-  // cursor all the way down to rooftops. Scroll out: it moves back the same way, and the view turns to face
-  // the centre of the Earth, so at full zoom-out the whole globe is back in the middle of the screen.
+  // ----- Smooth wheel zoom -----
+  // Accumulate wheel input and ease it in preRender so high-rate trackpads don't jump the camera.
   var ell=Cesium.Ellipsoid.WGS84, V3=Cesium.Cartesian3, cvs=viewer.canvas;
-  var MIN_H=3, MAX_H=2.8e7, MIN_DIST=6, pending=0, anchor=null;
+  var MIN_H=3, MAX_H=2.8e7, MIN_DIST=6, pending=0, anchor=null, anchorIdleTimer=0;
   function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
   cvs.addEventListener('wheel',function(e){
     e.preventDefault();e.stopImmediatePropagation();camera.cancelFlight();
     var delta=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?120:1);
-    var height=camera.positionCartographic.height;
-    var fraction=clamp(Math.abs(delta)*0.002,0.02,0.45);
-    var amount=Math.max(20,height*fraction);
-    if(delta<0)camera.zoomIn(Math.min(amount,Math.max(0,height-MIN_H)));
-    else camera.zoomOut(Math.min(amount,Math.max(0,MAX_H-height)));
+    if(!anchor) anchor=anchorFor(cursorPos(e));
+    pending=clamp(pending+delta*0.0012,-1.25,1.25);
+    clearTimeout(anchorIdleTimer);
+    anchorIdleTimer=setTimeout(function(){if(Math.abs(pending)<0.0006)anchor=null;},180);
   },{capture:true,passive:false});
   function pickGlobe(pos){
     var ray=camera.getPickRay(pos), p;
@@ -795,8 +829,8 @@
     camera.cancelFlight(); anchor=anchorFor(cursorPos(e)); pending=-1.6;
   });
   scene.preRender.addEventListener(function(){
-    if(!anchor||Math.abs(pending)<0.0006){ pending=0; return; }
-    var part=pending*0.2; pending-=part;
+    if(!anchor||Math.abs(pending)<0.0006){ pending=0; anchor=null; return; }
+    var part=pending*0.12; pending-=part;
     var C=V3.clone(camera.positionWC), P=anchor, d=V3.distance(C,P);
     if(d<1e-3) return;
     var newD=Math.max(d*Math.exp(part),MIN_DIST);
