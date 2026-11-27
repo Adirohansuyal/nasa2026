@@ -6,6 +6,7 @@ import os
 import re
 import time
 import math
+import asyncio
 import statistics
 from urllib.error import HTTPError, URLError
 from urllib.request import Request as URLRequest, urlopen
@@ -29,6 +30,9 @@ _MAX_PROMPT_CHARS = 30_000
 FIRMS_MAP_KEY = "90892aa833cf04bc64aee72e572fd93b"
 _request_times: dict[str, deque[float]] = defaultdict(deque)
 _global_forecast_cache: dict[str, object] = {"at": 0.0, "payload": None}
+_place_name_cache: dict[str, dict[str, object]] = {}
+_place_name_lock = asyncio.Lock()
+_last_nominatim_request = 0.0
 
 NASA_GEOSFP_GRID = "https://opendap.nccs.nasa.gov/dods/GEOS-5/fp/0.25_deg/fcast/tavg3_2d_smp_Nx.latest.ascii"
 NASA_GEOSCF_GRID = "https://opendap.nccs.nasa.gov/dods/gmao/geos-cf/v2/fcst/aqc_tavg_1hr_glo_L1440x721_slv.latest.ascii"
@@ -52,6 +56,52 @@ def _nasa_ascii_grid(url: str) -> list[float]:
 
 async def health(_: Request) -> JSONResponse:
     return JSONResponse({"ok": True, "service": "earthpulse-explainer"})
+
+
+async def reverse_geocode(request: Request) -> JSONResponse:
+    """Resolve a hotspot coordinate to a nearby named place, with Nominatim caching/rate limiting."""
+    global _last_nominatim_request
+    try:
+        lat, lon = float(request.query_params["lat"]), float(request.query_params["lon"])
+        if not math.isfinite(lat) or not math.isfinite(lon) or abs(lat) > 90 or abs(lon) > 180:
+            raise ValueError
+    except (KeyError, TypeError, ValueError):
+        return JSONResponse({"error": "Valid latitude and longitude are required."}, status_code=400)
+    key = f"{lat:.2f},{lon:.2f}"
+    if key in _place_name_cache:
+        return JSONResponse(_place_name_cache[key])
+    async with _place_name_lock:
+        if key in _place_name_cache:
+            return JSONResponse(_place_name_cache[key])
+        delay = 1.05 - (time.monotonic() - _last_nominatim_request)
+        if delay > 0:
+            await asyncio.sleep(delay)
+        _last_nominatim_request = time.monotonic()
+        try:
+            from urllib.parse import urlencode
+            url = "https://nominatim.openstreetmap.org/reverse?" + urlencode({
+                "format": "jsonv2", "lat": lat, "lon": lon, "zoom": 10,
+                "addressdetails": 1, "accept-language": "en",
+            })
+            def fetch():
+                with urlopen(URLRequest(url, headers={
+                    "User-Agent": "EarthPulse-X/1.0 (NASA FIRMS hotspot place labels)",
+                    "Accept": "application/json",
+                }), timeout=15) as response:
+                    import json
+                    return json.loads(response.read().decode("utf-8"))
+            data = await run_in_threadpool(fetch)
+            address = data.get("address") or {}
+            locality = next((address.get(k) for k in ("city", "town", "village", "hamlet", "suburb", "municipality") if address.get(k)), None)
+            region = next((address.get(k) for k in ("state", "province", "state_district", "county") if address.get(k) and address.get(k) != locality), None)
+            country = address.get("country")
+            name = ", ".join(dict.fromkeys(x for x in (locality, region, country) if x)) or data.get("name") or country
+            result = {"name": name, "locality": locality, "region": region, "country": country,
+                      "attribution": "© OpenStreetMap contributors", "lat": lat, "lon": lon}
+            _place_name_cache[key] = result
+            return JSONResponse(result)
+        except (HTTPError, URLError, TimeoutError, ValueError, UnicodeDecodeError) as exc:
+            return JSONResponse({"error": "Place lookup unavailable: " + str(exc)}, status_code=502)
 
 
 async def forecast_point(request: Request) -> JSONResponse:
@@ -714,7 +764,7 @@ allowed_origins = [
     if origin.strip()
 ]
 
-app = Starlette(routes=[Route("/health", health, methods=["GET"]), Route("/api/explain", explain, methods=["POST"]), Route("/api/forecast/point", forecast_point, methods=["GET"]), Route("/api/forecast/global", forecast_global, methods=["GET"]), Route("/api/firms/events", firms_events, methods=["GET"]), Route("/api/monitor/{source}", monitor_feed, methods=["GET"]), Route("/api/landcover/map-timeline", landcover_map_timeline, methods=["POST"])])
+app = Starlette(routes=[Route("/health", health, methods=["GET"]), Route("/api/explain", explain, methods=["POST"]), Route("/api/forecast/point", forecast_point, methods=["GET"]), Route("/api/forecast/global", forecast_global, methods=["GET"]), Route("/api/geocode/reverse", reverse_geocode, methods=["GET"]), Route("/api/firms/events", firms_events, methods=["GET"]), Route("/api/monitor/{source}", monitor_feed, methods=["GET"]), Route("/api/landcover/map-timeline", landcover_map_timeline, methods=["POST"])])
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,

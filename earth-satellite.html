@@ -169,7 +169,7 @@
   <div id="weather" class="wx" hidden><div>Rain (recent)<b id="wxRain">Loading…</b></div><div>Humidity<b id="wxHumidity">—</b></div><div>Temperature<b id="wxTemp">—</b></div></div>
   <div id="weatherStatus" hidden style="padding:0 12px 5px;color:var(--ink-dim);font-size:9px">NASA POWER daily point · Dehradun</div>
   <form id="fireForm" class="fire-form" hidden><button type="submit">Refresh all satellite fire detections</button></form>
-  <div id="fireStatus" hidden style="padding:0 12px 5px;color:var(--ink-dim);font-size:9px">NASA FIRMS</div>
+  <div id="fireStatus" style="padding:0 12px 5px;color:var(--ink-dim);font-size:9px">NASA FIRMS</div>
   <div id="volcanoStatus" hidden style="padding:4px 12px 6px;color:var(--ink-dim);font-size:9px">Combining observatory reports, GDACS alerts, and nearby satellite thermal detections.</div>
   <div id="airQualityPanel" hidden><div id="airQualityStatus">OpenAQ measurements</div><div id="airQualityList"></div></div>
   <div id="landslidePanel" hidden><div class="lhasa-overview"><span>NASA LHASA · selected 1 km cell</span><strong id="lhasaValue">Loading…</strong></div><div class="lhasa-metrics"><div><small>Rainfall trigger</small><b>GPM IMERG · model input</b></div><div><small>Soil wetness</small><b>SMAP · model input</b></div><div><small>Terrain susceptibility</small><b>Integrated by LHASA</b></div></div><div id="landslideStatus">Querying the NASA near-real-time model…</div><div style="padding-top:5px">NASA LHASA updates on a best-effort schedule, typically twice daily. Individual input scores are not supplied by this cell query. This model output is not an official local warning.</div><div style="display:flex;gap:10px;padding-top:5px"><a href="https://landslides.nasa.gov/viewer/" target="_blank" rel="noopener" style="color:#78d9cb">NASA LHASA Live Map ↗</a><a href="https://portal.nccs.nasa.gov/datashare/landslides/" target="_blank" rel="noopener" style="color:#78d9cb">Data download ↗</a></div></div>
@@ -393,7 +393,7 @@
     document.getElementById('eventsTitle').textContent=region?'Uttarakhand Monitor':'World Monitor';
     document.getElementById('regionView').setAttribute('aria-pressed',String(region));document.getElementById('globalView').setAttribute('aria-pressed',String(!region));
     document.getElementById('weather').hidden=!region;document.getElementById('weatherStatus').hidden=!region;
-    document.getElementById('fireForm').hidden=!region;document.getElementById('fireStatus').hidden=!region;
+    document.getElementById('fireForm').hidden=!region;document.getElementById('fireStatus').hidden=false;
     document.getElementById('volcanoStatus').hidden=true;
     document.getElementById('satelliteCatalog').hidden=true;
     document.getElementById('airQualityPanel').hidden=true;
@@ -547,7 +547,28 @@
       grouped[category].forEach(function(row){var b=document.createElement('button');b.type='button';b.className='event-item';var strong=document.createElement('strong');if(row.alertLevel){var badge=document.createElement('span');badge.className='alert-pill alert-'+row.alertLevel;badge.textContent=row.alertLevel.toUpperCase();strong.appendChild(badge);}strong.appendChild(document.createTextNode(row.title));var small=document.createElement('small');small.textContent=row.place+' · '+row.meta+' · '+row.source;b.appendChild(strong);b.appendChild(small);b.addEventListener('click',function(){if(row.position)zoomToEvent(row);else if(row.url)window.open(row.url,'_blank','noopener');});section.appendChild(b);});globalList.appendChild(section);});
     if(!globalList.children.length){var empty=document.createElement('div');empty.className='feed-label';empty.textContent='No matching events were reported by the selected feeds in the past 7 days.';globalList.appendChild(empty);}
   }
-  function addFeedRow(category,title,meta,source,url,position,feature,place,alertLevel){globalFeedRows.push({category:category,title:title,meta:meta,source:source,url:url,position:position,feature:feature,place:place||'Location unavailable',alertLevel:alertLevel||''});}
+  function addFeedRow(category,title,meta,source,url,position,feature,place,alertLevel){var row={category:category,title:title,meta:meta,source:source,url:url,position:position,feature:feature,place:place||'Location unavailable',alertLevel:alertLevel||''};globalFeedRows.push(row);return row;}
+  var fireNameRequestId=0;
+  function resolveFirePlaceNames(rows,runId,apiBase){
+    var pending=rows.filter(function(row){return row.source==='NASA FIRMS'&&row.geocodeLat!=null&&row.geocodeLon!=null;});
+    if(!pending.length)return;
+    var completed=0,failed=0,fireStatus=document.getElementById('fireStatus');
+    fireStatus.textContent+=' · naming hotspot locations 0/'+pending.length+'…';
+    function resolveAt(index){
+      if(index>=pending.length||runId!==fireNameRequestId)return;
+      var row=pending[index],url=apiBase+'/api/geocode/reverse?lat='+encodeURIComponent(row.geocodeLat)+'&lon='+encodeURIComponent(row.geocodeLon);
+      fetch(url,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(data){
+        if(runId!==fireNameRequestId)return;
+        if(!data.name)throw new Error(data.error||'No place name returned');
+        if(globalFeedRows.indexOf(row)<0)globalFeedRows.push(row);
+        row.place='Near '+data.name;row.title=row.hotspotCount+' FIRMS hotspots · '+data.name;
+        if(row.entity){row.entity.name=row.title;row.entity.label.text=row.title+'\nNear '+data.name;row.entity.description=row.title+'<br>NASA FIRMS · '+row.hotspotCount+' detections in a 2° grid cell<br>Near '+data.name+'<br>'+data.attribution;}
+        completed++;renderGlobalRows();
+      }).catch(function(err){if(runId===fireNameRequestId){failed++;row.place='Place name unavailable · '+row.place;renderGlobalRows();console.warn('FIRMS place lookup failed',row.geocodeLat,row.geocodeLon,err);}})
+        .finally(function(){if(runId!==fireNameRequestId)return;fireStatus.textContent='NASA FIRMS · '+completed+'/'+pending.length+' hotspot locations named'+(failed?' · '+failed+' lookup failed':'')+' · detections are not confirmation of a ground fire.';if(index+1<pending.length)setTimeout(function(){resolveAt(index+1);},1100);else fireStatus.textContent+=' · Place names © OpenStreetMap contributors';});
+    }
+    resolveAt(0);
+  }
   function gdacsAlertColor(level){return Cesium.Color.fromCssColorString(level==='red'?'#ff5b60':level==='orange'?'#ffad4d':level==='green'?'#61d995':'#a8b4c2');}
   function gdacsCategory(code){var v=String(code||'').toUpperCase();if(v==='EQ'||v.indexOf('EARTHQUAKE')>=0)return'Earthquakes';if(v==='TS'||v.indexOf('TSUNAMI')>=0)return'Tsunamis';if(v==='TC'||v.indexOf('CYCLONE')>=0||v.indexOf('STORM')>=0)return'Cyclones & severe storms';if(v==='FL'||v.indexOf('FLOOD')>=0)return'Floods';if(v==='VO'||v.indexOf('VOLCANO')>=0)return'Volcanoes';if(v==='WF'||v.indexOf('FIRE')>=0)return'Wildfires';if(v==='DR'||v.indexOf('DROUGHT')>=0)return'Droughts';if(v.indexOf('LANDSLIDE')>=0)return'Landslides';return'Other hazards';}
   function hazardColor(category){return Cesium.Color.fromCssColorString(category==='Earthquakes'?'#ffb24a':category==='Cyclones & severe storms'?'#62baff':category==='Floods'?'#35d4d0':category==='Volcanoes'?'#dc88ff':category==='Wildfires'?'#ff654f':category==='Droughts'?'#e6c85a':'#83dfc0');}
@@ -603,7 +624,7 @@
   function loadGlobalFeeds(){
     var requestId=++globalFeedRequestId;
     var apiBase=window.EARTHPULSE_API_BASE||'http://127.0.0.1:8001';
-    globalFeedRows=[];globalList.innerHTML=''; gdacsSource.entities.removeAll(); quakeSource.entities.removeAll(); volcanoSource.entities.removeAll();
+    globalFeedRows=globalFeedRows.filter(function(row){return row.source==='NASA FIRMS';});globalList.innerHTML=''; gdacsSource.entities.removeAll(); quakeSource.entities.removeAll(); volcanoSource.entities.removeAll();
     if(!document.getElementById('gdacsToggle').checked){radarData.gdacs={};radarData.gdacsLevels={};}
     if(!document.getElementById('usgsToggle').checked)radarData.usgs=0;
     renderRadar();
@@ -668,6 +689,7 @@
   }
   // FIRMS uses a user-provided MAP_KEY only for this request; it is not saved locally.
   function loadFires(source,region){
+    var geocodeRun=++fireNameRequestId;
     var sources=['VIIRS_SNPP_NRT','VIIRS_NOAA20_NRT','VIIRS_NOAA21_NRT','MODIS_NRT'];
     var fs=document.getElementById('fireStatus'); fs.textContent='Loading all four NASA FIRMS feeds…';
     var apiBase=window.EARTHPULSE_API_BASE||'http://127.0.0.1:8001';
@@ -684,9 +706,9 @@
           count++;
         });
       });
-      if(region==='world'){Object.keys(bins).forEach(function(key){var bin=bins[key],lon=bin.lon/bin.count,lat=bin.lat/bin.count,pt=[lon,lat,12000],title=bin.count+' FIRMS hotspots · '+key.replace(',','°, ')+'°',fireColor=bin.count>=100?'#ef5d62':bin.count>=25?'#f39b4a':bin.count>=8?'#f2cf62':'#ff7047';firesSource.entities.add({name:title,properties:{hazardCategory:'Wildfires'},description:title+'<br>NASA FIRMS · all satellite feeds · aggregated in a 2° grid cell',position:Cesium.Cartesian3.fromDegrees(lon,lat,12000),point:{pixelSize:Math.min(12,5+Math.log2(bin.count+1)*1.2),color:Cesium.Color.fromCssColorString(fireColor).withAlpha(.96),outlineColor:Cesium.Color.WHITE,outlineWidth:1,disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{show:false}});addFeedRow('Wildfires',title,bin.count+' hotspots in grid cell','NASA FIRMS',null,pt,null,key);});renderGlobalRows();}
+      if(region==='world'){var hotspotRows=[];Object.keys(bins).sort(function(a,b){return bins[b].count-a.count;}).forEach(function(key){var bin=bins[key],lon=bin.lon/bin.count,lat=bin.lat/bin.count,pt=[lon,lat,12000],title=bin.count+' FIRMS hotspots · '+key.replace(',','°, ')+'°',fireColor=bin.count>=100?'#ef5d62':bin.count>=25?'#f39b4a':bin.count>=8?'#f2cf62':'#ff7047',entity=firesSource.entities.add({name:title,properties:{hazardCategory:'Wildfires'},description:title+'<br>NASA FIRMS · all satellite feeds · aggregated in a 2° grid cell',position:Cesium.Cartesian3.fromDegrees(lon,lat,12000),point:{pixelSize:Math.min(12,5+Math.log2(bin.count+1)*1.2),color:Cesium.Color.fromCssColorString(fireColor).withAlpha(.96),outlineColor:Cesium.Color.WHITE,outlineWidth:1,disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{text:title,font:'12px sans-serif',show:false,showBackground:true,backgroundColor:Cesium.Color.fromCssColorString('#08111d').withAlpha(.92),pixelOffset:new Cesium.Cartesian2(0,-18),disableDepthTestDistance:Number.POSITIVE_INFINITY}}),row=addFeedRow('Wildfires',title,bin.count+' hotspots in grid cell','NASA FIRMS',null,pt,null,key);row.geocodeLat=lat;row.geocodeLon=lon;row.hotspotCount=bin.count;row.entity=entity;hotspotRows.push(row);});renderGlobalRows();}
       radarData.firms=count;radarData.lastRefresh=new Date().toLocaleTimeString();renderRadar();
-      applyHazardFilter();fs.textContent='NASA FIRMS · all 4 satellite feeds · '+count+' hotspots in last 24h · '+(region==='world'?Object.keys(bins).length+' mapped grid cells (2°) · ':'')+'detections are not confirmation of a ground fire.';
+      applyHazardFilter();fs.textContent='NASA FIRMS · all 4 satellite feeds · '+count+' hotspots in last 24h · '+(region==='world'?Object.keys(bins).length+' mapped grid cells (2°) · ':'')+'detections are not confirmation of a ground fire.';if(region==='world')resolveFirePlaceNames(hotspotRows,geocodeRun,apiBase.replace(/\/$/,''));
     }).catch(function(err){radarData.firms=-1;renderRadar();fs.textContent='FIRMS unavailable: '+err.message+' · check the local API server, NASA key, and request limit.';});
   }
   document.getElementById('fireForm').addEventListener('submit',function(e){e.preventDefault();loadFires(null,regionalEvents?'uttarakhand':'world');});
