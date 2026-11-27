@@ -490,7 +490,7 @@ body::before{opacity:.12}
 .topbar-divider{height:19px;width:1px;background:var(--border)}
 #main-nav{height:55px;max-width:1720px;margin:auto;padding:0 clamp(12px,3vw,48px);display:flex;align-items:stretch;gap:3px;overflow-x:auto;scrollbar-width:none}
 #main-nav::-webkit-scrollbar{display:none}
-#main-nav .nav-item{flex:0 0 auto;display:flex;align-items:center;gap:8px;white-space:nowrap;padding:0 13px;margin:0;border-radius:0;color:#98a8b9;font-size:.76rem;font-weight:600;border-bottom:2px solid transparent;transition:color .18s ease,border-color .18s ease,background .18s ease;font-family:inherit;text-align:left;background:transparent;border-top:0;border-left:0;border-right:0;cursor:pointer}
+#main-nav .nav-item{flex:0 0 auto;display:flex;align-items:center;gap:8px;white-space:nowrap;padding:0 13px;margin:0;border-radius:0;color:#98a8b9;font-size:.76rem;font-weight:600;border-bottom:2px solid transparent;transition:color .18s ease,border-color .18s ease,background .18s ease;font-family:inherit;text-align:left;text-decoration:none;background:transparent;border-top:0;border-left:0;border-right:0;cursor:pointer}
 #main-nav .nav-item:hover{background:rgba(255,255,255,.035);color:#edf4f8}
 #main-nav .nav-item.active{background:transparent;color:var(--accent);border-bottom-color:var(--accent)}
 #main-nav .nav-item.active::before{display:none}
@@ -564,6 +564,8 @@ h1{letter-spacing:-.045em}h2{letter-spacing:-.028em}
   border:1px solid rgba(168,190,205,.18);
   box-shadow:0 1px 0 rgba(255,255,255,.04) inset;
 }
+.hero-actions a.hero-secondary{display:inline-flex;align-items:center;height:46px;box-sizing:border-box;padding:0 20px;border-radius:10px;font-family:inherit;font-size:.8rem;font-weight:700;letter-spacing:.02em;text-decoration:none;transition:transform .2s,border-color .2s,background .2s}
+.hero-actions a.hero-secondary:hover{transform:translateY(-2px)}
 .hero-secondary:hover{
   border-color:rgba(121,170,164,.5)!important;
   background:rgba(121,170,164,.07);
@@ -1470,6 +1472,7 @@ img, canvas, svg, table { max-width: 100%; }
   </div>
   <nav id="main-nav" aria-label="Main navigation">
     <button type="button" class="nav-item active" data-page="home" aria-current="page">Overview</button>
+    <a class="nav-item" href="https://nasa20262.vercel.app">Explore world trend</a>
     <button type="button" class="nav-item" data-page="earth">Earth Observation</button>
     <button type="button" class="nav-item" data-page="landcover">Land Cover</button>
     <button type="button" class="nav-item" data-page="trend">Trends</button>
@@ -1477,6 +1480,7 @@ img, canvas, svg, table { max-width: 100%; }
     <button type="button" class="nav-item" data-page="network">Connections</button>
     <button type="button" class="nav-item" data-page="predict">Forecasts</button>
     <button type="button" class="nav-item" data-page="causal">Causal Discovery</button>
+    <a class="nav-item" href="earth-satellite.html" target="_blank" rel="noopener noreferrer">Global live Monitoring</a>
   </nav>
 </header>
 
@@ -1923,13 +1927,8 @@ img, canvas, svg, table { max-width: 100%; }
         <h1>Understand a changing<br/><span>Earth, at local scale.</span></h1>
         <p class="hero-sub">Satellite observations, climate trends and early warnings for Uttarakhand — brought together in one decision-ready platform.</p>
         <div class="hero-actions">
-          <button class="hero-primary" onclick="navigate('earth')">Explore Earth Observation <span>↗</span></button>
-          <button class="hero-secondary" onclick="navigate('trend')">View key findings</button>
-          <a class="hero-earth3d" href="earth-satellite.html" target="_blank" rel="noopener noreferrer">
-            <span class="e3d-globe">🌏</span>
-            Open interactive 3D Earth
-            <span class="e3d-arrow">↗</span>
-          </a>
+          <button class="hero-primary" onclick="navigate('earth')">Explore Uttarakhand Observation <span>↗</span></button>
+          <a class="hero-secondary" href="https://nasa20262.vercel.app">Explore world trend <span>↗</span></a>
         </div>
         <div class="hero-footnote"><span class="hero-footnote-dot"></span> 10 years of monthly observations <b>·</b> 13 districts <b>·</b> 5 satellite variables</div>
       </div>
