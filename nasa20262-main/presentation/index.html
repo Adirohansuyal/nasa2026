@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aeolus · Sunum</title>
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <!-- ───────────── 1. Açılış ───────────── -->
+        <section class="title-slide">
+          <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="stripes-bg" data-stripes></div>
+          <div class="brand-row">
+            <img class="logo" src="/logo.png" alt="" width="150" height="150" />
+            <div>
+              <p class="kicker shimmer">NASA Space Apps Challenge 2026 · Earth System Trend Detective</p>
+              <h1 data-generate>Aeolus</h1>
+            </div>
+          </div>
+          <p class="lead" data-generate>Yaşadığın yerin iklimi 46 yılda nasıl değişti? Bir tıkla, herkesin anlayacağı dille.</p>
+          <p class="team">Data May Cry ekibi · Enes Tekdemir · Rumet Argeş Şaşmaz</p>
+          <aside class="notes">
+            Bir soruyla başlayayım: doğduğunuz yıldan beri şehriniz kaç derece ısındı? Bilmiyorsunuz, değil mi?
+            Biz de bilmiyorduk. Biz Data May Cry'ız, bu da Aeolus. (~12 sn)
+          </aside>
+        </section>
+
+        <!-- ───────────── 2. İnsanların soruları ───────────── -->
+        <section>
+          <p class="kicker shimmer">Herkesin bir sorusu var</p>
+          <h2 data-generate>"Benim şehrimde gerçekten bir şey değişti mi?"</h2>
+          <div class="marquee" aria-label="Aeolus'un cevap verdiği sorular">
+            <div class="marquee-row">
+              <div class="marquee-track">
+                <span class="q">Diyarbakır yazları daha mı sıcak?</span>
+                <span class="q">Konya'da toprak kuruyor mu?</span>
+                <span class="q">Erzurum'da kar azaldı mı?</span>
+                <span class="q">İzmir'de yağış değişti mi?</span>
+                <span class="q">Türkiye'de rüzgâr zayıflıyor mu?</span>
+                <span class="q">Hangi ay en hızlı ısınıyor?</span>
+              </div>
+            </div>
+            <div class="marquee-row reverse">
+              <div class="marquee-track">
+                <span class="q">Doğduğum yıldan beri ne değişti?</span>
+                <span class="q">Ankara mı İstanbul mu daha hızlı ısınıyor?</span>
+                <span class="q">Kışlar mı yazlar mı daha çok ısındı?</span>
+                <span class="q">Antalya'da nem artıyor mu?</span>
+                <span class="q">81 il arasında en hızlı ısınan hangisi?</span>
+                <span class="q">Buharlaşma yağıştan hızlı mı artıyor?</span>
+              </div>
+            </div>
+          </div>
+          <p class="sub rise">Cevap NASA'nın verisinde. Ama 2.244 dosya ve istatistik bilgisi istiyor.</p>
+          <aside class="notes">
+            Bu sorunun cevabı aslında var. NASA 46 yıldır dünyanın her köşesini ölçüyor. Ama veri 2.244 dosyanın içinde,
+            istatistik bilmeden açılmayan bir kasada. Diyarbakır yazları daha mı sıcak, Erzurum'da kar azaldı mı?
+            Herkesin sorusu var ama kimse cevaba ulaşamıyor. Biz o kasayı açtık. Bakın: (~18 sn)
+          </aside>
+        </section>
+
+        <!-- ───────────── 3. Canlı gösterim ───────────── -->
+        <section class="demo-slide">
+          <p class="kicker shimmer">Canlı gösterim</p>
+          <h2 class="tight">Hadi birlikte bakalım.</h2>
+          <div class="frame">
+            <!-- the app is laid out at a real laptop size (1440 × 810) and scaled down, so nothing overlaps -->
+            <div class="frame-box"><iframe data-src-live data-shot="/shots/diyarbakir_tr.jpg" title="Aeolus canlı" loading="lazy"></iframe></div>
+            <p class="frame-note">Canlı uygulama · <span data-live-label></span> · tıklanabilir</p>
+          </div>
+          <aside class="notes">
+            Diyarbakır: 10 yılda 0,42 derece ve bu tahmin değil, net. Ya yazlar? (Yaz) Daha hızlı: 0,53.
+            Peki kışlar? (Kış) Burada çoğu uygulama bir şey uydururdu. Biz "belirgin bir değişim yok" diyoruz.
+            Emin değilsek, emin değiliz. (~35 sn) İnternet yoksa slayt ekran görüntüsünü gösterir.
+          </aside>
+        </section>
+
+        <!-- ───────────── 4. Kim, ne için ───────────── -->
+        <section>
+          <h2 data-generate>Kim, ne için kullanır?</h2>
+          <div class="uses">
+            <div class="use big glow rise">
+              <div class="who"><span class="ico" data-icon="sprout"></span><h3>Zeynep <span>· Ziraat mühendisi, Diyarbakır</span></h3></div>
+              <p class="q">Çiftçiye ne ekeceğini, ne zaman ekeceğini söylerken bakar.</p>
+              <p class="fact">Diyarbakır'da yazlar 46 yılda <b>2,4 °C ısındı</b>.</p>
+            </div>
+            <div class="use big glow rise">
+              <div class="who"><span class="ico" data-icon="energy"></span><h3>Can <span>· Rüzgâr santrali yatırımcısı</span></h3></div>
+              <p class="q">Santralin kurulacağı yeri seçerken bakar.</p>
+              <p class="fact">Aydın'da rüzgâr 46 yılda <b>belirgin şekilde zayıfladı</b>.</p>
+            </div>
+            <div class="use big glow rise">
+              <div class="who"><span class="ico" data-icon="city"></span><h3>Elif <span>·İklim uzmanı, Mersin</span></h3></div>
+              <p class="q">Şehrin sıcak hava planını hazırlarken bakar.</p>
+              <p class="fact">Mersin'de yazlar 46 yılda <b>belirgin şekilde nemlendi</b>.</p>
+            </div>
+            <div class="use big glow rise">
+              <div class="who"><span class="ico" data-icon="news"></span><h3>Murat <span>· Gazeteci</span></h3></div>
+              <p class="q">Sıcak hava haberini yazmadan önce rakamı doğrular.</p>
+              <p class="fact">İstanbul'da yazlar 46 yılda <b>2,7 °C ısındı</b>.</p>
+            </div>
+          </div>
+          <aside class="notes">
+            Bu ekran, Diyarbakır'da bir ziraat mühendisi için çok şey demek. Zeynep yazların 2,4 derece ısındığını görüyor
+            ve çiftçiye "eskisi gibi ekme" diyor. Aydın'da rüzgârın zayıfladığını gören Can, santralini yanlış yere kurmuyor.
+            Mersin'de Elif yazların nemlendiğini görüp sıcak hava planını buna göre yapıyor. Gazeteci Murat da
+            "İstanbul 2,7 derece ısındı" diye yazmadan önce rakamı buradan doğruluyor. (~25 sn)
+          </aside>
+        </section>
+
+        <!-- ───────────── 5. Sonuçlar: neden güvenebilirsin ───────────── -->
+        <section>
+          <p class="kicker shimmer">Sonuçlar · bağımsız kaynaklarla karşılaştırma</p>
+          <h2 data-generate>Kendi sonuçlarımızı kontrol ettik.</h2>
+          <div class="results">
+            <div class="res glow rise">
+              <p class="src">NOAA istasyonları</p>
+              <b data-count="94" data-sign="%">%94</b>
+              <span>sıcaklık: <b>954 / 1.013</b> bölgede aynı</span>
+            </div>
+            <div class="res glow rise">
+              <p class="src">NASA GISTEMP</p>
+              <b data-count="0.968" data-decimals="3">0,968</b>
+              <span>küresel sıcaklıkla uyum</span>
+            </div>
+            <div class="res glow rise">
+              <p class="src">%95 güven aralığı</p>
+              <b data-count="95" data-sign="%">%95</b>
+              <span>gerçek trendi içeriyor</span>
+            </div>
+            <div class="res glow rise">
+              <p class="src">Trendsiz yapay veri</p>
+              <b>≤ %5,5</b>
+              <span>yanlış alarm</span>
+            </div>
+          </div>
+          <div class="physics rise">
+            <span class="ph-title">Fizik testleri 6 / 6</span>
+            <span>Su dengesi <b>%0,02</b></span>
+            <span>Nem <b>%7,3</b> / °C</span>
+            <span>Arktik <b>2,7×</b></span>
+            <span>Pinatubo <b>−0,25 °C</b></span>
+            <span>El Niño yılları</span>
+            <span>Kar ↔ sıcaklık</span>
+          </div>
+          <aside class="notes">
+            Ama bu insanlar bu rakamlara dayanıp karar veriyorsa, rakamın doğru olması gerekir. O yüzden kendimizi test ettik.
+            NOAA istasyonlarıyla yüzde 94 aynı sonucu bulduk, NASA'nın küresel serisiyle 0,968 uyum çıktı.
+            Trend olmayan veride yanlış alarm yüzde 5,5'in altında. Altı fizik testine soktuk, altısı da tuttu. (~20 sn)
+            (Yağış sorulursa: uydu verisiyle uyum %57; uyuşmayan yerde kart "net" demiyor.)
+          </aside>
+        </section>
+
+        <!-- ───────────── 6. Avantajlar ve sınırlar ───────────── -->
+        <section>
+          <p class="kicker shimmer">Açık konuşalım</p>
+          <h2 data-generate>Avantajlar, dezavantajlar.</h2>
+          <div class="proscons">
+            <div class="pc pro">
+              <p class="pc-title"><span>+</span> Avantajlar</p>
+              <div class="pc-item glow rise"><b>Yanlış alarm vermiyor</b><small>Trendsiz veride ≤ %5,5: ölçüldü.</small></div>
+              <div class="pc-item glow rise"><b>Kendini kontrol ediyor</b><small>NOAA ve NASA kaynaklarıyla; uyuşmazsa "trend var" demiyor.</small></div>
+              <div class="pc-item glow rise"><b>Anında, ücretsiz, açık</b><small>Hesap tarayıcıda; açık API ve açık kod.</small></div>
+            </div>
+            <div class="pc con">
+              <p class="pc-title"><span>−</span> Dezavantajlar</p>
+              <div class="pc-item glow rise"><b>En fazla bir karo kadar ayrıntı</b><small>55 km'nin altı görünmüyor: ilçe, mahalle yok.</small></div>
+              <div class="pc-item glow rise"><b>Yılda bir değişiyor</b><small>Test tam yıllarla; her gün bakılacak bir araç değil.</small></div>
+              <div class="pc-item glow rise"><b>Sadece geçmiş</b><small>Tahmin yok, "neden" sorusuna cevap yok.</small></div>
+            </div>
+          </div>
+          <div class="stripes-big pc-stripes rise" data-stripes data-labels data-mark="1992" data-mark-text="1992 · Pinatubo"></div>
+          <aside class="notes">
+            Ama her şeyi yapıyor demeyeceğiz. Mahallenizi göremez, en küçük ayrıntı 55 kilometre. Her gün değişmez,
+            yılda bir değişir. Ve geleceği söylemez, sadece geçmişi söyler. Ama geçmişi çok net söyler. (~18 sn)
+            (Alttaki şeritte 1992 mavisi: Pinatubo patladı, dünya bir yıl ~0,25 °C soğudu.)
+          </aside>
+        </section>
+
+        <!-- ───────────── 7. Zaman yolculuğu (final, büyük resim): 46 yıl, 10 saniyede (arkada fotoğraf duvarı) ───────────── -->
+        <section class="tt-slide" data-tt>
+          <div class="wall" aria-hidden="true">
+            <div class="wall-row"><div class="wall-track"><img src="/shots/z-card.jpg" alt="" /><img src="/shots/z-chart.jpg" alt="" /><img src="/shots/z-rank.jpg" alt="" /><img src="/shots/z-summer.jpg" alt="" /><img src="/shots/z-finger.jpg" alt="" /><img src="/shots/z-cell.jpg" alt="" /><img src="/shots/z-months.jpg" alt="" /><img src="/shots/z-winter.jpg" alt="" /><img src="/shots/z-similar.jpg" alt="" /><img src="/shots/z-time.jpg" alt="" /></div></div>
+            <div class="wall-row"><div class="wall-track"><img src="/shots/z-cell.jpg" alt="" /><img src="/shots/z-months.jpg" alt="" /><img src="/shots/z-winter.jpg" alt="" /><img src="/shots/z-similar.jpg" alt="" /><img src="/shots/z-time.jpg" alt="" /><img src="/shots/z-card.jpg" alt="" /><img src="/shots/z-chart.jpg" alt="" /><img src="/shots/z-rank.jpg" alt="" /><img src="/shots/z-summer.jpg" alt="" /><img src="/shots/z-finger.jpg" alt="" /></div></div>
+            <div class="wall-row"><div class="wall-track"><img src="/shots/z-summer.jpg" alt="" /><img src="/shots/z-finger.jpg" alt="" /><img src="/shots/z-cell.jpg" alt="" /><img src="/shots/z-months.jpg" alt="" /><img src="/shots/z-winter.jpg" alt="" /><img src="/shots/z-similar.jpg" alt="" /><img src="/shots/z-time.jpg" alt="" /><img src="/shots/z-card.jpg" alt="" /><img src="/shots/z-chart.jpg" alt="" /><img src="/shots/z-rank.jpg" alt="" /></div></div>
+          </div>
+          <p class="kicker shimmer">Zaman yolculuğu 1980-2025 · 10 saniyede trend değişimi</p>
+          <div class="tt-player">
+            <div class="tt-globe" data-tt-frames></div>
+            <div class="tt-read">
+              <p class="tt-year" data-tt-year>1980</p>
+              <p class="tt-val" data-tt-val></p>
+              <p class="tt-cap2">normalden fark · NASA MERRA-2</p>
+              <div class="tt-bar"><i data-tt-bar></i></div>
+            </div>
+          </div>
+          <p class="tt-caption" data-tt-cap>46 yılda dünya <b>+0,7 °C</b> ısındı.</p>
+          <aside class="notes">
+            Bir şehirle başladık. Şimdi bütün dünyaya bakalım: 46 yıl, 10 saniyede. (sus, izlet)
+            Maviyle başladı, kırmızıyla bitti. Dünya 0,7 derece ısındı. (~12 sn)
+          </aside>
+        </section>
+
+        <!-- ───────────── 8. Teşekkür ───────────── -->
+        <section class="title-slide end">
+          <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="stripes-bg" data-stripes></div>
+          <img class="logo small" src="/logo.png" alt="Aeolus" width="84" height="84" />
+          <h2 data-generate>Kendi şehrine bak.</h2>
+          <div class="qr-wrap">
+            <div class="qr-ring"><canvas data-qr></canvas></div>
+            <a data-live-link></a>
+          </div>
+          <p class="team">Teşekkürler.    Data May Cry ekibi: Enes Tekdemir , Rumet Argeş Şaşmaz  * NASA Space Apps 2026 *</p>
+          <aside class="notes">Baştaki soruya döneyim: sizin şehriniz kaç derece ısındı? QR'ı okutun, 10 saniyede öğrenin. Teşekkürler. (~8 sn)</aside>
+        </section>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

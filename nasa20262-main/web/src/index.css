@@ -1,0 +1,87 @@
+:root {
+  /* EarthPulse-X palette, matched to the supplied index.html reference. */
+  --bg-deep: #0b1119;
+  --bg-base: #101923;
+  --bg-card: #172330;
+  --bg-card-h: #1d2b39;
+  --border: #293846;
+  --border-h: #3a4c5c;
+  --accent: #79aaa4;
+  --accent-dim: rgba(121, 170, 164, 0.11);
+  --accent-glow: rgba(121, 170, 164, 0.17);
+  --accent-2: #8297b3;
+  --accent-3: #c6a16d;
+  --green: #78a88c;
+  --red: #c87979;
+  --purple: #9c91b5;
+  --pink: #b9869b;
+  --t1: #edf1f3;
+  --t2: #b3bec6;
+  --t3: #81909b;
+  --bg: var(--bg-deep);
+  --surface: rgba(16, 25, 35, 0.94);
+  --surface-solid: var(--bg-base);
+  --surface-2: var(--bg-card);
+  --surface-3: var(--bg-card-h);
+  --line: rgba(41, 56, 70, 0.9);
+  --line-strong: var(--border-h);
+  --text: var(--t1);
+  --text-2: var(--t2);
+  --muted: var(--t3);
+  --hot: var(--accent-3);
+  --link: var(--accent);
+  --up: var(--red);
+  --down: var(--accent-2);
+  --ok: var(--green);
+  --warn: var(--accent-3);
+  --radius: 16px;
+  --radius-m: 12px;
+  --radius-s: 8px;
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(0, 0, 0, 0.18);
+  --display: "Urbanist", system-ui, sans-serif;
+  --sans: "Urbanist", system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: "Geist Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  font: 13px/1.5 var(--sans);
+  color: var(--text);
+  background: var(--bg);
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+button,
+select,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent-dim);
+}
